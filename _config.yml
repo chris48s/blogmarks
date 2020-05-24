@@ -1,0 +1,36 @@
+title: Blogmarks
+author: chris48s
+description: Handy links or snippets, and a sentence or two
+url: "https://chris48s.github.io/blogmarks"
+rss: rss
+paginate: 20
+
+# Build settings
+markdown: kramdown
+github_username: chris48s
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-paginate
+
+collections:
+  category:
+    output: true
+defaults:
+  -
+    scope:
+      path: ""
+      type: category
+    values:
+      layout: "category"
+
+# Exclude from processing.
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  - TODO

@@ -1,0 +1,24 @@
+<li style="padding-bottom: 0.5em;">
+
+  {% if post.categories contains "database" %}
+    <i class="fas fa-database"></i>
+  {% elsif post.categories contains "javascript" %}
+    <i class="fab fa-js"></i>
+  {% elsif post.categories contains "php" %}
+    <i class="fab fa-php"></i>
+  {% elsif post.categories contains "python" %}
+    <i class="fab fa-python"></i>
+  {% elsif post.categories contains "sql" %}
+    <i class="fas fa-database"></i>
+  {% elsif post.categories contains "terminal" %}
+    <i class="fas fa-terminal"></i>
+  {% else %}
+    <i class="fas fa-book-open"></i>
+  {% endif %}
+
+  {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+  <span class="post-meta">{{ post.date | date: date_format }}</span>
+
+  {{ post.content }}
+
+</li>
