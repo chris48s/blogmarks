@@ -1,7 +1,8 @@
 title: Blogmarks
 author: chris48s
 description: Handy links or snippets, and a sentence or two
-url: "https://chris48s.github.io/blogmarks"
+url: "https://chris48s.github.io"
+baseUrl: "/blogmarks"
 rss: rss
 paginate: 20
 
