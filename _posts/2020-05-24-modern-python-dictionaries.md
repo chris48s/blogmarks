@@ -1,4 +1,5 @@
 ---
+layout: post
 title: Modern Python Dictionaries
 categories: ['python']
 tags: ['python']

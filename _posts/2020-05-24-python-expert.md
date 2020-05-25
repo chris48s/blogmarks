@@ -1,4 +1,5 @@
 ---
+layout: post
 title: So you want to be a Python expert?
 categories: ['python']
 tags: ['python']
