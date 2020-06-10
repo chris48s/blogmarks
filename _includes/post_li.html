@@ -1,21 +1,21 @@
 <li style="padding-bottom: 0.5em;">
 
   {% if post.categories contains "database" %}
-    <i class="fas fa-database"></i>
+    <i class="fas fa-database" aria-hidden="true"></i>
   {% elsif post.categories contains "javascript" %}
-    <i class="fab fa-js"></i>
+    <i class="fab fa-js" aria-hidden="true"></i>
   {% elsif post.categories contains "php" %}
-    <i class="fab fa-php"></i>
+    <i class="fab fa-php" aria-hidden="true"></i>
   {% elsif post.categories contains "python" %}
-    <i class="fab fa-python"></i>
+    <i class="fab fa-python" aria-hidden="true"></i>
   {% elsif post.categories contains "sql" %}
-    <i class="fas fa-database"></i>
+    <i class="fas fa-database" aria-hidden="true"></i>
   {% elsif post.categories contains "terminal" %}
-    <i class="fas fa-terminal"></i>
+    <i class="fas fa-terminal" aria-hidden="true"></i>
   {% elsif post.categories contains "xml" %}
-    <i class="fas fa-code"></i>
+    <i class="fas fa-code" aria-hidden="true"></i>
   {% else %}
-    <i class="fas fa-book-open"></i>
+    <i class="fas fa-book-open" aria-hidden="true"></i>
   {% endif %}
 
   {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
