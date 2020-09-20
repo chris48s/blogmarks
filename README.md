@@ -7,7 +7,7 @@ https://chris48s.github.io/blogmarks/
 ## Local dev
 
 ```sh
-bundle install
+bundle install --path vendor/bundle
 ```
 
 ```sh
