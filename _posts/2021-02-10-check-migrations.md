@@ -19,7 +19,7 @@ class MyModel(TimeStampedModel, models.Model):
     pass
 ```
 
-In this situation, upgrading django-extensions to a new version might require me to regenerate the migrations in my app, even though I haven't made any changes to `models.py` and overlooking this could generated unexpected results.
+In this situation, upgrading django-extensions to a new version might require me to regenerate the migrations in my app, even though I haven't made any changes to `models.py` and overlooking this could generate unexpected results.
 
 Fortunately there is a simple thing I can do to detect and warn if this happens: If I run
 
