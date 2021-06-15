@@ -7,7 +7,7 @@ tags: ['sql']
 
 ## Identifying poorly indexed tables in Postgres
 
-Out of the box the Postgres [statistics collector](https://www.postgresql.org/docs/current/monitoring-stats.html) gives us a variety of useful views we can query to undersatnd the usage and performance of a database. This is a huge topic, so I'm just going to look at one very constrained topic in this post.
+Out of the box the Postgres [statistics collector](https://www.postgresql.org/docs/current/monitoring-stats.html) gives us a variety of useful views we can query to understand the usage and performance of a database. This is a huge topic, so I'm just going to look at one very constrained topic in this post.
 
 Sequential scans are OK on small tables or if we are making them infrequently, but usually if we are performing a lot of sequential scans on large tables this is a sign that we need to create an index. Fortunately Postgres collects some data in `pg_stat_user_tables` that can help us identify this:
 
