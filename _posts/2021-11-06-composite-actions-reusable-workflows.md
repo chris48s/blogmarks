@@ -48,6 +48,6 @@ There is a lot of overlap between these features and there are certainly some ta
 
   is valid
 
-- Steps in a composite action can not use `if:` conditions, although there are [workarounds](https://github.com/actions/runner/issues/834).
+- <s>Steps in a composite action can not use <code>if:</code> conditions, although there are <a href="https://github.com/actions/runner/issues/834">workarounds</a>.</s> **Update**: Thanks to [@bewuethr](https://github.com/bewuethr) who pointed out that composite actions [now support conditionals](https://github.blog/changelog/2021-11-09-github-actions-conditional-execution-of-steps-in-actions/) 🎉
 
 - A composite action is called as a job step so a job that calls a composite action can have other steps (including calling other composite actions). A job can only call one reusable workflow and can't contain other steps.
