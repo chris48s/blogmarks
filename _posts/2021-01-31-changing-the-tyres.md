@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Changing the tyres while the car is moving
-categories: []
+categories: ['post']
 tags: ['python', 'testing']
 ---
 
