@@ -7,9 +7,5 @@ https://chris48s.github.io/blogmarks/
 ## Local dev
 
 ```sh
-bundle install --path vendor/bundle
-```
-
-```sh
-bundle exec jekyll serve
+docker run -it --rm -v "$PWD":/usr/src/app -p "4000:4000" starefossen/github-pages
 ```
