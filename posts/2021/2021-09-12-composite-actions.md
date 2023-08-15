@@ -2,8 +2,8 @@
 .. title: GitHub Composite Actions
 .. slug: composite-actions
 .. date: 2021-09-12 00:00:00
-.. tags: github,github
-.. category: github
+.. tags: github
+.. category: 
 .. link: 
 .. description: 
 .. type: text

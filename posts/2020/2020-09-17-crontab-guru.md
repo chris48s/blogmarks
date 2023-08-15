@@ -2,8 +2,8 @@
 .. title: Crontab.guru
 .. slug: crontab-guru
 .. date: 2020-09-17 00:00:00
-.. tags: terminal,terminal
-.. category: terminal
+.. tags: terminal
+.. category: 
 .. link: 
 .. description: 
 .. type: text

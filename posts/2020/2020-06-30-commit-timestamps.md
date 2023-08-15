@@ -2,8 +2,8 @@
 .. title: Editing Commit Timestamps in Git
 .. slug: commit-timestamps
 .. date: 2020-06-30 00:00:00
-.. tags: terminal,git,terminal
-.. category: terminal
+.. tags: terminal,git
+.. category: 
 .. link: 
 .. description: 
 .. type: text

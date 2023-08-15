@@ -2,8 +2,8 @@
 .. title: Always bet on SQL
 .. slug: always-bet-on-sql
 .. date: 2023-08-07 00:00:00
-.. tags: sql,sql
-.. category: sql
+.. tags: sql
+.. category: 
 .. link: 
 .. description: 
 .. type: text

@@ -2,8 +2,8 @@
 .. title: Three great programming blogs
 .. slug: three-programming-blogs
 .. date: 2022-09-16 00:00:00
-.. tags: post,post
-.. category: post
+.. tags: 
+.. category: 
 .. link: 
 .. description: 
 .. type: text

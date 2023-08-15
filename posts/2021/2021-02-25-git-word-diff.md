@@ -2,8 +2,8 @@
 .. title: git --word-diff
 .. slug: git-word-diff
 .. date: 2021-02-25 00:00:00
-.. tags: terminal,git,terminal
-.. category: terminal
+.. tags: terminal,git
+.. category: 
 .. link: 
 .. description: 
 .. type: text

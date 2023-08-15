@@ -2,8 +2,8 @@
 .. title: The Silver Searcher
 .. slug: silver-searcher
 .. date: 2020-07-09 00:00:00
-.. tags: terminal,terminal
-.. category: terminal
+.. tags: terminal
+.. category: 
 .. link: 
 .. description: 
 .. type: text

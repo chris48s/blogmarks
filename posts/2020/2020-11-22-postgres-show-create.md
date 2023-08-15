@@ -2,8 +2,8 @@
 .. title: Show table create statement in Postgres
 .. slug: postgres-show-create
 .. date: 2020-11-22 00:00:00
-.. tags: sql,sql
-.. category: sql
+.. tags: sql
+.. category: 
 .. link: 
 .. description: 
 .. type: text

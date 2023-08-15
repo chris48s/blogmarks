@@ -2,8 +2,8 @@
 .. title: Renovate Custom Managers
 .. slug: renovate-custom-managers
 .. date: 2021-02-28 00:00:00
-.. tags: dependencies,dependencies
-.. category: dependencies
+.. tags: dependencies
+.. category: 
 .. link: 
 .. description: 
 .. type: text

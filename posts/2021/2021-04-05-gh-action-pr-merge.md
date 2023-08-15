@@ -2,8 +2,8 @@
 .. title: Running a GitHub action on pull request merge
 .. slug: gh-action-pr-merge
 .. date: 2021-04-05 00:00:00
-.. tags: github,github
-.. category: github
+.. tags: github
+.. category: 
 .. link: 
 .. description: 
 .. type: text

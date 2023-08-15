@@ -2,8 +2,8 @@
 .. title: HTML 5 Kitchen Sink
 .. slug: html5-kitchen-sink
 .. date: 2021-12-22 00:00:00
-.. tags: html,html
-.. category: html
+.. tags: html
+.. category: 
 .. link: 
 .. description: 
 .. type: text

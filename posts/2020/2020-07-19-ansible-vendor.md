@@ -2,8 +2,8 @@
 .. title: Vendoring Ansible Galaxy Roles
 .. slug: ansible-vendor
 .. date: 2020-07-19 00:00:00
-.. tags: terminal,ansible,terminal
-.. category: terminal
+.. tags: terminal,ansible,devops
+.. category: 
 .. link: 
 .. description: 
 .. type: text

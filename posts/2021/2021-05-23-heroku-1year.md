@@ -2,8 +2,8 @@
 .. title: Learnings from a year on Heroku
 .. slug: heroku-1year
 .. date: 2021-05-23 00:00:00
-.. tags: terminal,terminal,heroku
-.. category: terminal
+.. tags: terminal,heroku,devops
+.. category: 
 .. link: 
 .. description: 
 .. type: text

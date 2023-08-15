@@ -2,8 +2,8 @@
 .. title: Browse The Web Like A Crawler
 .. slug: google-bot-user-agent
 .. date: 2021-09-08 00:00:00
-.. tags: web,web
-.. category: web
+.. tags: web
+.. category: 
 .. link: 
 .. description: 
 .. type: text

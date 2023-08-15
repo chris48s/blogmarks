@@ -2,8 +2,8 @@
 .. title: Show Running Queries in PostgreSQL
 .. slug: postgres-running-queries
 .. date: 2020-06-20 00:00:00
-.. tags: sql,sql
-.. category: sql
+.. tags: sql
+.. category: 
 .. link: 
 .. description: 
 .. type: text

@@ -2,8 +2,8 @@
 .. title: Get the size of a HTTP response
 .. slug: response-size
 .. date: 2020-07-11 00:00:00
-.. tags: terminal,curl,terminal
-.. category: terminal
+.. tags: terminal,curl
+.. category: 
 .. link: 
 .. description: 
 .. type: text

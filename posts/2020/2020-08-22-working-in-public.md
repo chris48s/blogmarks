@@ -2,8 +2,8 @@
 .. title: Working In Public
 .. slug: working-in-public
 .. date: 2020-08-22 00:00:00
-.. tags: book,book
-.. category: book
+.. tags: 
+.. category: 
 .. link: 
 .. description: 
 .. type: text

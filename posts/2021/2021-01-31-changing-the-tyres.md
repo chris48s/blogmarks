@@ -2,8 +2,8 @@
 .. title: Changing the tyres while the car is moving
 .. slug: changing-the-tyres
 .. date: 2021-01-31 00:00:00
-.. tags: python,testing,post
-.. category: post
+.. tags: python,testing
+.. category: 
 .. link: 
 .. description: 
 .. type: text

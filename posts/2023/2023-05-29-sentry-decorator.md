@@ -2,8 +2,8 @@
 .. title: Adding a custom tag to a Sentry event
 .. slug: sentry-decorator
 .. date: 2023-05-29 00:00:00
-.. tags: python,python
-.. category: python
+.. tags: python
+.. category: 
 .. link: 
 .. description: 
 .. type: text

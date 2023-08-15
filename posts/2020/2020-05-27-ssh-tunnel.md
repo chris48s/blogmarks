@@ -2,8 +2,8 @@
 .. title: Creating SSH Tunnels
 .. slug: ssh-tunnel
 .. date: 2020-05-27 00:00:00
-.. tags: terminal,ssh,terminal
-.. category: terminal
+.. tags: terminal
+.. category: 
 .. link: 
 .. description: 
 .. type: text

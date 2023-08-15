@@ -2,8 +2,8 @@
 .. title: Pathlib Cheat Sheet
 .. slug: pathlib-cheat-sheet
 .. date: 2020-09-02 00:00:00
-.. tags: python,python
-.. category: python
+.. tags: python
+.. category: 
 .. link: 
 .. description: 
 .. type: text

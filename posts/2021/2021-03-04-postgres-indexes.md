@@ -2,8 +2,8 @@
 .. title: Identifying poorly indexed tables in Postgres
 .. slug: postgres-indexes
 .. date: 2021-03-04 00:00:00
-.. tags: sql,sql
-.. category: sql
+.. tags: sql
+.. category: 
 .. link: 
 .. description: 
 .. type: text

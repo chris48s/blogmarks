@@ -2,8 +2,8 @@
 .. title: Three useful psql settings
 .. slug: three-psql-settings
 .. date: 2020-11-26 00:00:00
-.. tags: sql,sql
-.. category: sql
+.. tags: sql
+.. category: 
 .. link: 
 .. description: 
 .. type: text

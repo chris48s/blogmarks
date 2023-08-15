@@ -2,8 +2,8 @@
 .. title: Three useful pathlib snippets
 .. slug: pathlib-snippets
 .. date: 2020-09-06 00:00:00
-.. tags: python,python
-.. category: python
+.. tags: python
+.. category: 
 .. link: 
 .. description: 
 .. type: text

@@ -2,8 +2,8 @@
 .. title: Capturing stdout in python
 .. slug: redirect-stdout
 .. date: 2021-02-18 00:00:00
-.. tags: python,testing,python
-.. category: python
+.. tags: python,testing
+.. category: 
 .. link: 
 .. description: 
 .. type: text

@@ -2,8 +2,8 @@
 .. title: A python CLI app which accepts input from stdin or a file
 .. slug: stdin-or-file
 .. date: 2020-12-07 00:00:00
-.. tags: python,terminal,python
-.. category: python
+.. tags: python,terminal
+.. category: 
 .. link: 
 .. description: 
 .. type: text

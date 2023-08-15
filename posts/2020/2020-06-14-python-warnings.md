@@ -2,8 +2,8 @@
 .. title: Working with warnings in Python
 .. slug: python-warnings
 .. date: 2020-06-14 00:00:00
-.. tags: python,python
-.. category: python
+.. tags: python
+.. category: 
 .. link: 
 .. description: 
 .. type: text

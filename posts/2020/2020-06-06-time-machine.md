@@ -2,8 +2,8 @@
 .. title: time-machine
 .. slug: time-machine
 .. date: 2020-06-06 00:00:00
-.. tags: python,testing,python
-.. category: python
+.. tags: python,testing
+.. category: 
 .. link: 
 .. description: 
 .. type: text

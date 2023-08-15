@@ -2,8 +2,8 @@
 .. title: Composite Actions vs Reusable Workflows
 .. slug: composite-actions-reusable-workflows
 .. date: 2021-11-06 00:00:00
-.. tags: github,github
-.. category: github
+.. tags: github
+.. category: 
 .. link: 
 .. description: 
 .. type: text

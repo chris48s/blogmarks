@@ -2,8 +2,8 @@
 .. title: relay.fedi.buzz
 .. slug: relay-fedi-buzz
 .. date: 2023-06-26 00:00:00
-.. tags: post,post
-.. category: post
+.. tags: mastodon
+.. category: 
 .. link: 
 .. description: 
 .. type: text
