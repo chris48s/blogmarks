@@ -1,0 +1,8 @@
+# python cache files
+__pycache__/
+*.pyc
+
+# Nikola
+.doit.db
+cache/
+output/
