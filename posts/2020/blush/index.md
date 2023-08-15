@@ -1,0 +1,16 @@
+<!--
+.. title: Blush
+.. slug: blush
+.. date: 2020-07-25 00:00:00
+.. tags: 
+.. category: 
+.. link: 
+.. description: 
+.. type: text
+-->
+
+[Blush](https://blush.design) hosts collections of customisable and composable images and designs which can be used under a [permissive licence](https://blush.design/license). Small PNGs (like this one generated from the [cityscapes](https://blush.design/collections/cityscapes) collection)
+
+![cityscape](/images/cityscape.png)
+
+are free to download. Large PNGs and SVGs are available with a paid plan.

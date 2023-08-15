@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Handy links or snippets, and a sentence or two">
+<meta name="viewport" content="width=device-width">
+<title>Blogmarks</title>
+<link href="assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/">
+<link rel="next" href="index-5.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2023/always-bet-on-sql/" type="text/html">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="." title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="rss.xml">RSS feed</a></li>
+                <li><a href="categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><div class="postindex">
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/always-bet-on-sql/" class="u-url">Always bet on SQL</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2023/always-bet-on-sql/" rel="bookmark">
+            <time class="published dt-published" datetime="2023-08-07T00:00:00+01:00" itemprop="datePublished" title="2023-08-07">2023-08-07</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I don't often write a spicy opinion piece, but it is spicy opinion time: ORMs are fine, but it is not worth investing too much time into becoming an expert in one.</p>
+<p>I first learned SQL over 20 years ago. Everything I learned then is still true now. Lots of other things have also become true in the meantime, but everything I learned then still holds.</p>
+<p>I've also used a number of different ORMs in some depth. Some free-standing. Some attached to a particular framework.</p>
+<ul>
+<li>Django ORM</li>
+<li>SQLAlchemy</li>
+<li>Doctrine</li>
+<li>CakePHP ORM</li>
+</ul>
+<p>All of those use different design patterns and provide conceptually quite different abstractions over the same underlying SQL. There are some common ideas between them, but if you pick any two from that list there are probably more differences between them than similarities. Only a subset of the knowledge from learning one is directly transferable to another ORM.</p>
+<p>ORMs come and go as different languages and frameworks gain or lose traction, but the underlying SQL is a constant.</p>
+<p>So here's a rule of thumb: ORMs are fine. They do a useful job. Even if you don't like them, you'll probably end up using one. But any given ORM doesn't really warrant too much energy or attention. Focus on SQL. Understand how an ORM maps onto the underlying SQL and learn your current ORM well enough to make it generate the SQL statement you want under the hood.</p>
+<p>There is a good chance that 5 years from now:</p>
+<ul>
+<li>Anything you learn about SQL today will remain valid and useful, even when transitioning to a new ORM</li>
+<li>You are likely to be using a different ORM, and much of your current ORM knowledge may not apply</li>
+</ul>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/relay-fedi-buzz/" class="u-url">relay.fedi.buzz</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2023/relay-fedi-buzz/" rel="bookmark">
+            <time class="published dt-published" datetime="2023-06-26T00:00:00+01:00" itemprop="datePublished" title="2023-06-26">2023-06-26</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I self-host my own mastodon instance. I am <a href="https://fed.chris-shaw.dev/@chris">the only user on my server</a> and I only follow a handful of accounts. This means I inhabit a somewhat weakly connected corner of the fediverse. For example, following a tag doesn't act as a useful way for me to discover new posts because it almost exclusively shows me posts from people I am already following, which I know about anyway.</p>
+<p>This is a problem that is theoretically solved by ActivityPub Relays, although practically I was never really able to get a handle on which (if any) made sense for me to add to my instance.</p>
+<p>That changed recently when I found out about <a href="https://relay.fedi.buzz/">relay.fedi.buzz</a> which allows you to generate ad-hoc follow-only ActivityPub relays for specific tags or instances (the most useful of those being tags IMO). For example, if I want to follow the <code>#python</code> tag, I can add <a href="https://relay.fedi.buzz/tag/python">https://relay.fedi.buzz/tag/python</a> to my instance's relays. That ingests a much wider range of posts featuring that tag into my federated timeline, including from instance I was not already federated with via my follows. Then following that htag from my personal account now allows me to discover new posts on that topic.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/sentry-decorator/" class="u-url">Adding a custom tag to a Sentry event</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2023/sentry-decorator/" rel="bookmark">
+            <time class="published dt-published" datetime="2023-05-29T00:00:00+01:00" itemprop="datePublished" title="2023-05-29">2023-05-29</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Sentry allows you to enrich captured events by applying
+<a href="https://docs.sentry.io/product/sentry-basics/integrate-backend/capturing-errors/#enriching-your-event-data">custom tags and attributes</a>.
+I was recently working on a python application where I needed a re-usable
+abstraction to express the logic "if function X throws exception Y
+then apply this custom <code>key=value</code> tag when we log the exception to Sentry"
+in a bunch of places. Here's what I came up with:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">sentry_sdk</span> <span class="kn">import</span> <span class="n">capture_exception</span><span class="p">,</span> <span class="n">push_scope</span>
+
+<span class="k">def</span> <span class="nf">tag_error</span><span class="p">(</span><span class="n">exc_class</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+                <span class="k">raise</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_class</span><span class="p">):</span>
+                    <span class="k">with</span> <span class="n">push_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">scope</span><span class="p">:</span>
+                        <span class="n">scope</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                        <span class="n">capture_exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="k">raise</span>
+        <span class="k">return</span> <span class="n">wrapper</span>
+    <span class="k">return</span> <span class="n">decorator</span>
+</pre></div>
+
+<p>This gives us a <code>@tag_error</code> decorator, which can be applied to any function. For example:</p>
+<div class="code"><pre class="code literal-block"><span class="nd">@tag_error</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="s2">"custom-key"</span><span class="p">,</span> <span class="s2">"custom-value"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">do_a_thing</span><span class="p">():</span>
+    <span class="o">...</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Oh no. A terrible thing has happened."</span><span class="p">)</span>
+    <span class="o">...</span>
+</pre></div>
+
+<p>This will tag any <code>ValueError</code>s raised by calling <code>do_a_thing()</code> with
+<code>custom-key=custom-value</code> when we log the exception to sentry.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/mocha-markdown/" class="u-url">Generating a GitHub Markdown Summary from Mocha</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2022/mocha-markdown/" rel="bookmark">
+            <time class="published dt-published" datetime="2022-09-20T00:00:00+01:00" itemprop="datePublished" title="2022-09-20">2022-09-20</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I recently wanted to migrate some CI builds running mocha tests from CircleCI to GitHub Actions. I also wanted to use <a href="https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/">Job Summaries</a> to produce a markdown summary of the build. This allows you to output a summary of your workflow run by echoing markdown to a special environment variable called <code>$GITHUB_STEP_SUMMARY</code> e.g: <code>echo '### Hello world! :rocket:' &gt;&gt; $GITHUB_STEP_SUMMARY</code></p>
+<p>We run our tests with mocha, which doesn't ship with a markdown output formatter. The "min" formatter was quite close to what I wanted (a markdown summary of any failed tests but a "quiet" output if everything passed). Dumping that to a code fence would have probably been acceptable. Unfortunately our test suite has a number of tests which log output to stdout which made things a bit messy as the "min" formatter also dumps to stdout. So I decided to write a quick script to parse mocha's json output and produce a markdown summary. Doing this also allowed me to uses some nicer formatting than dumping console output into a code fence.</p>
+<div class="code"><pre class="code literal-block"><span class="c1">// mocha2md.js</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nx">fs</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'fs'</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mf">3</span><span class="p">]))</span>
+
+<span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`# </span><span class="si">${</span><span class="nx">title</span><span class="si">}</span><span class="sb">\n\n`</span><span class="p">)</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">passes</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`✔ </span><span class="si">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">passes</span><span class="si">}</span><span class="sb"> passed\n`</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">failures</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`✖ </span><span class="si">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">failures</span><span class="si">}</span><span class="sb"> failed\n\n`</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">failures</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">test</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">tests</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">test</span><span class="p">.</span><span class="nx">err</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">test</span><span class="p">.</span><span class="nx">err</span><span class="p">).</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`### </span><span class="si">${</span><span class="nx">test</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">\n\n`</span><span class="p">)</span>
+<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">test</span><span class="p">.</span><span class="nx">fullTitle</span><span class="si">}</span><span class="sb">\n\n`</span><span class="p">)</span>
+<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'```\n'</span><span class="p">)</span>
+<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">test</span><span class="p">.</span><span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="si">}</span><span class="sb">\n`</span><span class="p">)</span>
+<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'```\n\n'</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Combine that with some workflow yaml to run the tests with the json reporter and use our script to write the report.</p>
+<div class="code"><pre class="code literal-block"><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run tests</span>
+<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">npm run test:core -- --reporter json --reporter-option 'output=reports/test.json'</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Write Markdown Summary</span>
+<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node mocha2md.js Tests reports/test.json &gt;&gt; $GITHUB_STEP_SUMMARY</span>
+</pre></div>
+
+<p>and we've got ourselves a nice little summary report from our mocha tests.</p>
+<p><img alt="example markdown summary" src="images/markdown-summary.png"></p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/diagrams/" class="u-url">Diagrams</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2022/diagrams/" rel="bookmark">
+            <time class="published dt-published" datetime="2022-09-18T00:00:00+01:00" itemprop="datePublished" title="2022-09-18">2022-09-18</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Last week I tried out <a href="https://diagrams.mingrammer.com/">diagrams</a> to knock up some cloud infrastructure diagrams. There are several things I really like about this tool:</p>
+<ul>
+<li>The learning curve is very easy. I was able to absorb the key concepts and produce a useful diagram showing the AWS setup for an application I am working on within about 30 mins of installing it for the first time.</li>
+<li>The [effort in]:[pretty pictures out] ratio is very satisfying.</li>
+<li>Because the diagram is generated from code, it can live in your repo. The diff changing the diagram could be in the same commit as the updates to your CDK definitions or ansible playbooks or whatever it is that actually makes the infrastructure changes.</li>
+</ul>
+<p>For example, the following diagram</p>
+<p><img alt="example diagram" src="images/diagram.png"></p>
+<p>is generated from this short python snippet:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">diagrams</span> <span class="kn">import</span> <span class="n">Cluster</span><span class="p">,</span> <span class="n">Diagram</span>
+<span class="kn">from</span> <span class="nn">diagrams.aws.compute</span> <span class="kn">import</span> <span class="n">Fargate</span>
+<span class="kn">from</span> <span class="nn">diagrams.aws.database</span> <span class="kn">import</span> <span class="n">RDS</span><span class="p">,</span> <span class="n">ElastiCache</span>
+<span class="kn">from</span> <span class="nn">diagrams.aws.engagement</span> <span class="kn">import</span> <span class="n">SES</span>
+<span class="kn">from</span> <span class="nn">diagrams.aws.network</span> <span class="kn">import</span> <span class="n">ELB</span><span class="p">,</span> <span class="n">Route53</span>
+<span class="kn">from</span> <span class="nn">diagrams.aws.storage</span> <span class="kn">import</span> <span class="n">S3</span>
+
+<span class="k">with</span> <span class="n">Diagram</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">ses</span> <span class="o">=</span> <span class="n">SES</span><span class="p">(</span><span class="s2">"Mail Transport (SES)"</span><span class="p">)</span>
+    <span class="n">dns</span> <span class="o">=</span> <span class="n">Route53</span><span class="p">(</span><span class="s2">"Route 53 (DNS)"</span><span class="p">)</span>
+    <span class="n">s3</span> <span class="o">=</span> <span class="n">S3</span><span class="p">(</span><span class="s2">"S3"</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">"VPC"</span><span class="p">):</span>
+        <span class="n">lb</span> <span class="o">=</span> <span class="n">ELB</span><span class="p">(</span><span class="s2">"Load Balancer (ALB)"</span><span class="p">)</span>
+        <span class="n">elasticache</span> <span class="o">=</span> <span class="n">ElastiCache</span><span class="p">(</span><span class="s2">"Redis (ElastiCache)"</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">"ECS"</span><span class="p">):</span>
+            <span class="n">web</span> <span class="o">=</span> <span class="n">Fargate</span><span class="p">(</span><span class="s2">"web"</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">"DB Cluster (RDS)"</span><span class="p">):</span>
+            <span class="n">db_primary</span> <span class="o">=</span> <span class="n">RDS</span><span class="p">(</span><span class="s2">"primary"</span><span class="p">)</span>
+            <span class="n">db_primary</span> <span class="o">-</span> <span class="n">RDS</span><span class="p">(</span><span class="s2">"read replica"</span><span class="p">)</span>
+
+    <span class="n">dns</span> <span class="o">&gt;&gt;</span> <span class="n">lb</span>
+    <span class="n">lb</span> <span class="o">&gt;&gt;</span> <span class="n">web</span>
+
+    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">elasticache</span>
+    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">db_primary</span>
+    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">s3</span>
+    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">ses</span>
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/three-programming-blogs/" class="u-url">Three great programming blogs</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2022/three-programming-blogs/" rel="bookmark">
+            <time class="published dt-published" datetime="2022-09-16T00:00:00+01:00" itemprop="datePublished" title="2022-09-16">2022-09-16</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>These are some of my favourite programming bloggers. All 3 of these are consistently knocking out quality posts and well worth a follow:</p>
+<ol>
+<li><a href="https://martinheinz.dev/">Martin Heinz</a></li>
+<li><a href="https://adamj.eu/tech">Adam Johnson</a></li>
+<li><a href="https://roman.pt/">Roman Imankulov</a></li>
+</ol>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/rich-tips/" class="u-url">Three Rich tips</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2022/rich-tips/" rel="bookmark">
+            <time class="published dt-published" datetime="2022-02-13T00:00:00Z" itemprop="datePublished" title="2022-02-13">2022-02-13</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I've mentioned Will McGugan's excellent library <a href="https://github.com/willmcgugan/rich">Rich</a> on this blog before. It is a great tool for building nice terminal interfaces, but it is also an important local development tool. Here's three top tips:</p>
+<ol>
+<li>Rich can be registered as a <a href="https://rich.readthedocs.io/en/stable/traceback.html#traceback-handler">handler to render stacktraces</a>. As well as the aesthetics, using Rich to handle stacktraces like this provides additional context which improves the usefulness of error messages in comparison to python's default handler.</li>
+<li>
+<a href="https://github.com/Textualize/rich#rich-inspect">Rich.inspect</a> can be used to examine a python object at runtime. I used to use <code>dir()</code> or <code>vars()</code> for this, but <code>rich.inspect()</code> is a big step up.</li>
+<li>Rich can be used as a log handler. <a href="https://rich.readthedocs.io/en/stable/logging.html">The docs</a> cover how to use it with python's <code>logging</code> module, but Will has also published this <a href="https://www.willmcgugan.com/blog/tech/post/richer-django-logging/">blog post</a> showing how to configure Django to use Rich as the default log handler.</li>
+</ol>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/html5-kitchen-sink/" class="u-url">HTML 5 Kitchen Sink</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/html5-kitchen-sink/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-12-22T00:00:00Z" itemprop="datePublished" title="2021-12-22">2021-12-22</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="https://github.com/dbox/html5-kitchen-sink">HTML 5 Kitchen Sink</a> is really useful for testing out themes and stylesheets. It also has the helpful side effect of introducing me to (or reminding me about) some of the less common HTML5 elements that exist in the spec as I use it.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/composite-actions-reusable-workflows/" class="u-url">Composite Actions vs Reusable Workflows</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/composite-actions-reusable-workflows/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-11-06T00:00:00Z" itemprop="datePublished" title="2021-11-06">2021-11-06</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>A few days after I blogged about GitHub <a href="https://docs.github.com/en/actions/creating-actions/creating-a-composite-action">Composite Actions</a>, GitHub launched another similar feature: <a href="https://docs.github.com/en/actions/learn-github-actions/reusing-workflows">Reusable Workflows</a>.</p>
+<p>There is a lot of overlap between these features and there are certainly some tasks that could be accomplished with either. Simultaneously, there are some important differences that drive a bit of a wedge between them.</p>
+<ul>
+<li>
+<p>A composite action is presented as one "step" when it is invoked in a workflow, even if the action yaml contains multiple steps. Invoking a reusable workflow presents each step separately in the summary output. This can make debugging a failed composite action run harder.</p>
+</li>
+<li>
+<p>Reusable workflows can use secrets, whereas a composite action can't. You have to pass secrets in as parameters. Reusable workflows are also always implicitly passed <code>secrets.GITHUB_TOKEN</code>. This is often convenient, but another way to see this tradeoff would be to say: If you're using a reusable workflow published by someone else, it can always read your <code>GITHUB_TOKEN</code> var with whatever scopes that is granted, which may not always be desirable. A composite action can only read what you explicitly pass it.</p>
+</li>
+<li>
+<p>Both can only take <code>string</code>, <code>number</code> or <code>boolean</code> as a param. Arrays are not allowed.</p>
+</li>
+<li>
+<p>Only a <a href="https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#supported-keywords-for-jobs-that-call-a-reusable-workflow">subset of job keywords</a> can be used when calling a reusable workflow. This places some restrictions on how they can be used. To give an example, reusable workflows can't be used with a matrix but composite actions can, so</p>
+</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">strategy</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">matrix</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">param</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'foo'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'bar'</span><span class="p p-Indicator">]</span>
+
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chris48s/my-reusable-workflow/.github/workflows/reuse-me.yml@main</span>
+<span class="w">    </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">param</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${% raw %}{{ matrix.param }}{% endraw %}</span>
+</pre></div>
+
+<p>will throw an error, but</p>
+<div class="code"><pre class="code literal-block"><span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">strategy</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">matrix</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">param</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'foo'</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'bar'</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">chris48s/my-shared-action@main</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">param</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${% raw %}{{ matrix.param }}{% endraw %}</span>
+</pre></div>
+
+<p>is valid</p>
+<ul>
+<li>
+<p><s>Steps in a composite action can not use <code>if:</code> conditions, although there are <a href="https://github.com/actions/runner/issues/834">workarounds</a>.</s> <strong>Update</strong>: Thanks to <a href="https://github.com/bewuethr">@bewuethr</a> who pointed out that composite actions <a href="https://github.blog/changelog/2021-11-09-github-actions-conditional-execution-of-steps-in-actions/">now support conditionals</a> 🎉</p>
+</li>
+<li>
+<p>A composite action is called as a job step so a job that calls a composite action can have other steps (including calling other composite actions). A job can only call one reusable workflow and can't contain other steps.</p>
+</li>
+</ul>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/composite-actions/" class="u-url">GitHub Composite Actions</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/composite-actions/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-09-12T00:00:00+01:00" itemprop="datePublished" title="2021-09-12">2021-09-12</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>GitHub quietly sneaked out a new feature in the last few weeks: <a href="https://docs.github.com/en/actions/creating-actions/creating-a-composite-action">Composite Actions</a>. This solves one of my biggest issues with GH Actions which is that yaml workflow steps couldn't be re-used. This means I have lots of repos with the exact same yaml workflow, or roughly the same workflow with slight variations. For example these 3 repos (and others) currently use the exact same workflow for CI:</p>
+<ul>
+<li><a href="https://github.com/chris48s/datapackage-to-datasette/blob/1db8e836f588d0d1b65fbef56bcfa4ccc79d871b/.github/workflows/test.yml">datapackage-to-datasette</a></li>
+<li><a href="https://github.com/chris48s/commitment/blob/fa634b9e6c4291052af5160421274c194d5eef3e/.github/workflows/test.yml">commitment</a></li>
+<li><a href="https://github.com/chris48s/datasette-mailto-links/blob/705aae608f839fbdff787971957291ec01f30d3f/.github/workflows/test.yml">datasette-mailto-links</a></li>
+</ul>
+<p>Composite actions essentially allows yaml workflow steps to be packaged and re-used in the same way that javascript actions or docker actions can be, so I can package this up as a shared action and use it in lots of repos. This is a feature I have been hoping would be added to Actions for some time and I'm looking forward to DRYing up my workflows across repos over the coming weeks.</p>
+    </div>
+    </article>
+</div>
+
+        <nav class="postindexpager"><ul class="pager">
+<li class="next">
+                <a href="index-5.html" rel="next">Older posts</a>
+            </li>
+        </ul></nav></main>
+</div>
+    
+            <script src="assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about web)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/web.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2023 chris48s</copyright><lastBuildDate>Tue, 15 Aug 2023 19:26:02 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Browse The Web Like A Crawler</title><link>https://chris48s.github.io/blogmarks/posts/2021/google-bot-user-agent/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Some sites sneakily serve different content to crawlers and interactive users.
+Setting your user agent to:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;allows you to see what GoogleBot sees. &lt;a href="https://addons.mozilla.org/en-GB/firefox/addon/uaswitcher/"&gt;Uaswitcher&lt;/a&gt; for firefox has a preset for this out of the box.&lt;/p&gt;</description><category>web</category><guid>https://chris48s.github.io/blogmarks/posts/2021/google-bot-user-agent/</guid><pubDate>Tue, 07 Sep 2021 23:00:00 GMT</pubDate></item></channel></rss>

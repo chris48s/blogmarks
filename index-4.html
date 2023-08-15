@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Handy links or snippets, and a sentence or two">
+<meta name="viewport" content="width=device-width">
+<title>Blogmarks (old posts, page 4) | Blogmarks</title>
+<link href="assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/index-4.html">
+<link rel="prev" href="index-5.html" type="text/html">
+<link rel="next" href="index-3.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]-->
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="." title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="rss.xml">RSS feed</a></li>
+                <li><a href="categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><div class="postindex">
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/check-migrations/" class="u-url">Failing the CI build if django migrations are out of date</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/check-migrations/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-02-10T00:00:00Z" itemprop="datePublished" title="2021-02-10">2021-02-10</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>A common mistake in django is to make a model change but forget to run <code>makemigrations</code> to generate a migration for the model change. Sometimes it is not entirely obvious when this need to happen. For example, let's say I'm using the <a href="https://github.com/django-extensions/django-extensions">django-extensions</a> library and I define a model like:</p>
+<div class="code"><pre class="code literal-block"><span class="c1"># models.py</span>
+
+<span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">django_extensions.db.models</span> <span class="kn">import</span> <span class="n">TimeStampedModel</span>
+
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">TimeStampedModel</span><span class="p">,</span> <span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+
+<p>In this situation, upgrading django-extensions to a new version might require me to regenerate the migrations in my app, even though I haven't made any changes to <code>models.py</code> and overlooking this could generate unexpected results.</p>
+<p>Fortunately there is a simple thing I can do to detect and warn if this happens: If I run</p>
+<div class="code"><pre class="code literal-block">python<span class="w"> </span>manage.py<span class="w"> </span>makemigrations<span class="w"> </span>--check
+</pre></div>
+
+<p>in my CI build, this will cause the build to fail if my migrations are out of sync with the models, warning me about the problem.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/changing-the-tyres/" class="u-url">Changing the tyres while the car is moving</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/changing-the-tyres/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-01-31T00:00:00Z" itemprop="datePublished" title="2021-01-31">2021-01-31</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I am currently working on a project where I need to migrate a legacy test suite from nose to pytest. The codebase has about 7,000 lines of test code. That isn't an enormous test suite, but I'm the only person who will be working on it. It will take me a while to get through them all because moving from one test runner to another will require changes to fixtures, factories, etc and maybe some light codebase refactoring as well as just reviewing/updating the test code itself. I also need to balance this with continuing to deliver bugfix and feature work. I can't block all delivery on the test suite migration, so here's a pattern:</p>
+<ul>
+<li>Split the test suite into two dirs: <code>/tests/nose</code> and <code>/tests/pt</code>
+</li>
+<li>Migrate one module of test code at a time</li>
+<li>Have the CI build run the old tests with nose and the new ones with pytest and merge the coverage reports:</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run nose tests</span>
+<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">nosetests</span>
+<span class="w">      </span><span class="no">--with-coverage \</span>
+<span class="w">      </span><span class="no">--cover-package=dir \</span>
+<span class="w">      </span><span class="no">--cover-erase \</span>
+<span class="w">      </span><span class="no">path/to/tests/nose</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run pytest tests</span>
+<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">pytest \</span>
+<span class="w">      </span><span class="no">--cov=dir \</span>
+<span class="w">      </span><span class="no">--cov-append \</span>
+<span class="w">      </span><span class="no">path/to/tests/pt</span>
+</pre></div>
+
+<ul>
+<li>When I rewrite the last test module left in <code>/tests/nose</code>, we can finally drop nose, delete any nose-specific test helpers and move all the tests from <code>/tests/pt</code> back to <code>/tests</code>.</li>
+</ul>
+<p>This approach buys me several useful things:</p>
+<ul>
+<li>I can tackle the test suite migration one module at a time</li>
+<li>I can submit small pull requests that are easy to review</li>
+<li>I can start writing tests for any new features or bugfixes in pytest right now</li>
+<li>I can minimise the chance of conflicts between test suite migration and bugfix/feature delivery</li>
+</ul>
+<p>This is a very simple example of a high-level general pattern for managing non-trivial migrations (like moving a project from one web framework to another). This can be applied to larger more complex migrations and enables us to "change the tyres while the car is moving" (a phrase I stole from my colleague <a href="https://amercader.net/">Adrià</a>):</p>
+<ul>
+<li>Set up a structure that allows both <code>$OLD_BORING_THING</code> and <code>$NEW_SHINY_THING</code> to run at the same time</li>
+<li>Gradually move code from <code>$OLD_BORING_THING</code> to <code>$NEW_SHINY_THING</code>
+</li>
+<li>When we migrate the last bit of code from <code>$OLD_BORING_THING</code> to <code>$NEW_SHINY_THING</code>, remove the structure that allows <code>$OLD_BORING_THING</code> and <code>$NEW_SHINY_THING</code> to co-exist and delete <code>$OLD_BORING_THING</code>
+</li>
+<li>Continue to deliver our roadmap in parallel to the migration</li>
+</ul>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/jsontidy/" class="u-url">Using jq to format JSON on the clipboard</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/jsontidy/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-01-07T00:00:00Z" itemprop="datePublished" title="2021-01-07">2021-01-07</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="https://stedolan.github.io/jq/">Jq</a> is a great tool. I use it frequently, but <a href="https://sequoia.makes.software/parsing-json-at-the-cli-a-practical-introduction-to-jq-and-more/">this recent article</a> from Sequoia McDowell still has some great tips in it. Well worth a read. One thing that stood out to me from this post was the snippet:</p>
+<blockquote>
+<p>I like this pretty-printing/formatting capability so much, I have an alias that formats JSON I've copied (in my OS "clipboard") &amp; puts it back in my clipboard:</p>
+<p><code>alias jsontidy="pbpaste | jq '.' | pbcopy"</code></p>
+</blockquote>
+<p>That's crazy-useful, but I need to tweak it a bit. Firstly, as noted, <code>pbcopy</code> and <code>pbpaste</code> are mac utils. No worries. We can substitute <code>xclip</code> on Linux:</p>
+<div class="code"><pre class="code literal-block">xclip<span class="w"> </span>-selection<span class="w"> </span>clipboard<span class="w"> </span>-o<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">'.'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xclip<span class="w"> </span>-selection<span class="w"> </span>clipboard
+</pre></div>
+
+<p>I spotted a minor problem here though: If I run this and the text on my clipboard isn't JSON then <code>jq</code> will exit with a non-zero code, output something like <code>parse error: Invalid numeric literal at line 1, column 6</code> to stderr and nothing to stdout. Pipe doesn't care about the non-zero exit code though so we overwrite whatever was on the clipboard with an empty string. So lets add a bit of error handing:</p>
+<div class="code"><pre class="code literal-block"><span class="nb">alias</span><span class="w"> </span><span class="nv">jsontidy</span><span class="o">=</span><span class="s2">"xclip -selection clipboard -o | (jq '.' || xclip -selection clipboard -o) | xclip -selection clipboard"</span>
+</pre></div>
+
+<p>Now <code>jsontidy</code> will format whatever is on the clipboard if it can parse as JSON but leave it alone otherwise.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/stdin-or-file/" class="u-url">A python CLI app which accepts input from stdin or a file</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/stdin-or-file/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-12-07T00:00:00Z" itemprop="datePublished" title="2020-12-07">2020-12-07</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>This excellent guide on <a href="https://clig.dev/">Command Line Interface Guidelines</a> has been shared widely over the last few days and it includes a huge variety of advice on writing elegant and well-behaved command line tools. The whole thing is well worth a read, but I'm going to pick out one quote to focus on in this post:</p>
+<blockquote>
+<p><strong>If your command is expecting to have something piped to it and stdin is an interactive terminal, display help immediately and quit.</strong> This means it doesn't just hang, like <code>cat</code>.</p>
+</blockquote>
+<p>Tools that can optionally accept input via pipe are very useful and this pattern is entirely possible with python and argparse, but not completely obvious. Here's a simple example of a python program which:</p>
+<ul>
+<li>Can accept input as a file: <code>./myscript.py /path/to/file.txt</code>
+</li>
+<li>Can accept input via a pipe: <code>echo 'foo' | ./myscript.py</code>
+</li>
+<li>Will print help and exit if invoked interactively with no arguments: <code>./myscript.py</code> (instead of just hanging and waiting for input)</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="ch">#!/usr/bin/env python3</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'A well-behaved CLI app which accepts input from stdin or a file'</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'file'</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">'?'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Input file, if empty stdin is used'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">FileType</span><span class="p">(</span><span class="s1">'r'</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">print_help</span><span class="p">()</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="k">return</span> <span class="mi">0</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/pip-203/" class="u-url">pip 20.3</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/pip-203/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-11-30T00:00:00Z" itemprop="datePublished" title="2020-11-30">2020-11-30</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>There is a very long-standing issue on the pip repository: <a href="https://github.com/pypa/pip/issues/988">pip needs a dependency resolver</a>. Most language package managers (e.g: composer, bundler, cargo, etc) either use a resolver to derive a consistent dependency tree and prevent incompatible installations, or in the case of NPM/yarn allow "broken diamond" resolution (where more than one version of the same package can be installed at the same time). For the longest time, pip has had no true resolver, allowing incompatible dependencies to be installed. Until now..</p>
+<p>Today's release of <a href="https://blog.python.org/2020/11/pip-20-3-release-new-resolver.html">Pip 20.3</a> is the culmination of a <a href="https://pyfound.blogspot.com/2020/03/new-pip-resolver-to-roll-out-this-year.html">long programme of work</a> to implement a proper dependency resolver in pip. This makes pip 20.3 the most significant pip release in a very long time, possibly ever.</p>
+<p>It has actually been possible to preview this feature for some time using the <code>--use-feature=2020-resolver</code> flag in pip 20.2.x or by installing the beta releases of pip 20.3, but pip 20.3 is the first stable release to enable the new resolver by default. This means that a command like:</p>
+<div class="code"><pre class="code literal-block">pip<span class="w"> </span>install<span class="w"> </span><span class="nv">virtualenv</span><span class="o">==</span><span class="m">20</span>.0.2<span class="w"> </span><span class="nv">six</span><span class="o">==</span><span class="m">1</span>.11
+</pre></div>
+
+<p>or</p>
+<div class="code"><pre class="code literal-block"><span class="nb">printf</span><span class="w"> </span><span class="s2">"virtualenv==20.0.2\nsix==1.11"</span><span class="w"> </span>&gt;<span class="w"> </span>requirements.txt
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+
+<p>will now not install any new packages and throw a helpful error like:</p>
+<div class="code"><pre class="code literal-block">ERROR: Cannot install six==1.11 and virtualenv==20.0.2 because these package versions have conflicting dependencies.
+
+The conflict is caused by:
+    The user requested six==1.11
+    virtualenv 20.0.2 depends on six&lt;2 and &gt;=1.12.0
+
+To fix this you could try to:
+1. loosen the range of package versions you've specified
+2. remove package versions to allow pip attempt to solve the dependency conflict
+
+ERROR: ResolutionImpossible: for help visit https://pip.pypa.io/en/latest/user_guide/#fixing-conflicting-dependencies
+</pre></div>
+
+<p>which is a <em>massive</em> improvement over the previous behaviour. There is a gotcha though. Resolution only considers the packages being installed in that command. It doesn't take into account other packages already installed in your (virtual) environment. This means running</p>
+<div class="code"><pre class="code literal-block">pip<span class="w"> </span>install<span class="w"> </span><span class="nv">virtualenv</span><span class="o">==</span><span class="m">20</span>.0.2<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">six</span><span class="o">==</span><span class="m">1</span>.11
+</pre></div>
+
+<p>doesn't fail to install <code>six==1.11</code> with a <code>ResolutionImpossible</code> error. It will still install the incompatible package and warn you that it has done that:</p>
+<div class="code"><pre class="code literal-block">ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+ERROR: virtualenv 20.0.2 requires six&lt;2,&gt;=1.12.0, but you'll have six 1.11.0 which is incompatible.
+</pre></div>
+
+<p>This isn't a bug. This behaviour is noted in the error message  and <a href="https://pip.pypa.io/en/latest/user_guide/#changes-to-the-pip-dependency-resolver-in-20-3-2020">documented in the release notes</a>, but it is worth understanding this limitation. Even with the new resolver pip will still install incompatible dependencies in your environment if given the right combination of commands. This is a situation it is possible to wander into without realising or consciously enabling the legacy behaviour with <code>--use-deprecated=legacy-resolver</code>. While it is useful to have some further improved messaging around this, it is still a bit of a disappointment.</p>
+<p>I've <a href="posts/2020/2poetry/">previously written</a> about poetry. I'm now using poetry for all projects where I'm the only person who works on it and I have no plan to change that (poetry's behaviour is still more advanced here and IMO preferable), but it is impossible to work in the wider python community without encountering pip. This feature reduces that point of friction and it is great to see, but it isn't a silver bullet for preventing incompatible dependencies. It will be interesting to see how the wider community responds as users encounter this behaviour change for the first time.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/three-psql-settings/" class="u-url">Three useful psql settings</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/three-psql-settings/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-11-26T00:00:00Z" itemprop="datePublished" title="2020-11-26">2020-11-26</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <ul>
+<li>By default <code>psql</code> doesn't display <code>NULL</code>s, but you can configure it to show NULLs as a printable character or string e.g: <code>\pset null '█'</code> or <code>\pset null '(null)'</code>. This makes it is easier to distinguish <code>NULL</code> from empty string.</li>
+<li>
+<code>\timing on</code> appends an execution time to each result e.g: <code>Time: 0.412 ms</code>. <code>\timing off</code> turns it off.</li>
+<li>By default, <code>psql</code> stores every line in history. Setting <code>\set HISTCONTROL ignoredups</code> ignores lines which match the previous history line. This is a common default for shells and REPLs.</li>
+</ul>
+<p>These can be used on an ad-hoc basis or added to <code>.psqlrc</code>.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/postgres-show-create/" class="u-url">Show table create statement in Postgres</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/postgres-show-create/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-11-22T00:00:00Z" itemprop="datePublished" title="2020-11-22">2020-11-22</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>MySQL has a handy statement <code>SHOW CREATE TABLE my-table;</code>. Postgres doesn't have this but it can be achieved with <code>pg_dump</code> and the <code>--schema-only</code> flag.</p>
+<div class="code"><pre class="code literal-block">pg_dump<span class="w"> </span>-t<span class="w"> </span><span class="s1">'public.my-table'</span><span class="w"> </span>--schema-only<span class="w"> </span>my-database
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/rich/" class="u-url">Rich</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/rich/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-11-10T00:00:00Z" itemprop="datePublished" title="2020-11-10">2020-11-10</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I gave <a href="https://github.com/willmcgugan/rich">Rich</a> a spin recently and its an absolute game-changer when it comes to building nice looking terminal interfaces in python. Rich provides elegant high-level abstractions for using colours, tables, markdown and more. See the <a href="https://github.com/willmcgugan/rich/blob/master/README.md">README</a> and <a href="https://rich.readthedocs.io/en/latest/">API docs</a> for a more detailed showcase of Rich's capabilities.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/glob/" class="u-url">Glob Pattern tester</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/glob/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-11-01T00:00:00Z" itemprop="datePublished" title="2020-11-01">2020-11-01</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Little glob pattens are everywhere, but non-trivial ones can be tricky to construct. Digital Ocean have put together this <a href="https://www.digitalocean.com/community/tools/glob">handy tool</a> for constructing glob patterns and testing them against lists of strings. This does for glob patterns what <a href="https://regexr.com/">regexr</a> does for regular expressions.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/markdown/" class="u-url">Documenting a python project with markdown</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/markdown/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-10-20T00:00:00+01:00" itemprop="datePublished" title="2020-10-20">2020-10-20</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Last time I looked at writing documentation for a python library from scratch (a few years ago), there wasn't really a solution that allowed me to write my docs in markdown, render it to a static site and incorporate docstrings from my code into the generated documentation. <a href="https://www.mkdocs.org/">MkDocs</a> allows you to write your free text in markdown, but at the time there wasn't really a good solution for pulling docstrings into the rendered docs. Conversely, <a href="https://www.sphinx-doc.org/">Sphinx</a> did have a good solution for pulling in docstrings but forced you to use reStructuredText for the free text.</p>
+<p>Things have changed a bit since then though, on both sides of that equation. I wanted to write a docs site for my <a href="https://pypi.org/project/geometry-to-spatialite/">geometry-to-spatialite</a> library, so I decided to investigate a few different options.</p>
+<h3>MkDocs</h3>
+<p>In the MkDocs ecosystem there are now several plugins that allow you to incorporate docstrings into markdown documentation.</p>
+<h4><a href="https://github.com/pawamoy/mkdocstrings">Mkdocstrings</a></h4>
+<p>Mkdocstrings currently has one handler which parses docstrings written in the popular Google style e.g:</p>
+<div class="code"><pre class="code literal-block"><span class="sd">"""</span>
+<span class="sd">Function description</span>
+
+<span class="sd">Args:</span>
+<span class="sd">    param1 (int): The first parameter.</span>
+<span class="sd">    param2 (str): The second parameter.</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">    bool: True for success, False otherwise.</span>
+<span class="sd">"""</span>
+</pre></div>
+
+<p>At the time of writing the documentation says "This project currently only works with the Material theme". This project is young, but it does seem to have some traction around it and I wouldn't be surprised to see support for more themes and docstring styles added. The tabular rendered outputs of this plugin are really nice and it does a great job of mixing information about type hints, required params and default values from the function declarations with the descriptions from the docstrings. This minimises the need to repeat this information.</p>
+<h4><a href="https://github.com/tomchristie/mkautodoc">MkAutoDoc</a></h4>
+<p>MkAutoDoc takes different approach. MkAutoDoc doesn't support any of the popular python docstring formats (Google, reST, NumPy). Instead it allows you to embed markdown in code comments and include those in your documentation. One the one hand, this allows you to really go all-in on markdown on a completely new project, but on the other it doesn't set out any particular structure for arguments, return types, etc (and hence can't do anything smart with them, like mkdocstrings does), and if you've already got docstrings in your code in any of the common formats, it won't parse them.</p>
+<p>MkAutoDoc is primarily used by projects under the <a href="https://github.com/encode">encode</a> organisation to build the docs for projects like <a href="https://www.python-httpx.org/">httpx</a> and <a href="https://www.starlette.io/">starlette</a>.</p>
+<h4><a href="https://github.com/rob-blackbourn/jetblack-markdown">Jetblack-markdown</a></h4>
+<p>Honourable mention for this one. Jetblack-markdown uses <a href="https://github.com/rr-/docstring_parser">docstring_parser</a> under-the-hood so in theory should work with reST, Google, and Numpydoc-style docstrings, although the test suite currently only covers the Google-style. It does also require a bit of extra CSS for styling. I gave this one a quick go with the readthedocs theme and it produces attractive rendered outputs. This one is a very young project, but worth keeping an eye on 👀</p>
+<h3>Sphinx</h3>
+<p>Meanwhile in the Sphinx ecosystem, there are already good solutions for working with docstrings in the form of the <a href="https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html">Autodoc</a> extension to parse docstrings and include them in the rendered output and <a href="https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html">Napoleon</a> which adds support for the Google and NumPy formats. There's also a new package that helps us out on the free text side.</p>
+<h4><a href="https://myst-parser.readthedocs.io">MyST Parser</a></h4>
+<p>MyST parser is a markdown flavour and parser for Sphinx. This is a bit of a game changer because the sphinx ecosystem has years of maturity and a large plugin ecosystem and MyST basically solves my biggest issue with sphinx. The main downside of MyST parser is that it is a slightly leaky abstraction. To access some plugin functionality, we have to drop in an <code>{eval-rst}</code> block and other Sphinx extensions still assume your source content is reST, so although it is possible to write the main body of text in markdown, you won't be able to use markdown <em>everywhere</em>.</p>
+<h3>Conclusion</h3>
+<p>Predictably, there isn't a single obvious conclusion. There are no solutions, only tradeoffs. However in 2020 there are multiple viable options for documenting your python project with markdown 🎉</p>
+<p>After conducing this roundup, I wrote a <a href="https://chris48s.github.io/geometry-to-spatialite/">docs site for geometry-to-spatialite</a> using</p>
+<ul>
+<li><a href="https://www.sphinx-doc.org">Sphinx</a></li>
+<li>
+<a href="https://myst-parser.readthedocs.io">MyST Parser</a> for markdown parsing</li>
+<li>
+<a href="https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html">Autodoc</a> to parse docstrings and include them in the rendered output</li>
+<li>
+<a href="https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html">Napoleon</a> to pre-process Google-style docstrings for autodoc</li>
+<li>
+<a href="https://pypi.org/project/ghp-import/">ghp-import</a> to deploy the generated HTML to github pages</li>
+</ul>
+<p>Being able to use sphinx and write (mostly) markdown seems like a good place to be for now, but there are multiple projects in the MkDocs ecosystem which I'll be monitoring and revisting as they mature and gain traction.</p>
+    </div>
+    </article>
+</div>
+
+        <nav class="postindexpager"><ul class="pager">
+<li class="previous">
+                <a href="index-5.html" rel="prev">Newer posts</a>
+            </li>
+            <li class="next">
+                <a href="index-3.html" rel="next">Older posts</a>
+            </li>
+        </ul></nav></main>
+</div>
+    
+            <script src="assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

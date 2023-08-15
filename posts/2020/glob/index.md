@@ -1,0 +1,12 @@
+<!--
+.. title: Glob Pattern tester
+.. slug: glob
+.. date: 2020-11-01 00:00:00
+.. tags: terminal
+.. category: 
+.. link: 
+.. description: 
+.. type: text
+-->
+
+Little glob pattens are everywhere, but non-trivial ones can be tricky to construct. Digital Ocean have put together this [handy tool](https://www.digitalocean.com/community/tools/glob) for constructing glob patterns and testing them against lists of strings. This does for glob patterns what [regexr](https://regexr.com/) does for regular expressions.

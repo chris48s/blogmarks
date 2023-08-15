@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about devops)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/devops.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2023 chris48s</copyright><lastBuildDate>Tue, 15 Aug 2023 19:26:02 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Diagrams</title><link>https://chris48s.github.io/blogmarks/posts/2022/diagrams/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Last week I tried out &lt;a href="https://diagrams.mingrammer.com/"&gt;diagrams&lt;/a&gt; to knock up some cloud infrastructure diagrams. There are several things I really like about this tool:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The learning curve is very easy. I was able to absorb the key concepts and produce a useful diagram showing the AWS setup for an application I am working on within about 30 mins of installing it for the first time.&lt;/li&gt;
+&lt;li&gt;The [effort in]:[pretty pictures out] ratio is very satisfying.&lt;/li&gt;
+&lt;li&gt;Because the diagram is generated from code, it can live in your repo. The diff changing the diagram could be in the same commit as the updates to your CDK definitions or ansible playbooks or whatever it is that actually makes the infrastructure changes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For example, the following diagram&lt;/p&gt;
+&lt;p&gt;&lt;img alt="example diagram" src="https://chris48s.github.io/blogmarks/images/diagram.png"&gt;&lt;/p&gt;
+&lt;p&gt;is generated from this short python snippet:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;diagrams&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Cluster&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Diagram&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;diagrams.aws.compute&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Fargate&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;diagrams.aws.database&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;RDS&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;ElastiCache&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;diagrams.aws.engagement&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;SES&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;diagrams.aws.network&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ELB&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Route53&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;diagrams.aws.storage&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;S3&lt;/span&gt;
+
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;Diagram&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;""&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;False&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;ses&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;SES&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Mail Transport (SES)"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;dns&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Route53&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Route 53 (DNS)"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;s3&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;S3&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"S3"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;Cluster&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"VPC"&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;lb&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ELB&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Load Balancer (ALB)"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;elasticache&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;ElastiCache&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"Redis (ElastiCache)"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;Cluster&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"ECS"&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;web&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Fargate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"web"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;Cluster&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"DB Cluster (RDS)"&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+            &lt;span class="n"&gt;db_primary&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;RDS&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"primary"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;db_primary&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;RDS&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"read replica"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="n"&gt;dns&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;lb&lt;/span&gt;
+    &lt;span class="n"&gt;lb&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;web&lt;/span&gt;
+
+    &lt;span class="n"&gt;web&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;elasticache&lt;/span&gt;
+    &lt;span class="n"&gt;web&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;db_primary&lt;/span&gt;
+    &lt;span class="n"&gt;web&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;s3&lt;/span&gt;
+    &lt;span class="n"&gt;web&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="n"&gt;ses&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>devops</category><category>python</category><guid>https://chris48s.github.io/blogmarks/posts/2022/diagrams/</guid><pubDate>Sat, 17 Sep 2022 23:00:00 GMT</pubDate></item><item><title>Learnings from a year on Heroku</title><link>https://chris48s.github.io/blogmarks/posts/2021/heroku-1year/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;We migrated &lt;a href="https://shields.io/"&gt;shields.io&lt;/a&gt; to Heroku just over a year ago. Heroku is a great platform but through the process of running a high-traffic application (on a busy day we serve ~30 million requests) I've got to know some of the idiosyncrasies of the platform. In this post I will run through a few of the esoteric details that have surprised me along the way as I've discovered them.&lt;/p&gt;
+&lt;h3&gt;📅 Daily Restarts&lt;/h3&gt;
+&lt;p&gt;Heroku's dyno manager restarts or cycles your dynos &lt;a href="https://devcenter.heroku.com/articles/dynos#automatic-dyno-restarts"&gt;once per day&lt;/a&gt;. This behaviour is non-configurable. With the default settings, these daily restarts may also lead to a bit of downtime due to Heroku's default dyno lifecycle, which leads us to..&lt;/p&gt;
+&lt;h3&gt;🔛 Preboot&lt;/h3&gt;
+&lt;p&gt;A surprising default behaviour of Heroku is that when you deploy or restart (or Heroku restarts your dyno for you), Heroku stops the existing set of web dynos before starting the new ones. Turning on the &lt;a href="https://devcenter.heroku.com/articles/preboot#enabling-and-disabling-preboot"&gt;preboot feature&lt;/a&gt; means Heroku will ensure the new dynos are receiving traffic before shutting down the old ones.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;heroku&lt;span class="w"&gt; &lt;/span&gt;features:enable&lt;span class="w"&gt; &lt;/span&gt;preboot&lt;span class="w"&gt; &lt;/span&gt;-a&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;myapp&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3&gt;💥 Crash Restart Policy&lt;/h3&gt;
+&lt;p&gt;Sometimes bugs hit production. In the case that your application crashes, for whatever reason, Heroku will automatically restart the dyno for you but it implements a &lt;a href="https://devcenter.heroku.com/articles/dynos#dyno-crash-restart-policy"&gt;backoff policy&lt;/a&gt;. In some cases this can lead to a situation where some of your dynos are spending over 5 hours not serving any traffic because they are in a cool-off period instead of recovering immediately. If this happens, the Heroku web UI will report you are running N dynos even when less than N of them are able to actively serve traffic because some are in a cool-off period waiting to start. Running&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;heroku&lt;span class="w"&gt; &lt;/span&gt;ps&lt;span class="w"&gt; &lt;/span&gt;-a&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;myapp&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;does tell you which dynos are up and which (if any) are crashed. This brings us on to the next point..&lt;/p&gt;
+&lt;h3&gt;👑 The CLI is King&lt;/h3&gt;
+&lt;p&gt;If you're planning on working with Heroku in any depth, you need to get familiar with &lt;a href="https://devcenter.heroku.com/articles/heroku-cli"&gt;the CLI&lt;/a&gt;. There are certain operations which can be performed via the CLI or API which just aren't available via the Web UI or where the CLI allows you to see more detailed information than the Web UI can show you. Fortunately Heroku's CLI app is very high quality. The &lt;code&gt;--help&lt;/code&gt; is very discoverable and it includes examples as well as a reference. This makes it really easy to just jump in and work things out as you go.&lt;/p&gt;
+&lt;p&gt;I've already hinted at &lt;code&gt;heroku features&lt;/code&gt; earlier in the post, but there are a variety of useful flags which can be listed with&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;heroku&lt;span class="w"&gt; &lt;/span&gt;features&lt;span class="w"&gt; &lt;/span&gt;-a&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;myapp&amp;gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# stable&lt;/span&gt;
+heroku&lt;span class="w"&gt; &lt;/span&gt;labs&lt;span class="w"&gt; &lt;/span&gt;-a&lt;span class="w"&gt; &lt;/span&gt;&amp;lt;myapp&amp;gt;&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="c1"&gt;# experemental&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Many of these also can't be enabled/disabled via the Web UI.&lt;/p&gt;</description><category>devops</category><category>heroku</category><category>terminal</category><guid>https://chris48s.github.io/blogmarks/posts/2021/heroku-1year/</guid><pubDate>Sat, 22 May 2021 23:00:00 GMT</pubDate></item><item><title>Vendoring Ansible Galaxy Roles</title><link>https://chris48s.github.io/blogmarks/posts/2020/ansible-vendor/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;By default &lt;code&gt;ansible-galaxy&lt;/code&gt; installs all roles in a single global location. If you use ansible a lot, this can lead to a situation where you have a conflict because one project requires version X of a dependency and another requires version Y. I usually guard against this by setting each of my ansible projects up to install dependencies in a local vendor directory inside the project (the NPM/composer model) using the &lt;a href="https://galaxy.ansible.com/docs/using/installing.html#determining-where-roles-are-installed"&gt;roles-path setting&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This can be specified on-the-fly with a flag or env var, but I usually set this in my &lt;code&gt;ansible.cfg&lt;/code&gt; before creating a &lt;code&gt;requirements.yml&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;[defaults]&lt;/span&gt;
+&lt;span class="na"&gt;roles_path&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;./vendor/&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>ansible</category><category>devops</category><category>terminal</category><guid>https://chris48s.github.io/blogmarks/posts/2020/ansible-vendor/</guid><pubDate>Sat, 18 Jul 2020 23:00:00 GMT</pubDate></item><item><title>Moto</title><link>https://chris48s.github.io/blogmarks/posts/2020/moto/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;&lt;a href="http://getmoto.org"&gt;moto&lt;/a&gt; is a library that allows you to easily mock out tests based on AWS infrastructure.&lt;/p&gt;
+&lt;p&gt;This package is an absolute essential for testing and developing applications which are closely tied to the AWS stack.&lt;/p&gt;
+&lt;ul class="no-bullet"&gt;
+  &lt;li&gt;
+    &lt;i class="fab fa-github"&gt;&lt;/i&gt;
+    &lt;a href="https://github.com/spulec/moto"&gt;Github&lt;/a&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;i class="fas fa-book-open"&gt;&lt;/i&gt;
+    &lt;a href="http://docs.getmoto.org/en/latest/"&gt;Docs&lt;/a&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</description><category>devops</category><category>python</category><category>testing</category><guid>https://chris48s.github.io/blogmarks/posts/2020/moto/</guid><pubDate>Wed, 24 Jun 2020 23:00:00 GMT</pubDate></item></channel></rss>

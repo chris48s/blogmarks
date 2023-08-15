@@ -1,0 +1,12 @@
+<!--
+.. title: mailtrap
+.. slug: mailtrap
+.. date: 2020-06-27 00:00:00
+.. tags: email
+.. category: 
+.. link: 
+.. description: 
+.. type: text
+-->
+
+[Mailtrap.io](https://mailtrap.io/) is a simple and very useful service for developing code that sends email. Set up a project inbox, tell your application to use `smtp.mailtrap.io`/port `2525` for mail transport and give it the username and password for your project inbox. Any emails your application sends (regardless of the outward address) are swallowed (no danger of spamming a real user with test emails) and emails can be reviewed in the project inbox. The free plan is generous enough to cover moderate usage.

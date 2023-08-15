@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Learnings from a year on Heroku | Blogmarks</title>
+<link href="../../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../../rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/posts/2021/heroku-1year/">
+<!--[if lt IE 9]><script src="../../../assets/js/html5shiv-printshiv.min.js"></script><![endif]--><meta name="author" content="chris48s">
+<link rel="prev" href="../gh-action-pr-merge/" title="Running a GitHub action on pull request merge" type="text/html">
+<link rel="next" href="../google-bot-user-agent/" title="Browse The Web Like A Crawler" type="text/html">
+<meta property="og:site_name" content="Blogmarks">
+<meta property="og:title" content="Learnings from a year on Heroku">
+<meta property="og:url" content="https://chris48s.github.io/blogmarks/posts/2021/heroku-1year/">
+<meta property="og:description" content="We migrated shields.io to Heroku just over a year ago. Heroku is a great platform but through the process of running a high-traffic application (on a busy day we serve ~30 million requests) I've got t">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-05-23T00:00:00+01:00">
+<meta property="article:tag" content="devops">
+<meta property="article:tag" content="heroku">
+<meta property="article:tag" content="terminal">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="../../../" title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+                <li><a href="../../../categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Learnings from a year on Heroku</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-23T00:00:00+01:00" itemprop="datePublished" title="2021-05-23">2021-05-23</time></a>
+            </p>
+            
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>We migrated <a href="https://shields.io/">shields.io</a> to Heroku just over a year ago. Heroku is a great platform but through the process of running a high-traffic application (on a busy day we serve ~30 million requests) I've got to know some of the idiosyncrasies of the platform. In this post I will run through a few of the esoteric details that have surprised me along the way as I've discovered them.</p>
+<h3>📅 Daily Restarts</h3>
+<p>Heroku's dyno manager restarts or cycles your dynos <a href="https://devcenter.heroku.com/articles/dynos#automatic-dyno-restarts">once per day</a>. This behaviour is non-configurable. With the default settings, these daily restarts may also lead to a bit of downtime due to Heroku's default dyno lifecycle, which leads us to..</p>
+<h3>🔛 Preboot</h3>
+<p>A surprising default behaviour of Heroku is that when you deploy or restart (or Heroku restarts your dyno for you), Heroku stops the existing set of web dynos before starting the new ones. Turning on the <a href="https://devcenter.heroku.com/articles/preboot#enabling-and-disabling-preboot">preboot feature</a> means Heroku will ensure the new dynos are receiving traffic before shutting down the old ones.</p>
+<div class="code"><pre class="code literal-block">heroku<span class="w"> </span>features:enable<span class="w"> </span>preboot<span class="w"> </span>-a<span class="w"> </span>&lt;myapp&gt;
+</pre></div>
+
+<h3>💥 Crash Restart Policy</h3>
+<p>Sometimes bugs hit production. In the case that your application crashes, for whatever reason, Heroku will automatically restart the dyno for you but it implements a <a href="https://devcenter.heroku.com/articles/dynos#dyno-crash-restart-policy">backoff policy</a>. In some cases this can lead to a situation where some of your dynos are spending over 5 hours not serving any traffic because they are in a cool-off period instead of recovering immediately. If this happens, the Heroku web UI will report you are running N dynos even when less than N of them are able to actively serve traffic because some are in a cool-off period waiting to start. Running</p>
+<div class="code"><pre class="code literal-block">heroku<span class="w"> </span>ps<span class="w"> </span>-a<span class="w"> </span>&lt;myapp&gt;
+</pre></div>
+
+<p>does tell you which dynos are up and which (if any) are crashed. This brings us on to the next point..</p>
+<h3>👑 The CLI is King</h3>
+<p>If you're planning on working with Heroku in any depth, you need to get familiar with <a href="https://devcenter.heroku.com/articles/heroku-cli">the CLI</a>. There are certain operations which can be performed via the CLI or API which just aren't available via the Web UI or where the CLI allows you to see more detailed information than the Web UI can show you. Fortunately Heroku's CLI app is very high quality. The <code>--help</code> is very discoverable and it includes examples as well as a reference. This makes it really easy to just jump in and work things out as you go.</p>
+<p>I've already hinted at <code>heroku features</code> earlier in the post, but there are a variety of useful flags which can be listed with</p>
+<div class="code"><pre class="code literal-block">heroku<span class="w"> </span>features<span class="w"> </span>-a<span class="w"> </span>&lt;myapp&gt;<span class="w">  </span><span class="c1"># stable</span>
+heroku<span class="w"> </span>labs<span class="w"> </span>-a<span class="w"> </span>&lt;myapp&gt;<span class="w">  </span><span class="c1"># experemental</span>
+</pre></div>
+
+<p>Many of these also can't be enabled/disabled via the Web UI.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../../categories/devops/" rel="tag">devops</a></li>
+            <li><a class="tag p-category" href="../../../categories/heroku/" rel="tag">heroku</a></li>
+            <li><a class="tag p-category" href="../../../categories/terminal/" rel="tag">terminal</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../gh-action-pr-merge/" rel="prev" title="Running a GitHub action on pull request merge">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../google-bot-user-agent/" rel="next" title="Browse The Web Like A Crawler">Next post</a>
+            </li>
+        </ul></nav></aside></article></main>
+</div>
+    
+            <script src="../../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

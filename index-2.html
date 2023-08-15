@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Handy links or snippets, and a sentence or two">
+<meta name="viewport" content="width=device-width">
+<title>Blogmarks (old posts, page 2) | Blogmarks</title>
+<link href="assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/index-2.html">
+<link rel="prev" href="index-3.html" type="text/html">
+<link rel="next" href="index-1.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]-->
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="." title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="rss.xml">RSS feed</a></li>
+                <li><a href="categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><div class="postindex">
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/water-css/" class="u-url">Water.css</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/water-css/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-08-01T00:00:00+01:00" itemprop="datePublished" title="2020-08-01">2020-08-01</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Water.css is a minimal responsive stylesheet. I sometimes use this when I'm prototyping something new or producing a demo website for a library. Drop it in your <code>&lt;head&gt;</code>, write semantic HTML, no classes needed. Good-enough styling when you don't want to think about styling.</p>
+<ul class="no-bullet">
+<li>
+    <i class="fab fa-github"></i>
+    <a href="https://github.com/kognise/water.css">Github</a>
+  </li>
+  <li>
+    <i class="fas fa-code"></i>
+    <a href="https://watercss.kognise.dev/">Demo page</a>
+  </li>
+  <li>
+    <i class="fa fa-cloud"></i>
+    <a href="https://www.jsdelivr.com/package/gh/kognise/water.css">jsDelivr</a>
+  </li>
+</ul>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/bat-delta/" class="u-url">Bat and Delta</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/bat-delta/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-07-29T00:00:00+01:00" itemprop="datePublished" title="2020-07-29">2020-07-29</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Two for one this time. These tools are two peas in a pod:</p>
+<ul>
+<li>
+<a href="https://github.com/sharkdp/bat">Bat</a> is a git-aware drop-in replacement for <code>cat</code> with syntax highlighting.</li>
+<li>
+<a href="https://github.com/dandavison/delta">Delta</a> builds on bat's syntax themes to provide a pager for git with improved diff highlighting.</li>
+</ul>
+<p>I use both with the Nord theme. Git can be configured to use the delta/Nord combo as the default pager by setting</p>
+<div class="code"><pre class="code literal-block"><span class="k">[core]</span>
+<span class="w">    </span><span class="na">pager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">delta --theme=Nord</span>
+
+<span class="k">[interactive]</span>
+<span class="w">    </span><span class="na">diffFilter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">delta --color-only --theme=Nord</span>
+</pre></div>
+
+<p>in <code>.gitconfig</code>.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/blush/" class="u-url">Blush</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/blush/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-07-25T00:00:00+01:00" itemprop="datePublished" title="2020-07-25">2020-07-25</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="https://blush.design">Blush</a> hosts collections of customisable and composable images and designs which can be used under a <a href="https://blush.design/license">permissive licence</a>. Small PNGs (like this one generated from the <a href="https://blush.design/collections/cityscapes">cityscapes</a> collection)</p>
+<p><img alt="cityscape" src="images/cityscape.png"></p>
+<p>are free to download. Large PNGs and SVGs are available with a paid plan.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/ansible-vendor/" class="u-url">Vendoring Ansible Galaxy Roles</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/ansible-vendor/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-07-19T00:00:00+01:00" itemprop="datePublished" title="2020-07-19">2020-07-19</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>By default <code>ansible-galaxy</code> installs all roles in a single global location. If you use ansible a lot, this can lead to a situation where you have a conflict because one project requires version X of a dependency and another requires version Y. I usually guard against this by setting each of my ansible projects up to install dependencies in a local vendor directory inside the project (the NPM/composer model) using the <a href="https://galaxy.ansible.com/docs/using/installing.html#determining-where-roles-are-installed">roles-path setting</a>.</p>
+<p>This can be specified on-the-fly with a flag or env var, but I usually set this in my <code>ansible.cfg</code> before creating a <code>requirements.yml</code>.</p>
+<div class="code"><pre class="code literal-block"><span class="k">[defaults]</span>
+<span class="na">roles_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">./vendor/</span>
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/response-size/" class="u-url">Get the size of a HTTP response</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/response-size/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-07-11T00:00:00+01:00" itemprop="datePublished" title="2020-07-11">2020-07-11</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Vanilla verison:</p>
+<div class="code"><pre class="code literal-block">curl<span class="w"> </span><span class="s2">"https://foo.bar/file"</span><span class="w"> </span>-w<span class="w"> </span><span class="s1">'size: %{size_download}\n'</span><span class="w"> </span>-o<span class="w"> </span>/dev/null
+</pre></div>
+
+<p>or with a little extra flourish:</p>
+<div class="code"><pre class="code literal-block">curl<span class="w"> </span><span class="s2">"https://foo.bar/file"</span><span class="w"> </span>-w<span class="w"> </span><span class="s1">'size: %{size_download}\n'</span><span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span><span class="s1">'s/[^0-9]//g'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>numfmt<span class="w"> </span>--to<span class="o">=</span>iec
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/silver-searcher/" class="u-url">The Silver Searcher</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/silver-searcher/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-07-09T00:00:00+01:00" itemprop="datePublished" title="2020-07-09">2020-07-09</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="https://github.com/ggreer/the_silver_searcher">The Silver Searcher</a> (or <code>ag</code> to its friends) has quickly become my go-to search tool for code. Performance gets top billing, but this tool has a number of other handy features. For example, searching ignores patterns in your <code>.gitignore</code> by default and <code>ag</code> is aware of a large number of programming languages and technologies. For example <code>ag "search string" . --html</code> searches only in files with the extensions <code>.htm</code>, <code>.html</code>, <code>.shtml</code> or <code>.xhtml</code>.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/time-is/" class="u-url">Time.is</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/time-is/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-07-04T00:00:00+01:00" itemprop="datePublished" title="2020-07-04">2020-07-04</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I often need to schedule meetings with participants in multiple timezones. My favourite feature of <a href="https://time.is">time.is</a> is the ability to easily assemble a link like <a href="https://time.is/1400_3_Jul_2020_in_London/CEST/Toronto">https://time.is/1400_3_Jul_2020_in_London/CEST/Toronto</a> using a mix of geographic locations and timezone abbreviations. If you co-ordinate across multiple timezones a lot, this website is very useful and has a number of handy <a href="https://time.is/howto">shortcuts and customisations</a> available.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/commit-timestamps/" class="u-url">Editing Commit Timestamps in Git</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/commit-timestamps/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-30T00:00:00+01:00" itemprop="datePublished" title="2020-06-30">2020-06-30</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I always forget that <a href="https://help.github.com/en/github/committing-changes-to-your-project/why-are-my-commits-in-the-wrong-order">GitHub shows commits in a pull request in timestamp order</a> rather than tree/history order until just after I've just pushed a monster rebase and everything's in the wrong order. To force GitHub to show the commits in the correct order, we need to edit the commit timestamps to match the history order. To do this:</p>
+<div class="code"><pre class="code literal-block">git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>HEAD~N
+</pre></div>
+
+<p>Mark the commits that need re-ordering as <code>edit</code></p>
+<div class="code"><pre class="code literal-block">edit f3b9e40 Reticulate Splines
+edit 68f39b8 Adjust Bell Curves
+edit d605e5a Dice Models
+</pre></div>
+
+<p>At each stage of the rebase:</p>
+<div class="code"><pre class="code literal-block">git<span class="w"> </span>commit<span class="w"> </span>--amend<span class="w"> </span>--date<span class="o">=</span>now<span class="w"> </span>--no-edit
+git<span class="w"> </span>rebase<span class="w"> </span>--continue
+</pre></div>
+
+<p>Now the timestamp ordering will match the history. When you force-push, GitHub will order the commits correctly in your pull request.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/mailtrap/" class="u-url">mailtrap</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/mailtrap/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-27T00:00:00+01:00" itemprop="datePublished" title="2020-06-27">2020-06-27</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="https://mailtrap.io/">Mailtrap.io</a> is a simple and very useful service for developing code that sends email. Set up a project inbox, tell your application to use <code>smtp.mailtrap.io</code>/port <code>2525</code> for mail transport and give it the username and password for your project inbox. Any emails your application sends (regardless of the outward address) are swallowed (no danger of spamming a real user with test emails) and emails can be reviewed in the project inbox. The free plan is generous enough to cover moderate usage.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/moto/" class="u-url">Moto</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/moto/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-25T00:00:00+01:00" itemprop="datePublished" title="2020-06-25">2020-06-25</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="http://getmoto.org">moto</a> is a library that allows you to easily mock out tests based on AWS infrastructure.</p>
+<p>This package is an absolute essential for testing and developing applications which are closely tied to the AWS stack.</p>
+<ul class="no-bullet">
+<li>
+    <i class="fab fa-github"></i>
+    <a href="https://github.com/spulec/moto">Github</a>
+  </li>
+  <li>
+    <i class="fas fa-book-open"></i>
+    <a href="http://docs.getmoto.org/en/latest/">Docs</a>
+  </li>
+</ul>
+</div>
+    </article>
+</div>
+
+        <nav class="postindexpager"><ul class="pager">
+<li class="previous">
+                <a href="index-3.html" rel="prev">Newer posts</a>
+            </li>
+            <li class="next">
+                <a href="index-1.html" rel="next">Older posts</a>
+            </li>
+        </ul></nav></main>
+</div>
+    
+            <script src="assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

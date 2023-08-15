@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Handy links or snippets, and a sentence or two">
+<meta name="viewport" content="width=device-width">
+<title>Blogmarks (old posts, page 5) | Blogmarks</title>
+<link href="assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/index-5.html">
+<link rel="prev" href="." type="text/html">
+<link rel="next" href="index-4.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]-->
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="." title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="rss.xml">RSS feed</a></li>
+                <li><a href="categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><div class="postindex">
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/google-bot-user-agent/" class="u-url">Browse The Web Like A Crawler</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/google-bot-user-agent/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-09-08T00:00:00+01:00" itemprop="datePublished" title="2021-09-08">2021-09-08</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Some sites sneakily serve different content to crawlers and interactive users.
+Setting your user agent to:</p>
+<div class="code"><pre class="code literal-block">Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+</pre></div>
+
+<p>allows you to see what GoogleBot sees. <a href="https://addons.mozilla.org/en-GB/firefox/addon/uaswitcher/">Uaswitcher</a> for firefox has a preset for this out of the box.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/heroku-1year/" class="u-url">Learnings from a year on Heroku</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/heroku-1year/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-23T00:00:00+01:00" itemprop="datePublished" title="2021-05-23">2021-05-23</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>We migrated <a href="https://shields.io/">shields.io</a> to Heroku just over a year ago. Heroku is a great platform but through the process of running a high-traffic application (on a busy day we serve ~30 million requests) I've got to know some of the idiosyncrasies of the platform. In this post I will run through a few of the esoteric details that have surprised me along the way as I've discovered them.</p>
+<h3>📅 Daily Restarts</h3>
+<p>Heroku's dyno manager restarts or cycles your dynos <a href="https://devcenter.heroku.com/articles/dynos#automatic-dyno-restarts">once per day</a>. This behaviour is non-configurable. With the default settings, these daily restarts may also lead to a bit of downtime due to Heroku's default dyno lifecycle, which leads us to..</p>
+<h3>🔛 Preboot</h3>
+<p>A surprising default behaviour of Heroku is that when you deploy or restart (or Heroku restarts your dyno for you), Heroku stops the existing set of web dynos before starting the new ones. Turning on the <a href="https://devcenter.heroku.com/articles/preboot#enabling-and-disabling-preboot">preboot feature</a> means Heroku will ensure the new dynos are receiving traffic before shutting down the old ones.</p>
+<div class="code"><pre class="code literal-block">heroku<span class="w"> </span>features:enable<span class="w"> </span>preboot<span class="w"> </span>-a<span class="w"> </span>&lt;myapp&gt;
+</pre></div>
+
+<h3>💥 Crash Restart Policy</h3>
+<p>Sometimes bugs hit production. In the case that your application crashes, for whatever reason, Heroku will automatically restart the dyno for you but it implements a <a href="https://devcenter.heroku.com/articles/dynos#dyno-crash-restart-policy">backoff policy</a>. In some cases this can lead to a situation where some of your dynos are spending over 5 hours not serving any traffic because they are in a cool-off period instead of recovering immediately. If this happens, the Heroku web UI will report you are running N dynos even when less than N of them are able to actively serve traffic because some are in a cool-off period waiting to start. Running</p>
+<div class="code"><pre class="code literal-block">heroku<span class="w"> </span>ps<span class="w"> </span>-a<span class="w"> </span>&lt;myapp&gt;
+</pre></div>
+
+<p>does tell you which dynos are up and which (if any) are crashed. This brings us on to the next point..</p>
+<h3>👑 The CLI is King</h3>
+<p>If you're planning on working with Heroku in any depth, you need to get familiar with <a href="https://devcenter.heroku.com/articles/heroku-cli">the CLI</a>. There are certain operations which can be performed via the CLI or API which just aren't available via the Web UI or where the CLI allows you to see more detailed information than the Web UI can show you. Fortunately Heroku's CLI app is very high quality. The <code>--help</code> is very discoverable and it includes examples as well as a reference. This makes it really easy to just jump in and work things out as you go.</p>
+<p>I've already hinted at <code>heroku features</code> earlier in the post, but there are a variety of useful flags which can be listed with</p>
+<div class="code"><pre class="code literal-block">heroku<span class="w"> </span>features<span class="w"> </span>-a<span class="w"> </span>&lt;myapp&gt;<span class="w">  </span><span class="c1"># stable</span>
+heroku<span class="w"> </span>labs<span class="w"> </span>-a<span class="w"> </span>&lt;myapp&gt;<span class="w">  </span><span class="c1"># experemental</span>
+</pre></div>
+
+<p>Many of these also can't be enabled/disabled via the Web UI.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/gh-action-pr-merge/" class="u-url">Running a GitHub action on pull request merge</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/gh-action-pr-merge/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-05T00:00:00+01:00" itemprop="datePublished" title="2021-04-05">2021-04-05</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Github workflows can be triggered by a variety of events. The <code>pull_request</code> event has 14 different <a href="https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request">activity types</a>. I recently wanted to write an action that runs after a pull request is merged and I was surprised to find that <code>merged</code> is not one of the supported activity types. This is easy enough to work around using the following snippet, but a surprising omission.</p>
+<div class="code"><pre class="code literal-block"><span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">types</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">closed</span><span class="p p-Indicator">]</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my-job</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">github.event.pull_request.merged == true</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/postgres-indexes/" class="u-url">Identifying poorly indexed tables in Postgres</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/postgres-indexes/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-04T00:00:00Z" itemprop="datePublished" title="2021-03-04">2021-03-04</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Out of the box the Postgres <a href="https://www.postgresql.org/docs/current/monitoring-stats.html">statistics collector</a> gives us a variety of useful views we can query to understand the usage and performance of a database. This is a huge topic, so I'm just going to look at one very constrained topic in this post.</p>
+<p>Sequential scans are OK on small tables or if we are making them infrequently, but usually if we are performing a lot of sequential scans on large tables this is a sign that we need to create an index. Fortunately Postgres collects some data in <code>pg_stat_user_tables</code> that can help us identify this:</p>
+<ul>
+<li>Looking at <code>seq_scan</code> and <code>idx_scan</code> can show us tables where we are frequently performing sequential scans rather than indexed scans</li>
+<li>Looking at <code>seq_scan</code> and <code>seq_tup_read</code> can show us tables where sequential scans typically process a large number of rows</li>
+</ul>
+<p>Running this query:</p>
+<div class="code"><pre class="code literal-block"><span class="k">SELECT</span>
+<span class="w">    </span><span class="n">relname</span><span class="p">,</span><span class="w"> </span><span class="n">idx_scan</span><span class="p">,</span><span class="w"> </span><span class="n">seq_scan</span><span class="p">,</span><span class="w"> </span><span class="n">seq_tup_read</span><span class="p">,</span>
+
+<span class="w">    </span><span class="n">seq_tup_read</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">seq_scan</span>
+<span class="w">    </span><span class="k">AS</span><span class="w"> </span><span class="n">average_tuples_per_scan</span><span class="p">,</span>
+
+<span class="w">    </span><span class="p">((</span><span class="n">seq_scan</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">seq_scan</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">idx_scan</span><span class="p">)</span><span class="w"> </span><span class="p">::</span><span class="w"> </span><span class="nb">FLOAT</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
+<span class="w">    </span><span class="k">AS</span><span class="w"> </span><span class="n">percent_sequential_scans</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_user_tables</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">seq_scan</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">average_tuples_per_scan</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
+</pre></div>
+
+<p>Should provide a pretty clear picture of tables that need optimisation.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/renovate-custom-managers/" class="u-url">Renovate Custom Managers</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/renovate-custom-managers/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-02-28T00:00:00Z" itemprop="datePublished" title="2021-02-28">2021-02-28</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Tools like Dependabot and PyUp are amazing for automatically keeping dependencies updated. They work fine, as long as your dependencies are distributed via a supported language-specific package manager and specified in a manifest file. This doesn't account for 100% of application dependencies though, particularly when it comes to deployment. This is where Renovate has a killer feature: <a href="https://docs.renovatebot.com/modules/manager/regex/">Custom Managers</a>. The setup is a little fiddly, but this allows Renovate to submit pull requests to arbitrary files like a <code>Dockerfile</code> or an ansible playbook bumping applications like nginx, curl or Postgres which aren't specified in a <code>requirements.txt</code> or a <code>package.json</code>.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/git-word-diff/" class="u-url">git --word-diff</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/git-word-diff/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-02-25T00:00:00Z" itemprop="datePublished" title="2021-02-25">2021-02-25</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Git's default diff behaviour can make it difficult to parse edits to long lines of text. This is often an issue when editing documentation</p>
+<p><img alt="unhelpful git diff" src="images/word-diff1.png"><em>Thanks git, but what actually changed?</em></p>
+<p>In these situations, the <a href="https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---word-diffltmodegt"><code>--word-diff</code></a> option can be used to generate a diff that is easier to read.</p>
+<p><img alt="helpful git diff" src="images/word-diff2.png"><em>Aah that's better!</em></p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/redirect-stdout/" class="u-url">Capturing stdout in python</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/redirect-stdout/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-02-18T00:00:00Z" itemprop="datePublished" title="2021-02-18">2021-02-18</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Sometimes it is helpful to capture stdout/stderr. I usually use this when writing tests to make assertions about terminal output or just suppress it when the tests are running. Normally I would do a little switcheroo like this to manually manipulate <code>sys.stdout</code>:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span> 
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'foobar'</span><span class="p">)</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdout__</span>
+</pre></div>
+
+<p>but today I leaned about python's <a href="https://docs.python.org/3/library/contextlib.html#contextlib.redirect_stdout"><code>contextlib.redirect_stdout</code></a> and <a href="https://docs.python.org/3/library/contextlib.html#contextlib.redirect_stderr"><code>contextlib.redirect_stderr</code></a>. These standard library context managers provide a built-in abstraction over this operation:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span> 
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">redirect_stdout</span>
+
+<span class="k">with</span> <span class="n">StringIO</span><span class="p">()</span> <span class="k">as</span> <span class="n">buf</span><span class="p">,</span> <span class="n">redirect_stdout</span><span class="p">(</span><span class="n">buf</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'foobar'</span><span class="p">)</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+</pre></div>
+    </div>
+    </article>
+</div>
+
+        <nav class="postindexpager"><ul class="pager">
+<li class="previous">
+                <a href="." rel="prev">Newer posts</a>
+            </li>
+            <li class="next">
+                <a href="index-4.html" rel="next">Older posts</a>
+            </li>
+        </ul></nav></main>
+</div>
+    
+            <script src="assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

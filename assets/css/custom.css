@@ -1,0 +1,46 @@
+body {
+  font-size: 18px;
+}
+
+.metadata {
+  margin-bottom: 8px;
+  text-align: right;
+}
+
+h1.entry-title {
+  margin-bottom: 6px;
+}
+
+a, a:visited, a:hover, a:active {
+  color: #0d53a3;
+}
+
+blockquote {
+  border-left: 4px solid #e8e8e8;
+  padding-left: 15px;
+  font-style: italic
+}
+
+code {
+  background-color: #f8f8f8;
+  font-weight: bold;
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+}
+
+pre.code.literal-block {
+  padding: 0.5em;
+}
+
+ul.no-bullet {
+  list-style-type: none;
+}
+
+.postpromonav ul.tags li:first-of-type::before,
+.postpromonav ul.tags li:before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: " \f02c ";
+  padding-left: 0.5em;
+  padding-right: 0.2em;
+}

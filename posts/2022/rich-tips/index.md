@@ -1,0 +1,16 @@
+<!--
+.. title: Three Rich tips
+.. slug: rich-tips
+.. date: 2022-02-13 00:00:00
+.. tags: python,terminal
+.. category: 
+.. link: 
+.. description: 
+.. type: text
+-->
+
+I've mentioned Will McGugan's excellent library [Rich](https://github.com/willmcgugan/rich) on this blog before. It is a great tool for building nice terminal interfaces, but it is also an important local development tool. Here's three top tips:
+
+1. Rich can be registered as a [handler to render stacktraces](https://rich.readthedocs.io/en/stable/traceback.html#traceback-handler). As well as the aesthetics, using Rich to handle stacktraces like this provides additional context which improves the usefulness of error messages in comparison to python's default handler.
+2. [Rich.inspect](https://github.com/Textualize/rich#rich-inspect) can be used to examine a python object at runtime. I used to use `dir()` or `vars()` for this, but `rich.inspect()` is a big step up.
+3. Rich can be used as a log handler. [The docs](https://rich.readthedocs.io/en/stable/logging.html) cover how to use it with python's `logging` module, but Will has also published this [blog post](https://www.willmcgugan.com/blog/tech/post/richer-django-logging/) showing how to configure Django to use Rich as the default log handler.

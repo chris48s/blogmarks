@@ -1,0 +1,4 @@
+Sitemap: https://chris48s.github.io/blogmarks/sitemapindex.xml
+
+User-Agent: *
+Host: chris48s.github.io

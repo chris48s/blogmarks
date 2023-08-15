@@ -1,0 +1,60 @@
+<!--
+.. title: pip 20.3
+.. slug: pip-203
+.. date: 2020-11-30 00:00:00
+.. tags: python,packaging
+.. category: 
+.. link: 
+.. description: 
+.. type: text
+-->
+
+There is a very long-standing issue on the pip repository: [pip needs a dependency resolver](https://github.com/pypa/pip/issues/988). Most language package managers (e.g: composer, bundler, cargo, etc) either use a resolver to derive a consistent dependency tree and prevent incompatible installations, or in the case of NPM/yarn allow "broken diamond" resolution (where more than one version of the same package can be installed at the same time). For the longest time, pip has had no true resolver, allowing incompatible dependencies to be installed. Until now..
+
+Today's release of [Pip 20.3](https://blog.python.org/2020/11/pip-20-3-release-new-resolver.html) is the culmination of a [long programme of work](https://pyfound.blogspot.com/2020/03/new-pip-resolver-to-roll-out-this-year.html) to implement a proper dependency resolver in pip. This makes pip 20.3 the most significant pip release in a very long time, possibly ever.
+
+It has actually been possible to preview this feature for some time using the `--use-feature=2020-resolver` flag in pip 20.2.x or by installing the beta releases of pip 20.3, but pip 20.3 is the first stable release to enable the new resolver by default. This means that a command like:
+
+```bash
+pip install virtualenv==20.0.2 six==1.11
+```
+
+or
+
+```bash
+printf "virtualenv==20.0.2\nsix==1.11" > requirements.txt
+pip install -r requirements.txt
+```
+
+will now not install any new packages and throw a helpful error like:
+
+```text
+ERROR: Cannot install six==1.11 and virtualenv==20.0.2 because these package versions have conflicting dependencies.
+
+The conflict is caused by:
+    The user requested six==1.11
+    virtualenv 20.0.2 depends on six<2 and >=1.12.0
+
+To fix this you could try to:
+1. loosen the range of package versions you've specified
+2. remove package versions to allow pip attempt to solve the dependency conflict
+
+ERROR: ResolutionImpossible: for help visit https://pip.pypa.io/en/latest/user_guide/#fixing-conflicting-dependencies
+```
+
+which is a _massive_ improvement over the previous behaviour. There is a gotcha though. Resolution only considers the packages being installed in that command. It doesn't take into account other packages already installed in your (virtual) environment. This means running
+
+```bash
+pip install virtualenv==20.0.2 && pip install six==1.11
+```
+
+doesn't fail to install `six==1.11` with a `ResolutionImpossible` error. It will still install the incompatible package and warn you that it has done that:
+
+```text
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+ERROR: virtualenv 20.0.2 requires six<2,>=1.12.0, but you'll have six 1.11.0 which is incompatible.
+```
+
+This isn't a bug. This behaviour is noted in the error message  and [documented in the release notes](https://pip.pypa.io/en/latest/user_guide/#changes-to-the-pip-dependency-resolver-in-20-3-2020), but it is worth understanding this limitation. Even with the new resolver pip will still install incompatible dependencies in your environment if given the right combination of commands. This is a situation it is possible to wander into without realising or consciously enabling the legacy behaviour with `--use-deprecated=legacy-resolver`. While it is useful to have some further improved messaging around this, it is still a bit of a disappointment.
+
+I've [previously written](link://slug/2poetry) about poetry. I'm now using poetry for all projects where I'm the only person who works on it and I have no plan to change that (poetry's behaviour is still more advanced here and IMO preferable), but it is impossible to work in the wider python community without encountering pip. This feature reduces that point of friction and it is great to see, but it isn't a silver bullet for preventing incompatible dependencies. It will be interesting to see how the wider community responds as users encounter this behaviour change for the first time.

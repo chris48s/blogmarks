@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Handy links or snippets, and a sentence or two">
+<meta name="viewport" content="width=device-width">
+<title>Blogmarks (old posts, page 1) | Blogmarks</title>
+<link href="assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/index-1.html">
+<link rel="prev" href="index-2.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]-->
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="." title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="rss.xml">RSS feed</a></li>
+                <li><a href="categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><div class="postindex">
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/postgres-running-queries/" class="u-url">Show Running Queries in PostgreSQL</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/postgres-running-queries/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-20T00:00:00+01:00" itemprop="datePublished" title="2020-06-20">2020-06-20</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <div class="code"><pre class="code literal-block"><span class="k">SELECT</span>
+<span class="w">    </span><span class="n">pid</span><span class="p">,</span>
+<span class="w">    </span><span class="p">(</span><span class="k">CURRENT_TIMESTAMP</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">query_start</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">query_time</span><span class="p">,</span>
+<span class="w">    </span><span class="n">datname</span><span class="p">,</span>
+<span class="w">    </span><span class="n">usename</span><span class="p">,</span>
+<span class="w">    </span><span class="n">query</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_activity</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">query_time</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
+</pre></div>
+
+<p>This is particularly useful for keeping an eye on long-running queries. Bonus - if you need to kill one, grab the PID and run:</p>
+<div class="code"><pre class="code literal-block"><span class="k">SELECT</span><span class="w"> </span><span class="n">pg_terminate_backend</span><span class="p">(</span><span class="mi">12345</span><span class="p">);</span>
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/tldr/" class="u-url">tldr pages</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/tldr/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-16T00:00:00+01:00" itemprop="datePublished" title="2020-06-16">2020-06-16</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="https://tldr.sh/">tldr pages</a> are simplified and community-driven man pages</p>
+<p>I use this tool daily. It's a companion to man pages which provides a small
+number of usage examples for a command instead of an exhaustive reference
+for every flag and parameter. One of my favourite aspects of the project
+is the large ecosystem of
+<a href="https://github.com/tldr-pages/tldr#clients">client libraries</a>
+for consuming the content via the console or the web.</p>
+<ul class="no-bullet">
+<li>
+    <i class="fas fa-globe"></i>
+    <a href="https://tldr.sh/">Website</a>
+  </li>
+  <li>
+    <i class="fab fa-github"></i>
+    <a href="https://github.com/tldr-pages/tldr">Github</a>
+  </li>
+</ul>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/python-warnings/" class="u-url">Working with warnings in Python</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/python-warnings/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-14T00:00:00+01:00" itemprop="datePublished" title="2020-06-14">2020-06-14</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I've encountered python warnings before and I've used python's <code>-W</code> flag to configure displaying them, but I'd never really given much thought to how warnings are raised in userland code until I read this article - <a href="https://lerner.co.il/2020/04/27/working-with-warnings-in-python/">Working with warnings in Python</a>. This is a language feature to use infrequently, but worth having in the back pocket when maintaining libraries.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/xpath/" class="u-url">Xpath cheatsheet</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/xpath/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-09T00:00:00+01:00" itemprop="datePublished" title="2020-06-09">2020-06-09</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I use Xpath selectors infrequently enough that I can never really remember the syntax off the top of my head. Fortunately <a href="https://devhints.io/xpath">this reference</a> usually gets me through. <a href="https://devhints.io/">Devhints</a> also has a wide variety of other cheat sheets but this is the one I keep on coming back to.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/time-machine/" class="u-url">time-machine</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/time-machine/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-06T00:00:00+01:00" itemprop="datePublished" title="2020-06-06">2020-06-06</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I usually reach for <a href="https://github.com/spulec/freezegun">freezegun</a>
+when I need to mock calls to the standard library datetime functions,
+but Adam Johnson explains in this recent
+<a href="https://adamj.eu/tech/2020/06/03/introducing-time-machine/">blog post</a>
+why he has chosen to create a new library for this.
+<a href="https://github.com/adamchainz/time-machine">Time-machine</a> uses a similar
+decorator-based syntax to freezegun but promises substantial performance
+gains with large codebases.</p>
+<p>I'm looking forward to giving this a spin next time I need to write a test
+that mocks the current time.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/q/" class="u-url">q</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/q/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-01T00:00:00+01:00" itemprop="datePublished" title="2020-06-01">2020-06-01</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="http://harelba.github.io/q/">q</a> executes SQL-like queries on CSV and TSV files.</p>
+<p>I use this all the time for running quick ad-hoc queries on data that is a bit too large to deal with in a spreadsheet.</p>
+<p>Example call:</p>
+<div class="code"><pre class="code literal-block">q<span class="w"> </span>-H<span class="w"> </span>-d<span class="w"> </span><span class="s2">","</span><span class="w"> </span><span class="s2">"SELECT COUNT(*) FROM ./raw.csv WHERE created&gt;'2020-05-22 23:00:00';"</span>
+</pre></div>
+
+<p><code>-H</code> skips the header row. <code>-d</code> specifies the delimiter.</p>
+<ul class="no-bullet">
+<li>
+    <i class="fab fa-github"></i>
+    <a href="https://github.com/harelba/q">Github</a>
+  </li>
+  <li>
+    <i class="fas fa-book-open"></i>
+    <a href="http://harelba.github.io/q/#examples">Examples</a>
+  </li>
+</ul>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/pspg/" class="u-url">pspg - Postgres Pager</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/pspg/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-05-28T00:00:00+01:00" itemprop="datePublished" title="2020-05-28">2020-05-28</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="https://github.com/okbob/pspg">pspg</a> is a pager with support for tabular data</p>
+<p>Install it:</p>
+<div class="code"><pre class="code literal-block">sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>pspg
+</pre></div>
+
+<p>Then set it as the default pager for <code>psql</code> in <code>~/.psqlrc</code>:</p>
+<div class="code"><pre class="code literal-block">\x auto
+\pset pager on
+\pset linestyle unicode
+\pset border 2
+\setenv PAGER 'pspg -bX --no-mouse'
+</pre></div>
+
+<p>This is particularly useful when combined with <a href="posts/2020/ssh-tunnel/">yesterday's post</a></p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/ssh-tunnel/" class="u-url">Creating SSH Tunnels</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/ssh-tunnel/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-05-27T00:00:00+01:00" itemprop="datePublished" title="2020-05-27">2020-05-27</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Two handy examples:</p>
+<p>1) Bind local port 4001 to port 5432 on <code>postgres-server</code>:</p>
+<div class="code"><pre class="code literal-block">ssh<span class="w"> </span>user@postgres-server<span class="w"> </span>-L<span class="w"> </span><span class="m">4001</span>:localhost:5432
+psql<span class="w"> </span>-h<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>-p<span class="w"> </span><span class="m">4001</span>
+</pre></div>
+
+<p>2) Bind local port 4001 to port 5432 on <code>postgres-server</code> using <code>sentinel</code> as a jump box:</p>
+<div class="code"><pre class="code literal-block">ssh<span class="w"> </span>user@sentinel<span class="w"> </span>-L<span class="w"> </span><span class="m">4001</span>:postgres-server:5432
+psql<span class="w"> </span>-h<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>-p<span class="w"> </span><span class="m">4001</span>
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/2poetry/" class="u-url">Poetry</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/2poetry/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-05-23T01:00:00+01:00" itemprop="datePublished" title="2020-05-23">2020-05-23</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="https://python-poetry.org/">Poetry</a>'s killer feature is consistent deterministic dependency resolution and proper handling of <a href="https://www.well-typed.com/blog/2008/08/solving-the-diamond-dependency-problem/">the diamond dependency problem</a>. In most packaging ecosystems, this is table stakes. Sadly in python, <a href="https://github.com/pypa/pip/issues/988">it still isn't</a>.</p>
+<p>A few years ago I migrated some projects to <code>pipenv</code> hoping it would be the solution I was looking for but, like many others, I quickly hit some roadblocks with this approach.</p>
+<p>I've been using poetry in earnest for around six months and have since migrated all of my active personal projects to use poetry. It is now my go-to solution for dependency installation, virtualenv management and packaging.</p>
+<ul class="no-bullet">
+<li>
+    <i class="fab fa-github"></i>
+    <a href="https://github.com/python-poetry/poetry">Github</a>
+  </li>
+  <li>
+    <i class="fas fa-book-open"></i>
+    <a href="https://python-poetry.org/docs/">Docs</a>
+  </li>
+</ul>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/1hello/" class="u-url">Hello World</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/1hello/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-05-23T00:00:00+01:00" itemprop="datePublished" title="2020-05-23">2020-05-23</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>First!</p>
+<p>The plan for this is to post fairly regularly with the format being either an interesting link with a bit of commentary or a useful code snippet. Lets see how long I stick to it for...</p>
+    </div>
+    </article>
+</div>
+
+        <nav class="postindexpager"><ul class="pager">
+<li class="previous">
+                <a href="index-2.html" rel="prev">Newer posts</a>
+            </li>
+        </ul></nav></main>
+</div>
+    
+            <script src="assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

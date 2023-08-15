@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about sql)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/sql.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2023 chris48s</copyright><lastBuildDate>Tue, 15 Aug 2023 19:26:02 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Always bet on SQL</title><link>https://chris48s.github.io/blogmarks/posts/2023/always-bet-on-sql/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;I don't often write a spicy opinion piece, but it is spicy opinion time: ORMs are fine, but it is not worth investing too much time into becoming an expert in one.&lt;/p&gt;
+&lt;p&gt;I first learned SQL over 20 years ago. Everything I learned then is still true now. Lots of other things have also become true in the meantime, but everything I learned then still holds.&lt;/p&gt;
+&lt;p&gt;I've also used a number of different ORMs in some depth. Some free-standing. Some attached to a particular framework.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Django ORM&lt;/li&gt;
+&lt;li&gt;SQLAlchemy&lt;/li&gt;
+&lt;li&gt;Doctrine&lt;/li&gt;
+&lt;li&gt;CakePHP ORM&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All of those use different design patterns and provide conceptually quite different abstractions over the same underlying SQL. There are some common ideas between them, but if you pick any two from that list there are probably more differences between them than similarities. Only a subset of the knowledge from learning one is directly transferable to another ORM.&lt;/p&gt;
+&lt;p&gt;ORMs come and go as different languages and frameworks gain or lose traction, but the underlying SQL is a constant.&lt;/p&gt;
+&lt;p&gt;So here's a rule of thumb: ORMs are fine. They do a useful job. Even if you don't like them, you'll probably end up using one. But any given ORM doesn't really warrant too much energy or attention. Focus on SQL. Understand how an ORM maps onto the underlying SQL and learn your current ORM well enough to make it generate the SQL statement you want under the hood.&lt;/p&gt;
+&lt;p&gt;There is a good chance that 5 years from now:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Anything you learn about SQL today will remain valid and useful, even when transitioning to a new ORM&lt;/li&gt;
+&lt;li&gt;You are likely to be using a different ORM, and much of your current ORM knowledge may not apply&lt;/li&gt;
+&lt;/ul&gt;</description><category>sql</category><guid>https://chris48s.github.io/blogmarks/posts/2023/always-bet-on-sql/</guid><pubDate>Sun, 06 Aug 2023 23:00:00 GMT</pubDate></item><item><title>Identifying poorly indexed tables in Postgres</title><link>https://chris48s.github.io/blogmarks/posts/2021/postgres-indexes/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Out of the box the Postgres &lt;a href="https://www.postgresql.org/docs/current/monitoring-stats.html"&gt;statistics collector&lt;/a&gt; gives us a variety of useful views we can query to understand the usage and performance of a database. This is a huge topic, so I'm just going to look at one very constrained topic in this post.&lt;/p&gt;
+&lt;p&gt;Sequential scans are OK on small tables or if we are making them infrequently, but usually if we are performing a lot of sequential scans on large tables this is a sign that we need to create an index. Fortunately Postgres collects some data in &lt;code&gt;pg_stat_user_tables&lt;/code&gt; that can help us identify this:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Looking at &lt;code&gt;seq_scan&lt;/code&gt; and &lt;code&gt;idx_scan&lt;/code&gt; can show us tables where we are frequently performing sequential scans rather than indexed scans&lt;/li&gt;
+&lt;li&gt;Looking at &lt;code&gt;seq_scan&lt;/code&gt; and &lt;code&gt;seq_tup_read&lt;/code&gt; can show us tables where sequential scans typically process a large number of rows&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Running this query:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;relname&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;idx_scan&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;seq_scan&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;seq_tup_read&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;seq_tup_read&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;seq_scan&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;AS&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;average_tuples_per_scan&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="n"&gt;seq_scan&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;seq_scan&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;idx_scan&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;::&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;FLOAT&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="k"&gt;AS&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;percent_sequential_scans&lt;/span&gt;
+&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pg_stat_user_tables&lt;/span&gt;
+&lt;span class="k"&gt;WHERE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;seq_scan&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;
+&lt;span class="k"&gt;ORDER&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;BY&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;average_tuples_per_scan&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;DESC&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Should provide a pretty clear picture of tables that need optimisation.&lt;/p&gt;</description><category>sql</category><guid>https://chris48s.github.io/blogmarks/posts/2021/postgres-indexes/</guid><pubDate>Thu, 04 Mar 2021 00:00:00 GMT</pubDate></item><item><title>Three useful psql settings</title><link>https://chris48s.github.io/blogmarks/posts/2020/three-psql-settings/</link><dc:creator>chris48s</dc:creator><description>&lt;ul&gt;
+&lt;li&gt;By default &lt;code&gt;psql&lt;/code&gt; doesn't display &lt;code&gt;NULL&lt;/code&gt;s, but you can configure it to show NULLs as a printable character or string e.g: &lt;code&gt;\pset null '█'&lt;/code&gt; or &lt;code&gt;\pset null '(null)'&lt;/code&gt;. This makes it is easier to distinguish &lt;code&gt;NULL&lt;/code&gt; from empty string.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;\timing on&lt;/code&gt; appends an execution time to each result e.g: &lt;code&gt;Time: 0.412 ms&lt;/code&gt;. &lt;code&gt;\timing off&lt;/code&gt; turns it off.&lt;/li&gt;
+&lt;li&gt;By default, &lt;code&gt;psql&lt;/code&gt; stores every line in history. Setting &lt;code&gt;\set HISTCONTROL ignoredups&lt;/code&gt; ignores lines which match the previous history line. This is a common default for shells and REPLs.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;These can be used on an ad-hoc basis or added to &lt;code&gt;.psqlrc&lt;/code&gt;.&lt;/p&gt;</description><category>sql</category><guid>https://chris48s.github.io/blogmarks/posts/2020/three-psql-settings/</guid><pubDate>Thu, 26 Nov 2020 00:00:00 GMT</pubDate></item><item><title>Show table create statement in Postgres</title><link>https://chris48s.github.io/blogmarks/posts/2020/postgres-show-create/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;MySQL has a handy statement &lt;code&gt;SHOW CREATE TABLE my-table;&lt;/code&gt;. Postgres doesn't have this but it can be achieved with &lt;code&gt;pg_dump&lt;/code&gt; and the &lt;code&gt;--schema-only&lt;/code&gt; flag.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pg_dump&lt;span class="w"&gt; &lt;/span&gt;-t&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;'public.my-table'&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--schema-only&lt;span class="w"&gt; &lt;/span&gt;my-database
+&lt;/pre&gt;&lt;/div&gt;</description><category>sql</category><guid>https://chris48s.github.io/blogmarks/posts/2020/postgres-show-create/</guid><pubDate>Sun, 22 Nov 2020 00:00:00 GMT</pubDate></item><item><title>Show Running Queries in PostgreSQL</title><link>https://chris48s.github.io/blogmarks/posts/2020/postgres-running-queries/</link><dc:creator>chris48s</dc:creator><description>&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;pid&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;CURRENT_TIMESTAMP&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;query_start&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;as&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;query_time&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;datname&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;usename&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="n"&gt;query&lt;/span&gt;
+&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pg_stat_activity&lt;/span&gt;
+&lt;span class="k"&gt;ORDER&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;BY&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;query_time&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;DESC&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This is particularly useful for keeping an eye on long-running queries. Bonus - if you need to kill one, grab the PID and run:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;pg_terminate_backend&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;12345&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><category>sql</category><guid>https://chris48s.github.io/blogmarks/posts/2020/postgres-running-queries/</guid><pubDate>Fri, 19 Jun 2020 23:00:00 GMT</pubDate></item><item><title>q</title><link>https://chris48s.github.io/blogmarks/posts/2020/q/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;&lt;a href="http://harelba.github.io/q/"&gt;q&lt;/a&gt; executes SQL-like queries on CSV and TSV files.&lt;/p&gt;
+&lt;p&gt;I use this all the time for running quick ad-hoc queries on data that is a bit too large to deal with in a spreadsheet.&lt;/p&gt;
+&lt;p&gt;Example call:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;q&lt;span class="w"&gt; &lt;/span&gt;-H&lt;span class="w"&gt; &lt;/span&gt;-d&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;","&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"SELECT COUNT(*) FROM ./raw.csv WHERE created&amp;gt;'2020-05-22 23:00:00';"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;-H&lt;/code&gt; skips the header row. &lt;code&gt;-d&lt;/code&gt; specifies the delimiter.&lt;/p&gt;
+&lt;ul class="no-bullet"&gt;
+  &lt;li&gt;
+    &lt;i class="fab fa-github"&gt;&lt;/i&gt;
+    &lt;a href="https://github.com/harelba/q"&gt;Github&lt;/a&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;i class="fas fa-book-open"&gt;&lt;/i&gt;
+    &lt;a href="http://harelba.github.io/q/#examples"&gt;Examples&lt;/a&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</description><category>csv</category><category>sql</category><category>terminal</category><guid>https://chris48s.github.io/blogmarks/posts/2020/q/</guid><pubDate>Sun, 31 May 2020 23:00:00 GMT</pubDate></item><item><title>pspg - Postgres Pager</title><link>https://chris48s.github.io/blogmarks/posts/2020/pspg/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;&lt;a href="https://github.com/okbob/pspg"&gt;pspg&lt;/a&gt; is a pager with support for tabular data&lt;/p&gt;
+&lt;p&gt;Install it:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;sudo&lt;span class="w"&gt; &lt;/span&gt;apt&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;pspg
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Then set it as the default pager for &lt;code&gt;psql&lt;/code&gt; in &lt;code&gt;~/.psqlrc&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;\x auto
+\pset pager on
+\pset linestyle unicode
+\pset border 2
+\setenv PAGER 'pspg -bX --no-mouse'
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This is particularly useful when combined with &lt;a href="https://chris48s.github.io/blogmarks/posts/2020/ssh-tunnel/"&gt;yesterday's post&lt;/a&gt;&lt;/p&gt;</description><category>sql</category><category>terminal</category><guid>https://chris48s.github.io/blogmarks/posts/2020/pspg/</guid><pubDate>Wed, 27 May 2020 23:00:00 GMT</pubDate></item></channel></rss>

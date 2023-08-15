@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about markdown)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/markdown.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2023 chris48s</copyright><lastBuildDate>Tue, 15 Aug 2023 19:26:02 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Documenting a python project with markdown</title><link>https://chris48s.github.io/blogmarks/posts/2020/markdown/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Last time I looked at writing documentation for a python library from scratch (a few years ago), there wasn't really a solution that allowed me to write my docs in markdown, render it to a static site and incorporate docstrings from my code into the generated documentation. &lt;a href="https://www.mkdocs.org/"&gt;MkDocs&lt;/a&gt; allows you to write your free text in markdown, but at the time there wasn't really a good solution for pulling docstrings into the rendered docs. Conversely, &lt;a href="https://www.sphinx-doc.org/"&gt;Sphinx&lt;/a&gt; did have a good solution for pulling in docstrings but forced you to use reStructuredText for the free text.&lt;/p&gt;
+&lt;p&gt;Things have changed a bit since then though, on both sides of that equation. I wanted to write a docs site for my &lt;a href="https://pypi.org/project/geometry-to-spatialite/"&gt;geometry-to-spatialite&lt;/a&gt; library, so I decided to investigate a few different options.&lt;/p&gt;
+&lt;h3&gt;MkDocs&lt;/h3&gt;
+&lt;p&gt;In the MkDocs ecosystem there are now several plugins that allow you to incorporate docstrings into markdown documentation.&lt;/p&gt;
+&lt;h4&gt;&lt;a href="https://github.com/pawamoy/mkdocstrings"&gt;Mkdocstrings&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Mkdocstrings currently has one handler which parses docstrings written in the popular Google style e.g:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="sd"&gt;"""&lt;/span&gt;
+&lt;span class="sd"&gt;Function description&lt;/span&gt;
+
+&lt;span class="sd"&gt;Args:&lt;/span&gt;
+&lt;span class="sd"&gt;    param1 (int): The first parameter.&lt;/span&gt;
+&lt;span class="sd"&gt;    param2 (str): The second parameter.&lt;/span&gt;
+
+&lt;span class="sd"&gt;Returns:&lt;/span&gt;
+&lt;span class="sd"&gt;    bool: True for success, False otherwise.&lt;/span&gt;
+&lt;span class="sd"&gt;"""&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;At the time of writing the documentation says "This project currently only works with the Material theme". This project is young, but it does seem to have some traction around it and I wouldn't be surprised to see support for more themes and docstring styles added. The tabular rendered outputs of this plugin are really nice and it does a great job of mixing information about type hints, required params and default values from the function declarations with the descriptions from the docstrings. This minimises the need to repeat this information.&lt;/p&gt;
+&lt;h4&gt;&lt;a href="https://github.com/tomchristie/mkautodoc"&gt;MkAutoDoc&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;MkAutoDoc takes different approach. MkAutoDoc doesn't support any of the popular python docstring formats (Google, reST, NumPy). Instead it allows you to embed markdown in code comments and include those in your documentation. One the one hand, this allows you to really go all-in on markdown on a completely new project, but on the other it doesn't set out any particular structure for arguments, return types, etc (and hence can't do anything smart with them, like mkdocstrings does), and if you've already got docstrings in your code in any of the common formats, it won't parse them.&lt;/p&gt;
+&lt;p&gt;MkAutoDoc is primarily used by projects under the &lt;a href="https://github.com/encode"&gt;encode&lt;/a&gt; organisation to build the docs for projects like &lt;a href="https://www.python-httpx.org/"&gt;httpx&lt;/a&gt; and &lt;a href="https://www.starlette.io/"&gt;starlette&lt;/a&gt;.&lt;/p&gt;
+&lt;h4&gt;&lt;a href="https://github.com/rob-blackbourn/jetblack-markdown"&gt;Jetblack-markdown&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Honourable mention for this one. Jetblack-markdown uses &lt;a href="https://github.com/rr-/docstring_parser"&gt;docstring_parser&lt;/a&gt; under-the-hood so in theory should work with reST, Google, and Numpydoc-style docstrings, although the test suite currently only covers the Google-style. It does also require a bit of extra CSS for styling. I gave this one a quick go with the readthedocs theme and it produces attractive rendered outputs. This one is a very young project, but worth keeping an eye on 👀&lt;/p&gt;
+&lt;h3&gt;Sphinx&lt;/h3&gt;
+&lt;p&gt;Meanwhile in the Sphinx ecosystem, there are already good solutions for working with docstrings in the form of the &lt;a href="https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html"&gt;Autodoc&lt;/a&gt; extension to parse docstrings and include them in the rendered output and &lt;a href="https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html"&gt;Napoleon&lt;/a&gt; which adds support for the Google and NumPy formats. There's also a new package that helps us out on the free text side.&lt;/p&gt;
+&lt;h4&gt;&lt;a href="https://myst-parser.readthedocs.io"&gt;MyST Parser&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;MyST parser is a markdown flavour and parser for Sphinx. This is a bit of a game changer because the sphinx ecosystem has years of maturity and a large plugin ecosystem and MyST basically solves my biggest issue with sphinx. The main downside of MyST parser is that it is a slightly leaky abstraction. To access some plugin functionality, we have to drop in an &lt;code&gt;{eval-rst}&lt;/code&gt; block and other Sphinx extensions still assume your source content is reST, so although it is possible to write the main body of text in markdown, you won't be able to use markdown &lt;em&gt;everywhere&lt;/em&gt;.&lt;/p&gt;
+&lt;h3&gt;Conclusion&lt;/h3&gt;
+&lt;p&gt;Predictably, there isn't a single obvious conclusion. There are no solutions, only tradeoffs. However in 2020 there are multiple viable options for documenting your python project with markdown 🎉&lt;/p&gt;
+&lt;p&gt;After conducing this roundup, I wrote a &lt;a href="https://chris48s.github.io/geometry-to-spatialite/"&gt;docs site for geometry-to-spatialite&lt;/a&gt; using&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://www.sphinx-doc.org"&gt;Sphinx&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://myst-parser.readthedocs.io"&gt;MyST Parser&lt;/a&gt; for markdown parsing&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html"&gt;Autodoc&lt;/a&gt; to parse docstrings and include them in the rendered output&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html"&gt;Napoleon&lt;/a&gt; to pre-process Google-style docstrings for autodoc&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://pypi.org/project/ghp-import/"&gt;ghp-import&lt;/a&gt; to deploy the generated HTML to github pages&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Being able to use sphinx and write (mostly) markdown seems like a good place to be for now, but there are multiple projects in the MkDocs ecosystem which I'll be monitoring and revisting as they mature and gain traction.&lt;/p&gt;</description><category>markdown</category><category>python</category><guid>https://chris48s.github.io/blogmarks/posts/2020/markdown/</guid><pubDate>Mon, 19 Oct 2020 23:00:00 GMT</pubDate></item></channel></rss>

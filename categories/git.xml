@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about git)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/git.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2023 chris48s</copyright><lastBuildDate>Tue, 15 Aug 2023 19:26:02 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>git --word-diff</title><link>https://chris48s.github.io/blogmarks/posts/2021/git-word-diff/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Git's default diff behaviour can make it difficult to parse edits to long lines of text. This is often an issue when editing documentation&lt;/p&gt;
+&lt;p&gt;&lt;img alt="unhelpful git diff" src="https://chris48s.github.io/blogmarks/images/word-diff1.png"&gt;
+&lt;em&gt;Thanks git, but what actually changed?&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;In these situations, the &lt;a href="https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---word-diffltmodegt"&gt;&lt;code&gt;--word-diff&lt;/code&gt;&lt;/a&gt; option can be used to generate a diff that is easier to read.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="helpful git diff" src="https://chris48s.github.io/blogmarks/images/word-diff2.png"&gt;
+&lt;em&gt;Aah that's better!&lt;/em&gt;&lt;/p&gt;</description><category>git</category><category>terminal</category><guid>https://chris48s.github.io/blogmarks/posts/2021/git-word-diff/</guid><pubDate>Thu, 25 Feb 2021 00:00:00 GMT</pubDate></item><item><title>Bat and Delta</title><link>https://chris48s.github.io/blogmarks/posts/2020/bat-delta/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Two for one this time. These tools are two peas in a pod:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://github.com/sharkdp/bat"&gt;Bat&lt;/a&gt; is a git-aware drop-in replacement for &lt;code&gt;cat&lt;/code&gt; with syntax highlighting.&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://github.com/dandavison/delta"&gt;Delta&lt;/a&gt; builds on bat's syntax themes to provide a pager for git with improved diff highlighting.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I use both with the Nord theme. Git can be configured to use the delta/Nord combo as the default pager by setting&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;[core]&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="na"&gt;pager&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;delta --theme=Nord&lt;/span&gt;
+
+&lt;span class="k"&gt;[interactive]&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="na"&gt;diffFilter&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;delta --color-only --theme=Nord&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;in &lt;code&gt;.gitconfig&lt;/code&gt;.&lt;/p&gt;</description><category>git</category><category>terminal</category><guid>https://chris48s.github.io/blogmarks/posts/2020/bat-delta/</guid><pubDate>Tue, 28 Jul 2020 23:00:00 GMT</pubDate></item><item><title>Editing Commit Timestamps in Git</title><link>https://chris48s.github.io/blogmarks/posts/2020/commit-timestamps/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;I always forget that &lt;a href="https://help.github.com/en/github/committing-changes-to-your-project/why-are-my-commits-in-the-wrong-order"&gt;GitHub shows commits in a pull request in timestamp order&lt;/a&gt; rather than tree/history order until just after I've just pushed a monster rebase and everything's in the wrong order. To force GitHub to show the commits in the correct order, we need to edit the commit timestamps to match the history order. To do this:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;git&lt;span class="w"&gt; &lt;/span&gt;rebase&lt;span class="w"&gt; &lt;/span&gt;-i&lt;span class="w"&gt; &lt;/span&gt;HEAD~N
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Mark the commits that need re-ordering as &lt;code&gt;edit&lt;/code&gt;&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;edit f3b9e40 Reticulate Splines
+edit 68f39b8 Adjust Bell Curves
+edit d605e5a Dice Models
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;At each stage of the rebase:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;git&lt;span class="w"&gt; &lt;/span&gt;commit&lt;span class="w"&gt; &lt;/span&gt;--amend&lt;span class="w"&gt; &lt;/span&gt;--date&lt;span class="o"&gt;=&lt;/span&gt;now&lt;span class="w"&gt; &lt;/span&gt;--no-edit
+git&lt;span class="w"&gt; &lt;/span&gt;rebase&lt;span class="w"&gt; &lt;/span&gt;--continue
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Now the timestamp ordering will match the history. When you force-push, GitHub will order the commits correctly in your pull request.&lt;/p&gt;</description><category>git</category><category>terminal</category><guid>https://chris48s.github.io/blogmarks/posts/2020/commit-timestamps/</guid><pubDate>Mon, 29 Jun 2020 23:00:00 GMT</pubDate></item></channel></rss>

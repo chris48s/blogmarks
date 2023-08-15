@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about packaging)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/packaging.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2023 chris48s</copyright><lastBuildDate>Tue, 15 Aug 2023 19:26:02 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>pip 20.3</title><link>https://chris48s.github.io/blogmarks/posts/2020/pip-203/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;There is a very long-standing issue on the pip repository: &lt;a href="https://github.com/pypa/pip/issues/988"&gt;pip needs a dependency resolver&lt;/a&gt;. Most language package managers (e.g: composer, bundler, cargo, etc) either use a resolver to derive a consistent dependency tree and prevent incompatible installations, or in the case of NPM/yarn allow "broken diamond" resolution (where more than one version of the same package can be installed at the same time). For the longest time, pip has had no true resolver, allowing incompatible dependencies to be installed. Until now..&lt;/p&gt;
+&lt;p&gt;Today's release of &lt;a href="https://blog.python.org/2020/11/pip-20-3-release-new-resolver.html"&gt;Pip 20.3&lt;/a&gt; is the culmination of a &lt;a href="https://pyfound.blogspot.com/2020/03/new-pip-resolver-to-roll-out-this-year.html"&gt;long programme of work&lt;/a&gt; to implement a proper dependency resolver in pip. This makes pip 20.3 the most significant pip release in a very long time, possibly ever.&lt;/p&gt;
+&lt;p&gt;It has actually been possible to preview this feature for some time using the &lt;code&gt;--use-feature=2020-resolver&lt;/code&gt; flag in pip 20.2.x or by installing the beta releases of pip 20.3, but pip 20.3 is the first stable release to enable the new resolver by default. This means that a command like:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;virtualenv&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;.0.2&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;six&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.11
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;printf&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"virtualenv==20.0.2\nsix==1.11"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;requirements.txt
+pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;requirements.txt
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;will now not install any new packages and throw a helpful error like:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ERROR: Cannot install six==1.11 and virtualenv==20.0.2 because these package versions have conflicting dependencies.
+
+The conflict is caused by:
+    The user requested six==1.11
+    virtualenv 20.0.2 depends on six&amp;lt;2 and &amp;gt;=1.12.0
+
+To fix this you could try to:
+1. loosen the range of package versions you've specified
+2. remove package versions to allow pip attempt to solve the dependency conflict
+
+ERROR: ResolutionImpossible: for help visit https://pip.pypa.io/en/latest/user_guide/#fixing-conflicting-dependencies
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;which is a &lt;em&gt;massive&lt;/em&gt; improvement over the previous behaviour. There is a gotcha though. Resolution only considers the packages being installed in that command. It doesn't take into account other packages already installed in your (virtual) environment. This means running&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;virtualenv&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;.0.2&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;six&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.11
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;doesn't fail to install &lt;code&gt;six==1.11&lt;/code&gt; with a &lt;code&gt;ResolutionImpossible&lt;/code&gt; error. It will still install the incompatible package and warn you that it has done that:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+ERROR: virtualenv 20.0.2 requires six&amp;lt;2,&amp;gt;=1.12.0, but you'll have six 1.11.0 which is incompatible.
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This isn't a bug. This behaviour is noted in the error message  and &lt;a href="https://pip.pypa.io/en/latest/user_guide/#changes-to-the-pip-dependency-resolver-in-20-3-2020"&gt;documented in the release notes&lt;/a&gt;, but it is worth understanding this limitation. Even with the new resolver pip will still install incompatible dependencies in your environment if given the right combination of commands. This is a situation it is possible to wander into without realising or consciously enabling the legacy behaviour with &lt;code&gt;--use-deprecated=legacy-resolver&lt;/code&gt;. While it is useful to have some further improved messaging around this, it is still a bit of a disappointment.&lt;/p&gt;
+&lt;p&gt;I've &lt;a href="https://chris48s.github.io/blogmarks/posts/2020/2poetry/"&gt;previously written&lt;/a&gt; about poetry. I'm now using poetry for all projects where I'm the only person who works on it and I have no plan to change that (poetry's behaviour is still more advanced here and IMO preferable), but it is impossible to work in the wider python community without encountering pip. This feature reduces that point of friction and it is great to see, but it isn't a silver bullet for preventing incompatible dependencies. It will be interesting to see how the wider community responds as users encounter this behaviour change for the first time.&lt;/p&gt;</description><category>packaging</category><category>python</category><guid>https://chris48s.github.io/blogmarks/posts/2020/pip-203/</guid><pubDate>Mon, 30 Nov 2020 00:00:00 GMT</pubDate></item><item><title>pipx</title><link>https://chris48s.github.io/blogmarks/posts/2020/pipx/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Poetry is my go-to solution for managing libraries and project dependencies in python, but there are also a variety of python-based CLI tools like &lt;a href="https://github.com/aws/aws-cli"&gt;aws-cli&lt;/a&gt; and &lt;a href="https://pypi.org/project/tldr/"&gt;tldr&lt;/a&gt; that I want globally available. But what if they have incompatible dependencies? No worries - &lt;a href="https://pipxproject.github.io/pipx/"&gt;pipx&lt;/a&gt; has got your back. Pipx installs packages into an isolated virtual environment for each application, keeping their dependencies separate and your global environment clean. This makes the applications globally available while avoiding the possibility of conflicts in the global environment.&lt;/p&gt;</description><category>packaging</category><category>python</category><guid>https://chris48s.github.io/blogmarks/posts/2020/pipx/</guid><pubDate>Fri, 14 Aug 2020 23:00:00 GMT</pubDate></item><item><title>Poetry</title><link>https://chris48s.github.io/blogmarks/posts/2020/2poetry/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;&lt;a href="https://python-poetry.org/"&gt;Poetry&lt;/a&gt;'s killer feature is consistent deterministic dependency resolution and proper handling of &lt;a href="https://www.well-typed.com/blog/2008/08/solving-the-diamond-dependency-problem/"&gt;the diamond dependency problem&lt;/a&gt;. In most packaging ecosystems, this is table stakes. Sadly in python, &lt;a href="https://github.com/pypa/pip/issues/988"&gt;it still isn't&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;A few years ago I migrated some projects to &lt;code&gt;pipenv&lt;/code&gt; hoping it would be the solution I was looking for but, like many others, I quickly hit some roadblocks with this approach.&lt;/p&gt;
+&lt;p&gt;I've been using poetry in earnest for around six months and have since migrated all of my active personal projects to use poetry. It is now my go-to solution for dependency installation, virtualenv management and packaging.&lt;/p&gt;
+&lt;ul class="no-bullet"&gt;
+  &lt;li&gt;
+    &lt;i class="fab fa-github"&gt;&lt;/i&gt;
+    &lt;a href="https://github.com/python-poetry/poetry"&gt;Github&lt;/a&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;i class="fas fa-book-open"&gt;&lt;/i&gt;
+    &lt;a href="https://python-poetry.org/docs/"&gt;Docs&lt;/a&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</description><category>packaging</category><category>python</category><guid>https://chris48s.github.io/blogmarks/posts/2020/2poetry/</guid><pubDate>Sat, 23 May 2020 00:00:00 GMT</pubDate></item></channel></rss>

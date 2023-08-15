@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Handy links or snippets, and a sentence or two">
+<meta name="viewport" content="width=device-width">
+<title>Blogmarks (old posts, page 3) | Blogmarks</title>
+<link href="assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/index-3.html">
+<link rel="prev" href="index-4.html" type="text/html">
+<link rel="next" href="index-2.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]-->
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="." title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="rss.xml">RSS feed</a></li>
+                <li><a href="categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><div class="postindex">
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/find-exec/" class="u-url">Using find -exec</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/find-exec/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-10-06T00:00:00+01:00" itemprop="datePublished" title="2020-10-06">2020-10-06</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="https://www.gnu.org/software/findutils/">Find</a> has a useful option <code>-exec</code> which can be used to run a command on each file found. It has a couple of slightly obscure details to the syntax:</p>
+<ul>
+<li>
+<code>{}</code> is a placeholder for the filename.</li>
+<li>The command we are running with <code>-exec</code> needs to be terminated with a semicolon as there may be further arguments to find after it. This needs to be escaped as <code>\;</code> or <code>';'</code>, otherwise it will be interpreted as the end of the <code>find</code> command.</li>
+</ul>
+<p>It is also possible to pass the <code>-exec</code> argument multiple times</p>
+<p>Stringing this together allows us to assemble some elegant one-liners, for example:</p>
+<div class="code"><pre class="code literal-block"><span class="c1"># delete log files more than 60 days old</span>
+find<span class="w"> </span>./logs<span class="w"> </span>-mtime<span class="w"> </span>+60<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*.log'</span><span class="w"> </span>-exec<span class="w"> </span>rm<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+
+<span class="c1"># print the name and (array/object) length of all JSON files</span>
+find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*.json'</span><span class="w"> </span>-exec<span class="w"> </span><span class="nb">printf</span><span class="w"> </span><span class="o">{}</span><span class="se">\:\ </span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>-exec<span class="w"> </span>jq<span class="w"> </span><span class="s1">'. | length'</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+
+<span class="c1"># recursively change permissions on files (ignore directories)</span>
+find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/pihole/" class="u-url">Pi-Hole</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/pihole/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-09-29T00:00:00+01:00" itemprop="datePublished" title="2020-09-29">2020-09-29</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I've been running <a href="https://pi-hole.net/">Pi-Hole</a> for years and I'm a big fan of it. It provides network-level blocking of ads and trackers. Set up Pi-Hole, configure your network to use it as a DNS server and it won't resolve DNS requests for known ad/tracking domains. This is harder to detect than in-browser content blockers and also blocks ads on mobile platforms where ad blockers may not be available because the blocking is applied at the network level, rather than the device.</p>
+<p>Pi-Hole can run on a Raspberry Pi (hence the name) - and that's how I run mine - but can also be installed on other hardware (including via Docker). It can also be <a href="https://docs.pi-hole.net/guides/dns-over-https/">configured as a DNS-Over-HTTPS proxy</a> using <a href="https://github.com/cloudflare/cloudflared">Argo Tunnel</a> so you can use DOH and have DNS-level ad-blocking.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/curl-json/" class="u-url">Post JSON to an API with curl</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/curl-json/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-09-23T00:00:00+01:00" itemprop="datePublished" title="2020-09-23">2020-09-23</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Increasingly this is becoming just a place to store snippets and one-liners that are a bit too long to remember.</p>
+<div class="code"><pre class="code literal-block">curl<span class="w"> </span><span class="s2">"https://my-api/endpoint"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Accept: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Authorization: f00ba2"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--data<span class="w"> </span><span class="s1">'{"my": "payload", "foo": "bar"}'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--include
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/crontab-guru/" class="u-url">Crontab.guru</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/crontab-guru/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-09-17T00:00:00+01:00" itemprop="datePublished" title="2020-09-17">2020-09-17</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>It doesn't matter how long I use it for, crontab syntax is one of those things is one of those things I just can't commit to memory. It's not <em>complicated</em>, just somewhat unintuitive. Fortunately <a href="https://crontab.guru/">crontab.guru</a> is a crontab syntax checker which translates crontab expressions into natural language.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/pathlib-snippets/" class="u-url">Three useful pathlib snippets</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/pathlib-snippets/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-09-06T00:00:00+01:00" itemprop="datePublished" title="2020-09-06">2020-09-06</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'/foo/bar'</span><span class="p">)</span>
+
+
+<span class="c1"># Read in a text file</span>
+<span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">/</span> <span class="s1">'file.txt'</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+
+<span class="c1"># Recursively list all .csv files in directory</span>
+<span class="n">csvs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">'*.csv'</span><span class="p">))</span>
+
+<span class="c1"># Iterate files or subdirectories</span>
+<span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">is_file</span><span class="p">()]</span>
+<span class="n">subdirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()]</span>
+</pre></div>
+
+<p>Maybe that's three and a half 🙂</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/pathlib-cheat-sheet/" class="u-url">Pathlib Cheat Sheet</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/pathlib-cheat-sheet/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-09-02T00:00:00+01:00" itemprop="datePublished" title="2020-09-02">2020-09-02</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <div class="code"><pre class="code literal-block"><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s1">'foo.tar.gz'</span>  <span class="c1"># same as f = Path('/home/chris/foo.tar.gz')</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+<span class="kc">True</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
+<span class="kc">False</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+<span class="kc">True</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+<span class="n">PosixPath</span><span class="p">(</span><span class="s1">'/home/chris/foo.tar.gz'</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">as_uri</span><span class="p">()</span>
+<span class="s1">'file:///home/chris/foo.tar.gz'</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+<span class="s1">'/home/chris/foo.tar.gz'</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">parts</span>
+<span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="s1">'home'</span><span class="p">,</span> <span class="s1">'chris'</span><span class="p">,</span> <span class="s1">'foo.tar.gz'</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span>
+<span class="s1">'.gz'</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">suffixes</span>
+<span class="p">[</span><span class="s1">'.tar'</span><span class="p">,</span> <span class="s1">'.gz'</span><span class="p">]</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">PosixPath</span><span class="p">(</span><span class="s1">'/home/chris'</span><span class="p">)</span>
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/shellcheck/" class="u-url">ShellCheck</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/shellcheck/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-08-31T00:00:00+01:00" itemprop="datePublished" title="2020-08-31">2020-08-31</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I write bash scripts from time to time, but I'm certainly not a master of it and bash is a technology which has a variety of gotchas, surprising behaviours and foot-guns. This means the scripting process can be a bit of a minefield. Enter <a href="https://www.shellcheck.net/">ShellCheck</a> - a linter/static analysis tool for Bash. This is one of those tools I wish I had known about years ago as its great for flagging common mistakes and errors.</p>
+<p>Using this locally in the terminal is great, but one of my favourite features is that if you paste your script into the editor on <a href="https://www.shellcheck.net/">shellcheck.net</a> any error codes raised links to a wiki article with a detailed explanation of why this error is being raised and what problems might be caused by this code. <a href="https://github.com/koalaman/shellcheck/wiki/SC2162">Example</a>.</p>
+<p><img alt="shonky bash script" src="images/shellcheck.png"><em>ShellCheck telling me how to fix a shonky bash script</em></p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/working-in-public/" class="u-url">Working In Public</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/working-in-public/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-08-22T00:00:00+01:00" itemprop="datePublished" title="2020-08-22">2020-08-22</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Nadia Eghbal (who previously authored the seminal report <a href="https://www.fordfoundation.org/work/learning/research-reports/roads-and-bridges-the-unseen-labor-behind-our-digital-infrastructure/">Roads &amp; Bridges</a>) recently released her first full-length book <a href="https://www.amazon.co.uk/Working-Public-Making-Maintenance-Software-ebook/dp/B08BDGXVK9">Working in Public: The Making and Maintenance of Open Source Software</a>. Working in Public presents an updated, more nuanced and more refined take on the challenges faced by open source developers and maintainers. As ever, Nadia's superpower is to take the experiences we all feel in the open source community and package them in a way that makes the topic accessible for a new and much wider audience.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/pipx/" class="u-url">pipx</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/pipx/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-08-15T00:00:00+01:00" itemprop="datePublished" title="2020-08-15">2020-08-15</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Poetry is my go-to solution for managing libraries and project dependencies in python, but there are also a variety of python-based CLI tools like <a href="https://github.com/aws/aws-cli">aws-cli</a> and <a href="https://pypi.org/project/tldr/">tldr</a> that I want globally available. But what if they have incompatible dependencies? No worries - <a href="https://pipxproject.github.io/pipx/">pipx</a> has got your back. Pipx installs packages into an isolated virtual environment for each application, keeping their dependencies separate and your global environment clean. This makes the applications globally available while avoiding the possibility of conflicts in the global environment.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/gron/" class="u-url">gron</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2020/gron/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-08-09T00:00:00+01:00" itemprop="datePublished" title="2020-08-09">2020-08-09</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p><a href="https://github.com/tomnomnom/gron">gron</a> makes JSON greppable. I'm late to the party on <code>gron</code>, but its already found itself a home in my toolchain. It flattens JSON into valid javascript statements (useful in itself) and makes it easier to process JSON with standard unix command line tools.</p>
+    </div>
+    </article>
+</div>
+
+        <nav class="postindexpager"><ul class="pager">
+<li class="previous">
+                <a href="index-4.html" rel="prev">Newer posts</a>
+            </li>
+            <li class="next">
+                <a href="index-2.html" rel="next">Older posts</a>
+            </li>
+        </ul></nav></main>
+</div>
+    
+            <script src="assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

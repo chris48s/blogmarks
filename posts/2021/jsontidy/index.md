@@ -1,0 +1,32 @@
+<!--
+.. title: Using jq to format JSON on the clipboard
+.. slug: jsontidy
+.. date: 2021-01-07 00:00:00
+.. tags: terminal,json
+.. category: 
+.. link: 
+.. description: 
+.. type: text
+-->
+
+[Jq](https://stedolan.github.io/jq/) is a great tool. I use it frequently, but [this recent article](https://sequoia.makes.software/parsing-json-at-the-cli-a-practical-introduction-to-jq-and-more/) from Sequoia McDowell still has some great tips in it. Well worth a read. One thing that stood out to me from this post was the snippet:
+
+> I like this pretty-printing/formatting capability so much, I have an alias that formats JSON I've copied (in my OS "clipboard") & puts it back in my clipboard:
+> 
+> ```
+> alias jsontidy="pbpaste | jq '.' | pbcopy"
+> ```
+
+That's crazy-useful, but I need to tweak it a bit. Firstly, as noted, `pbcopy` and `pbpaste` are mac utils. No worries. We can substitute `xclip` on Linux:
+
+```bash
+xclip -selection clipboard -o | jq '.' | xclip -selection clipboard
+```
+
+I spotted a minor problem here though: If I run this and the text on my clipboard isn't JSON then `jq` will exit with a non-zero code, output something like `parse error: Invalid numeric literal at line 1, column 6` to stderr and nothing to stdout. Pipe doesn't care about the non-zero exit code though so we overwrite whatever was on the clipboard with an empty string. So lets add a bit of error handing:
+
+```bash
+alias jsontidy="xclip -selection clipboard -o | (jq '.' || xclip -selection clipboard -o) | xclip -selection clipboard"
+```
+
+Now `jsontidy` will format whatever is on the clipboard if it can parse as JSON but leave it alone otherwise.

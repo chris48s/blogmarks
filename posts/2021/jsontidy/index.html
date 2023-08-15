@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Using jq to format JSON on the clipboard | Blogmarks</title>
+<link href="../../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../../rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/posts/2021/jsontidy/">
+<!--[if lt IE 9]><script src="../../../assets/js/html5shiv-printshiv.min.js"></script><![endif]--><meta name="author" content="chris48s">
+<link rel="prev" href="../../2020/stdin-or-file/" title="A python CLI app which accepts input from stdin or a file" type="text/html">
+<link rel="next" href="../changing-the-tyres/" title="Changing the tyres while the car is moving" type="text/html">
+<meta property="og:site_name" content="Blogmarks">
+<meta property="og:title" content="Using jq to format JSON on the clipboard">
+<meta property="og:url" content="https://chris48s.github.io/blogmarks/posts/2021/jsontidy/">
+<meta property="og:description" content="Jq is a great tool. I use it frequently, but this recent article from Sequoia McDowell still has some great tips in it. Well worth a read. One thing that stood out to me from this post was the snippet">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-01-07T00:00:00Z">
+<meta property="article:tag" content="json">
+<meta property="article:tag" content="terminal">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="../../../" title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+                <li><a href="../../../categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Using jq to format JSON on the clipboard</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-01-07T00:00:00Z" itemprop="datePublished" title="2021-01-07">2021-01-07</time></a>
+            </p>
+            
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p><a href="https://stedolan.github.io/jq/">Jq</a> is a great tool. I use it frequently, but <a href="https://sequoia.makes.software/parsing-json-at-the-cli-a-practical-introduction-to-jq-and-more/">this recent article</a> from Sequoia McDowell still has some great tips in it. Well worth a read. One thing that stood out to me from this post was the snippet:</p>
+<blockquote>
+<p>I like this pretty-printing/formatting capability so much, I have an alias that formats JSON I've copied (in my OS "clipboard") &amp; puts it back in my clipboard:</p>
+<p><code>alias jsontidy="pbpaste | jq '.' | pbcopy"</code></p>
+</blockquote>
+<p>That's crazy-useful, but I need to tweak it a bit. Firstly, as noted, <code>pbcopy</code> and <code>pbpaste</code> are mac utils. No worries. We can substitute <code>xclip</code> on Linux:</p>
+<div class="code"><pre class="code literal-block">xclip<span class="w"> </span>-selection<span class="w"> </span>clipboard<span class="w"> </span>-o<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">'.'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xclip<span class="w"> </span>-selection<span class="w"> </span>clipboard
+</pre></div>
+
+<p>I spotted a minor problem here though: If I run this and the text on my clipboard isn't JSON then <code>jq</code> will exit with a non-zero code, output something like <code>parse error: Invalid numeric literal at line 1, column 6</code> to stderr and nothing to stdout. Pipe doesn't care about the non-zero exit code though so we overwrite whatever was on the clipboard with an empty string. So lets add a bit of error handing:</p>
+<div class="code"><pre class="code literal-block"><span class="nb">alias</span><span class="w"> </span><span class="nv">jsontidy</span><span class="o">=</span><span class="s2">"xclip -selection clipboard -o | (jq '.' || xclip -selection clipboard -o) | xclip -selection clipboard"</span>
+</pre></div>
+
+<p>Now <code>jsontidy</code> will format whatever is on the clipboard if it can parse as JSON but leave it alone otherwise.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../../categories/json/" rel="tag">json</a></li>
+            <li><a class="tag p-category" href="../../../categories/terminal/" rel="tag">terminal</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../../2020/stdin-or-file/" rel="prev" title="A python CLI app which accepts input from stdin or a file">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../changing-the-tyres/" rel="next" title="Changing the tyres while the car is moving">Next post</a>
+            </li>
+        </ul></nav></aside></article></main>
+</div>
+    
+            <script src="../../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>
