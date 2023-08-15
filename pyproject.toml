@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "blogmarks"
+version = "0.1.0"
+description = "Handy links or snippets, and a sentence or two"
+authors = ["chris48s <git@chris-shaw.dev>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+nikola = "^8.2.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
