@@ -157,7 +157,7 @@ NAVIGATION_ALT_LINKS = {
 }
 
 # Name of the theme to use.
-THEME = "bootblog4"
+THEME = "rudimentary"
 
 # A theme color. In default themes, it might be displayed by some browsers as
 # the browser UI color (eg. Chrome on Android). Other themes might also use it
@@ -172,23 +172,23 @@ THEME_COLOR = '#5670d4'
 #                      navbar_custom_bg (defaults to '')
 
 # Config for bootblog4:
-THEME_CONFIG = {
-    DEFAULT_LANG: {
-        # Show the latest featured post in a large box, with the previewimage as its background.
-        'featured_large': False,
-        # Show the first (remaining) two featured posts in small boxes.
-        'featured_small': False,
-        # Show featured posts on mobile.
-        'featured_on_mobile': True,
-        # Show image in `featured_large` on mobile.
-        # `featured_small` displays them only on desktop.
-        'featured_large_image_on_mobile': True,
-        # Strip HTML from featured post text.
-        'featured_strip_html': False,
-        # Contents of the sidebar, If empty, the sidebar is not displayed.
-        'sidebar': ''
-    }
-}
+# THEME_CONFIG = {
+#     DEFAULT_LANG: {
+#         # Show the latest featured post in a large box, with the previewimage as its background.
+#         'featured_large': False,
+#         # Show the first (remaining) two featured posts in small boxes.
+#         'featured_small': False,
+#         # Show featured posts on mobile.
+#         'featured_on_mobile': True,
+#         # Show image in `featured_large` on mobile.
+#         # `featured_small` displays them only on desktop.
+#         'featured_large_image_on_mobile': True,
+#         # Strip HTML from featured post text.
+#         'featured_strip_html': False,
+#         # Contents of the sidebar, If empty, the sidebar is not displayed.
+#         'sidebar': ''
+#     }
+# }
 # Config for bootstrap4:
 # THEME_CONFIG = {
 #     DEFAULT_LANG: {
@@ -269,7 +269,7 @@ TIMEZONE = "Europe/London"
 # Date format used to display post dates. (translatable)
 # Used by babel.dates, CLDR style: http://cldr.unicode.org/translation/date-time-1/date-time
 # You can also use 'full', 'long', 'medium', or 'short'
-# DATE_FORMAT = 'yyyy-MM-dd HH:mm'
+DATE_FORMAT = 'yyyy-MM-dd'
 
 # Date format used to display post dates, if local dates are used. (translatable)
 # Used by Luxon: https://moment.github.io/luxon/docs/manual/formatting
@@ -1173,14 +1173,14 @@ MARKDOWN_EXTENSIONS = ['markdown.extensions.fenced_code', 'markdown.extensions.c
 # """
 
 # Show link to source for the posts?
-# SHOW_SOURCELINK = True
+SHOW_SOURCELINK = False
 # Copy the source files for your pages?
 # Setting it to False implies SHOW_SOURCELINK = False
 # COPY_SOURCES = True
 
 # Modify the number of Post per Index Page
 # Defaults to 10
-# INDEX_DISPLAY_POST_COUNT = 10
+INDEX_DISPLAY_POST_COUNT = 10
 
 # By default, Nikola generates RSS files for the website and for tags, and
 # links to it.  Set this to False to disable everything RSS-related.
@@ -1349,7 +1349,7 @@ MARKDOWN_EXTENSIONS = ['markdown.extensions.fenced_code', 'markdown.extensions.c
 # Bundle JS and CSS into single files to make site loading faster in a HTTP/1.1
 # environment but is not recommended for HTTP/2.0 when caching is used.
 # Defaults to True.
-# USE_BUNDLES = True
+USE_BUNDLES = False
 
 # Plugins you don't want to use. Be careful :-)
 # DISABLED_PLUGINS = ["render_galleries"]
