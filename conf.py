@@ -113,7 +113,7 @@ TRANSLATIONS = {
 # this pattern is also used for metadata:
 #     something.meta -> something.pl.meta
 
-TRANSLATIONS_PATTERN = '{path}.{lang}.{ext}'
+TRANSLATIONS_PATTERN = "{path}.{lang}.{ext}"
 
 # Links for the sidebar / navigation bar.  (translatable)
 # This is a dict.  The keys are languages, and values are tuples.
@@ -150,9 +150,7 @@ NAVIGATION_LINKS = {
 # Alternative navigation links. Works the same way NAVIGATION_LINKS does,
 # although themes may not always support them. (translatable)
 # (Bootstrap 4: right-side of navbar, Bootblog 4: right side of title)
-NAVIGATION_ALT_LINKS = {
-    DEFAULT_LANG: ()
-}
+NAVIGATION_ALT_LINKS = {DEFAULT_LANG: ()}
 
 # Name of the theme to use.
 THEME = "rudimentary"
@@ -160,7 +158,7 @@ THEME = "rudimentary"
 # A theme color. In default themes, it might be displayed by some browsers as
 # the browser UI color (eg. Chrome on Android). Other themes might also use it
 # as an accent color (the default ones don’t). Must be a HEX value.
-THEME_COLOR = '#5670d4'
+THEME_COLOR = "#5670d4"
 
 # POSTS and PAGES contains (wildcard, destination, template) tuples.
 # (translatable)
@@ -229,7 +227,7 @@ TIMEZONE = "Europe/London"
 # Date format used to display post dates. (translatable)
 # Used by babel.dates, CLDR style: http://cldr.unicode.org/translation/date-time-1/date-time
 # You can also use 'full', 'long', 'medium', or 'short'
-DATE_FORMAT = 'yyyy-MM-dd'
+DATE_FORMAT = "yyyy-MM-dd"
 
 # Date format used to display post dates, if local dates are used. (translatable)
 # Used by Luxon: https://moment.github.io/luxon/docs/manual/formatting
@@ -273,18 +271,18 @@ DATE_FORMAT = 'yyyy-MM-dd'
 # 'markdown' is Markdown
 # 'html' assumes the file is HTML and just copies it
 COMPILERS = {
-    "rest": ['.rst', '.txt'],
-    "markdown": ['.md', '.mdown', '.markdown'],
-    "textile": ['.textile'],
-    "txt2tags": ['.t2t'],
-    "bbcode": ['.bb'],
-    "wiki": ['.wiki'],
-    "ipynb": ['.ipynb'],
-    "html": ['.html', '.htm'],
+    "rest": [".rst", ".txt"],
+    "markdown": [".md", ".mdown", ".markdown"],
+    "textile": [".textile"],
+    "txt2tags": [".t2t"],
+    "bbcode": [".bb"],
+    "wiki": [".wiki"],
+    "ipynb": [".ipynb"],
+    "html": [".html", ".htm"],
     # PHP files are rendered the usual way (i.e. with the full templates).
     # The resulting files have .php extensions, making it possible to run
     # them without reconfiguring your server to recognize them.
-    "php": ['.php'],
+    "php": [".php"],
     # Pandoc detects the input from the source filename
     # but is disabled by default as it would conflict
     # with many of the others.
@@ -386,7 +384,7 @@ COMPILERS = {
 # If you do not want to display a tag publicly, you can mark it as hidden.
 # The tag will not be displayed on the tag list page and posts.
 # Tag pages will still be generated.
-HIDDEN_TAGS = ['mathjax']
+HIDDEN_TAGS = ["mathjax"]
 
 # Only include tags on the tag list/overview page if there are at least
 # TAGLIST_MINIMUM_POSTS number of posts or more with every tag. Every tag
@@ -533,7 +531,7 @@ HIDDEN_CATEGORIES = []
 # If you do not want to display an author publicly, you can mark it as hidden.
 # The author will not be displayed on the author list page.
 # Author pages and links to them will still be generated.
-HIDDEN_AUTHORS = ['Guest']
+HIDDEN_AUTHORS = ["Guest"]
 
 # Allow multiple, comma-separated authors for a post? (Requires theme support, present in built-in themes)
 # MULTIPLE_AUTHORS_PER_POST = False
@@ -545,9 +543,7 @@ HIDDEN_AUTHORS = ['Guest']
 
 # Optional HTML that displayed on “main” blog index.html files.
 # May be used for a greeting. (translatable)
-FRONT_INDEX_HEADER = {
-    DEFAULT_LANG: ''
-}
+FRONT_INDEX_HEADER = {DEFAULT_LANG: ""}
 
 # Create per-month archives instead of per-year
 # CREATE_MONTHLY_ARCHIVE = False
@@ -622,63 +618,234 @@ ATOM_FILENAME_BASE = "feed"
 
 # Legacy redirects from old jekyll blog
 REDIRECTIONS = [
-    ("2020/05/23/1hello.html", "../../../posts/2020/1hello"),
-    ("python/2020/05/23/2poetry.html", "../../../../posts/2020/2poetry"),
-    ("terminal/2020/05/27/ssh-tunnel.html", "../../../../posts/2020/ssh-tunnel"),
-    ("terminal/2020/05/28/pspg.html", "../../../../posts/2020/pspg"),
-    ("terminal/2020/06/01/q.html", "../../../../posts/2020/q"),
-    ("python/2020/06/06/time-machine.html", "../../../../posts/2020/time-machine"),
-    ("xml/2020/06/09/xpath.html", "../../../../posts/2020/xpath"),
-    ("python/2020/06/14/python-warnings.html", "../../../../posts/2020/python-warnings"),
-    ("terminal/2020/06/16/tldr.html", "../../../../posts/2020/tldr"),
-    ("sql/2020/06/20/postgres-running-queries.html", "../../../../posts/2020/postgres-running-queries"),
-    ("python/2020/06/25/moto.html", "../../../../posts/2020/moto"),
-    ("email/2020/06/27/mailtrap.html", "../../../../posts/2020/mailtrap"),
-    ("terminal/2020/06/30/commit-timestamps.html", "../../../../posts/2020/commit-timestamps"),
-    ("2020/07/04/time-is.html", "../../../posts/2020/time-is"),
-    ("terminal/2020/07/09/silver-searcher.html", "../../../../posts/2020/silver-searcher"),
-    ("terminal/2020/07/11/response-size.html", "../../../../posts/2020/response-size"),
-    ("terminal/2020/07/19/ansible-vendor.html", "../../../../posts/2020/ansible-vendor"),
-    ("design/2020/07/25/blush.html", "../../../../posts/2020/blush"),
-    ("terminal/2020/07/29/bat-delta.html", "../../../../posts/2020/bat-delta"),
-    ("html/2020/08/01/water-css.html", "../../../../posts/2020/water-css"),
-    ("terminal/2020/08/09/gron.html", "../../../../posts/2020/gron"),
-    ("python/2020/08/15/pipx.html", "../../../../posts/2020/pipx"),
-    ("book/2020/08/22/working-in-public.html", "../../../../posts/2020/working-in-public"),
-    ("terminal/2020/08/31/shellcheck.html", "../../../../posts/2020/shellcheck"),
-    ("python/2020/09/02/pathlib-cheat-sheet.html", "../../../../posts/2020/pathlib-cheat-sheet"),
-    ("python/2020/09/06/pathlib-snippets.html", "../../../../posts/2020/pathlib-snippets"),
-    ("terminal/2020/09/17/crontab-guru.html", "../../../../posts/2020/crontab-guru"),
-    ("terminal/2020/09/23/curl-json.html", "../../../../posts/2020/curl-json"),
-    ("raspberry-pi/2020/09/29/pihole.html", "../../../../posts/2020/pihole"),
-    ("terminal/2020/10/06/find-exec.html", "../../../../posts/2020/find-exec"),
-    ("python/2020/10/20/markdown.html", "../../../../posts/2020/markdown"),
-    ("post/2020/11/01/glob.html", "../../../../posts/2020/glob"),
-    ("python/2020/11/10/rich.html", "../../../../posts/2020/rich"),
-    ("sql/2020/11/22/postgres-show-create.html", "../../../../posts/2020/postgres-show-create"),
-    ("sql/2020/11/26/three-psql-settings.html", "../../../../posts/2020/three-psql-settings"),
-    ("python/2020/11/30/pip-20.3.html", "../../../../posts/2020/pip-203"),
-    ("python/2020/12/07/stdin-or-file.html", "../../../../posts/2020/stdin-or-file"),
-    ("terminal/2021/01/07/jsontidy.html", "../../../../posts/2021/jsontidy"),
-    ("post/2021/01/31/changing-the-tyres.html", "../../../../posts/2021/changing-the-tyres"),
-    ("python/2021/02/10/check-migrations.html", "../../../../posts/2021/check-migrations"),
-    ("python/2021/02/18/redirect-stdout.html", "../../../../posts/2021/redirect-stdout"),
-    ("terminal/2021/02/25/git-word-diff.html", "../../../../posts/2021/git-word-diff"),
-    ("dependencies/2021/02/28/renovate-custom-managers.html", "../../../../posts/2021/renovate-custom-managers"),
-    ("sql/2021/03/04/postgres-indexes.html", "../../../../posts/2021/postgres-indexes"),
-    ("github/2021/04/05/gh-action-pr-merge.html", "../../../../posts/2021/gh-action-pr-merge"),
-    ("terminal/heroku/2021/05/23/heroku-1year.html", "../../../../../posts/2021/heroku-1year"),
-    ("web/2021/09/08/google-bot-user-agent.html", "../../../../posts/2021/google-bot-user-agent"),
-    ("github/2021/09/12/composite-actions.html", "../../../../posts/2021/composite-actions"),
-    ("github/2021/11/06/composite-actions-reusable-workflows.html", "../../../../posts/2021/composite-actions-reusable-workflows"),
-    ("html/2021/12/22/html5-kitchen-sink.html", "../../../../posts/2021/html5-kitchen-sink"),
-    ("python/2022/02/13/rich-tips.html", "../../../../posts/2022/rich-tips"),
-    ("post/2022/09/16/three-programming-blogs.html", "../../../../posts/2022/three-programming-blogs"),
-    ("python/2022/09/18/diagrams.html", "../../../../posts/2022/diagrams"),
-    ("javascript/2022/09/20/mocha-markdown.html", "../../../../posts/2022/mocha-markdown"),
-    ("python/2023/05/29/sentry-decorator.html", "../../../../posts/2023/sentry-decorator"),
-    ("post/2023/06/26/relay-fedi-buzz.html", "../../../../posts/2023/relay-fedi-buzz"),
-    ("sql/2023/08/07/always-bet-on-sql.html", "../../../../posts/2023/always-bet-on-sql"),
+    (
+        "2020/05/23/1hello.html",
+        "../../../posts/2020/1hello",
+    ),
+    (
+        "python/2020/05/23/2poetry.html",
+        "../../../../posts/2020/2poetry",
+    ),
+    (
+        "terminal/2020/05/27/ssh-tunnel.html",
+        "../../../../posts/2020/ssh-tunnel",
+    ),
+    (
+        "terminal/2020/05/28/pspg.html",
+        "../../../../posts/2020/pspg",
+    ),
+    (
+        "terminal/2020/06/01/q.html",
+        "../../../../posts/2020/q",
+    ),
+    (
+        "python/2020/06/06/time-machine.html",
+        "../../../../posts/2020/time-machine",
+    ),
+    (
+        "xml/2020/06/09/xpath.html",
+        "../../../../posts/2020/xpath",
+    ),
+    (
+        "python/2020/06/14/python-warnings.html",
+        "../../../../posts/2020/python-warnings",
+    ),
+    (
+        "terminal/2020/06/16/tldr.html",
+        "../../../../posts/2020/tldr",
+    ),
+    (
+        "sql/2020/06/20/postgres-running-queries.html",
+        "../../../../posts/2020/postgres-running-queries",
+    ),
+    (
+        "python/2020/06/25/moto.html",
+        "../../../../posts/2020/moto",
+    ),
+    (
+        "email/2020/06/27/mailtrap.html",
+        "../../../../posts/2020/mailtrap",
+    ),
+    (
+        "terminal/2020/06/30/commit-timestamps.html",
+        "../../../../posts/2020/commit-timestamps",
+    ),
+    (
+        "2020/07/04/time-is.html",
+        "../../../posts/2020/time-is",
+    ),
+    (
+        "terminal/2020/07/09/silver-searcher.html",
+        "../../../../posts/2020/silver-searcher",
+    ),
+    (
+        "terminal/2020/07/11/response-size.html",
+        "../../../../posts/2020/response-size",
+    ),
+    (
+        "terminal/2020/07/19/ansible-vendor.html",
+        "../../../../posts/2020/ansible-vendor",
+    ),
+    (
+        "design/2020/07/25/blush.html",
+        "../../../../posts/2020/blush",
+    ),
+    (
+        "terminal/2020/07/29/bat-delta.html",
+        "../../../../posts/2020/bat-delta",
+    ),
+    (
+        "html/2020/08/01/water-css.html",
+        "../../../../posts/2020/water-css",
+    ),
+    (
+        "terminal/2020/08/09/gron.html",
+        "../../../../posts/2020/gron",
+    ),
+    (
+        "python/2020/08/15/pipx.html",
+        "../../../../posts/2020/pipx",
+    ),
+    (
+        "book/2020/08/22/working-in-public.html",
+        "../../../../posts/2020/working-in-public",
+    ),
+    (
+        "terminal/2020/08/31/shellcheck.html",
+        "../../../../posts/2020/shellcheck",
+    ),
+    (
+        "python/2020/09/02/pathlib-cheat-sheet.html",
+        "../../../../posts/2020/pathlib-cheat-sheet",
+    ),
+    (
+        "python/2020/09/06/pathlib-snippets.html",
+        "../../../../posts/2020/pathlib-snippets",
+    ),
+    (
+        "terminal/2020/09/17/crontab-guru.html",
+        "../../../../posts/2020/crontab-guru",
+    ),
+    (
+        "terminal/2020/09/23/curl-json.html",
+        "../../../../posts/2020/curl-json",
+    ),
+    (
+        "raspberry-pi/2020/09/29/pihole.html",
+        "../../../../posts/2020/pihole",
+    ),
+    (
+        "terminal/2020/10/06/find-exec.html",
+        "../../../../posts/2020/find-exec",
+    ),
+    (
+        "python/2020/10/20/markdown.html",
+        "../../../../posts/2020/markdown",
+    ),
+    (
+        "post/2020/11/01/glob.html",
+        "../../../../posts/2020/glob",
+    ),
+    (
+        "python/2020/11/10/rich.html",
+        "../../../../posts/2020/rich",
+    ),
+    (
+        "sql/2020/11/22/postgres-show-create.html",
+        "../../../../posts/2020/postgres-show-create",
+    ),
+    (
+        "sql/2020/11/26/three-psql-settings.html",
+        "../../../../posts/2020/three-psql-settings",
+    ),
+    (
+        "python/2020/11/30/pip-20.3.html",
+        "../../../../posts/2020/pip-203",
+    ),
+    (
+        "python/2020/12/07/stdin-or-file.html",
+        "../../../../posts/2020/stdin-or-file",
+    ),
+    (
+        "terminal/2021/01/07/jsontidy.html",
+        "../../../../posts/2021/jsontidy",
+    ),
+    (
+        "post/2021/01/31/changing-the-tyres.html",
+        "../../../../posts/2021/changing-the-tyres",
+    ),
+    (
+        "python/2021/02/10/check-migrations.html",
+        "../../../../posts/2021/check-migrations",
+    ),
+    (
+        "python/2021/02/18/redirect-stdout.html",
+        "../../../../posts/2021/redirect-stdout",
+    ),
+    (
+        "terminal/2021/02/25/git-word-diff.html",
+        "../../../../posts/2021/git-word-diff",
+    ),
+    (
+        "dependencies/2021/02/28/renovate-custom-managers.html",
+        "../../../../posts/2021/renovate-custom-managers",
+    ),
+    (
+        "sql/2021/03/04/postgres-indexes.html",
+        "../../../../posts/2021/postgres-indexes",
+    ),
+    (
+        "github/2021/04/05/gh-action-pr-merge.html",
+        "../../../../posts/2021/gh-action-pr-merge",
+    ),
+    (
+        "terminal/heroku/2021/05/23/heroku-1year.html",
+        "../../../../../posts/2021/heroku-1year",
+    ),
+    (
+        "web/2021/09/08/google-bot-user-agent.html",
+        "../../../../posts/2021/google-bot-user-agent",
+    ),
+    (
+        "github/2021/09/12/composite-actions.html",
+        "../../../../posts/2021/composite-actions",
+    ),
+    (
+        "github/2021/11/06/composite-actions-reusable-workflows.html",
+        "../../../../posts/2021/composite-actions-reusable-workflows",
+    ),
+    (
+        "html/2021/12/22/html5-kitchen-sink.html",
+        "../../../../posts/2021/html5-kitchen-sink",
+    ),
+    (
+        "python/2022/02/13/rich-tips.html",
+        "../../../../posts/2022/rich-tips",
+    ),
+    (
+        "post/2022/09/16/three-programming-blogs.html",
+        "../../../../posts/2022/three-programming-blogs",
+    ),
+    (
+        "python/2022/09/18/diagrams.html",
+        "../../../../posts/2022/diagrams",
+    ),
+    (
+        "javascript/2022/09/20/mocha-markdown.html",
+        "../../../../posts/2022/mocha-markdown",
+    ),
+    (
+        "python/2023/05/29/sentry-decorator.html",
+        "../../../../posts/2023/sentry-decorator",
+    ),
+    (
+        "post/2023/06/26/relay-fedi-buzz.html",
+        "../../../../posts/2023/relay-fedi-buzz",
+    ),
+    (
+        "sql/2023/08/07/always-bet-on-sql.html",
+        "../../../../posts/2023/always-bet-on-sql",
+    ),
 ]
 
 # Presets of commands to execute to deploy. Can be anything, for
@@ -880,7 +1047,7 @@ GALLERIES_DEFAULT_THUMBNAIL = None
 # but a different naming template can be configured with IMAGE_THUMBNAIL_FORMAT).
 # Panoramas (aspect ratio over 3:1) get 4x larger thumbnails due to scaling issues.
 
-IMAGE_FOLDERS = {'images': 'images'}
+IMAGE_FOLDERS = {"images": "images"}
 # IMAGE_THUMBNAIL_SIZE = 400
 # IMAGE_THUMBNAIL_FORMAT = '{name}.thumbnail{ext}'
 
@@ -1028,15 +1195,15 @@ CONTENT_FOOTER_FORMATS = {
             "email": BLOG_EMAIL,
             "author": BLOG_AUTHOR,
             "date": time.gmtime().tm_year,
-            "license": LICENSE
-        }
+            "license": LICENSE,
+        },
     )
 }
 
 # A simple copyright tag for inclusion in RSS feeds that works just
 # like CONTENT_FOOTER and CONTENT_FOOTER_FORMATS
-RSS_COPYRIGHT = 'Contents © {date} {author}'
-RSS_COPYRIGHT_PLAIN = 'Contents © {date} {author}'
+RSS_COPYRIGHT = "Contents © {date} {author}"
+RSS_COPYRIGHT_PLAIN = "Contents © {date} {author}"
 RSS_COPYRIGHT_FORMATS = CONTENT_FOOTER_FORMATS
 
 # To use comments, you can choose between different third party comment
@@ -1151,7 +1318,11 @@ PRETTY_URLS = True
 #       with the MarkdownExtension class and should not be added here.
 # Defaults are markdown.extensions.(fenced_code|codehilite|extra)
 # markdown.extensions.meta is required for Markdown metadata.
-MARKDOWN_EXTENSIONS = ['markdown.extensions.fenced_code', 'markdown.extensions.codehilite', 'markdown.extensions.extra']
+MARKDOWN_EXTENSIONS = [
+    "markdown.extensions.fenced_code",
+    "markdown.extensions.codehilite",
+    "markdown.extensions.extra",
+]
 
 # Options to be passed to markdown extensions (See https://python-markdown.github.io/reference/)
 # Default is {DEFAULT_LANG: {}} (no config at all)
