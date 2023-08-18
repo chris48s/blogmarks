@@ -1171,9 +1171,21 @@ LICENSE = ""
 
 # A small copyright notice for the page footer (in HTML).
 # (translatable)
-CONTENT_FOOTER = 'Contents &copy; {date}         <a href="mailto:{email}">{author}</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         {license}'
-# TODO: footer
-CONTENT_FOOTER = ""
+CONTENT_FOOTER = """
+<p>Contents &copy; {date} {author}</p>
+
+<ul class="no-bullet">
+  <li>
+    <i class="fab fa-github"></i>
+    <a href="https://github.com/chris48s/" target="_blank">Github</a>
+  </li>
+  <li>
+    <i class="fab fa-mastodon"></i>
+    <a href="https://fed.chris-shaw.dev/@chris" target="_blank">Mastodon</a>
+  </li>
+</ul>
+"""
+
 
 # Things that will be passed to CONTENT_FOOTER.format().  This is done
 # for translatability, as dicts are not formattable.  Nikola will
