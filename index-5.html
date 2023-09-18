@@ -41,7 +41,26 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/google-bot-user-agent/" class="u-url">Browse The Web Like A Crawler</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/composite-actions/" class="u-url">GitHub Composite Actions</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2021/composite-actions/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-09-12T00:00:00+01:00" itemprop="datePublished" title="2021-09-12">2021-09-12</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>GitHub quietly sneaked out a new feature in the last few weeks: <a href="https://docs.github.com/en/actions/creating-actions/creating-a-composite-action">Composite Actions</a>. This solves one of my biggest issues with GH Actions which is that yaml workflow steps couldn't be re-used. This means I have lots of repos with the exact same yaml workflow, or roughly the same workflow with slight variations. For example these 3 repos (and others) currently use the exact same workflow for CI:</p>
+<ul>
+<li><a href="https://github.com/chris48s/datapackage-to-datasette/blob/1db8e836f588d0d1b65fbef56bcfa4ccc79d871b/.github/workflows/test.yml">datapackage-to-datasette</a></li>
+<li><a href="https://github.com/chris48s/commitment/blob/fa634b9e6c4291052af5160421274c194d5eef3e/.github/workflows/test.yml">commitment</a></li>
+<li><a href="https://github.com/chris48s/datasette-mailto-links/blob/705aae608f839fbdff787971957291ec01f30d3f/.github/workflows/test.yml">datasette-mailto-links</a></li>
+</ul>
+<p>Composite actions essentially allows yaml workflow steps to be packaged and re-used in the same way that javascript actions or docker actions can be, so I can package this up as a shared action and use it in lots of repos. This is a feature I have been hoping would be added to Actions for some time and I'm looking forward to DRYing up my workflows across repos over the coming weeks.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/google-bot-user-agent/" class="u-url">Browse The Web Like A Crawler</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s

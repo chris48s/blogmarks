@@ -17,7 +17,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
 <link rel="canonical" href="https://chris48s.github.io/blogmarks/">
 <link rel="next" href="index-5.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2023/always-bet-on-sql/" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2023/bulk-querying-github/" type="text/html">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -40,7 +40,54 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/always-bet-on-sql/" class="u-url">Always bet on SQL</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/bulk-querying-github/" class="u-url">Querying GitHub Repos in Bulk</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2023/bulk-querying-github/" rel="bookmark">
+            <time class="published dt-published" datetime="2023-09-18T00:00:00+01:00" itemprop="datePublished" title="2023-09-18">2023-09-18</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I've recently been working on a tool called <a href="https://github.com/chris48s/pip-abandoned">pip-abandoned</a>, which allows you to search for abandoned and deprecated python packages.</p>
+<p>In order to make this, one of the things I needed to do was fetch the <code>archived</code> property for lots of GitHub repositories. Using the GitHub v3 (rest) API, this would need one round-trip per repo. So if I want to fetch the <code>archived</code> property for</p>
+<ul>
+<li><a href="https://github.com/pygments/pygments">https://github.com/pygments/pygments</a></li>
+<li><a href="https://github.com/pycqa/mccabe">https://github.com/pycqa/mccabe</a></li>
+<li><a href="https://github.com/readthedocs/commonmark.py">https://github.com/readthedocs/commonmark.py</a></li>
+</ul>
+<p>then I need to make three API calls:</p>
+<ul>
+<li><a href="https://api.github.com/repos/pygments/pygments">https://api.github.com/repos/pygments/pygments</a></li>
+<li><a href="https://api.github.com/repos/pycqa/mccabe">https://api.github.com/repos/pycqa/mccabe</a></li>
+<li><a href="https://api.github.com/repos/readthedocs/commonmark.py">https://api.github.com/repos/readthedocs/commonmark.py</a></li>
+</ul>
+<p>..and if I had a list of 200 GitHub repos, that would require 200 individual network requests.</p>
+<p>Fortunately, GitHub also has a GraphQL API. Using the GraphQL API, we can query more than one repo in a single request. To fetch the same data as above using the GraphQL API, I can make the following query</p>
+<div class="code"><pre class="code literal-block"><span class="k">query</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">pygments</span><span class="p">:</span><span class="w"> </span><span class="n">repository</span><span class="p">(</span>
+<span class="w">    </span><span class="n">owner</span><span class="p">:</span><span class="w"> </span><span class="s">"pygments"</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s">"pygments"</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">isArchived</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nl">mccabe</span><span class="p">:</span><span class="w"> </span><span class="n">repository</span><span class="p">(</span>
+<span class="w">    </span><span class="n">owner</span><span class="p">:</span><span class="w"> </span><span class="s">"pycqa"</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s">"mccabe"</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">isArchived</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nl">commonmark</span><span class="p">:</span><span class="w"> </span><span class="n">repository</span><span class="p">(</span>
+<span class="w">    </span><span class="n">owner</span><span class="p">:</span><span class="w"> </span><span class="s">"readthedocs"</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s">"commonmark.py"</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">isArchived</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>to retrieve the <code>archived</code> property for those three repos in a single round-trip over the network. When querying a large number of repos this is a big benefit.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/always-bet-on-sql/" class="u-url">Always bet on SQL</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s
@@ -349,25 +396,6 @@ in a bunch of places. Here's what I came up with:</p>
 </li>
 </ul>
 </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/composite-actions/" class="u-url">GitHub Composite Actions</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                chris48s
-            </span></p>
-            <p class="dateline">
-            <a href="posts/2021/composite-actions/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-09-12T00:00:00+01:00" itemprop="datePublished" title="2021-09-12">2021-09-12</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>GitHub quietly sneaked out a new feature in the last few weeks: <a href="https://docs.github.com/en/actions/creating-actions/creating-a-composite-action">Composite Actions</a>. This solves one of my biggest issues with GH Actions which is that yaml workflow steps couldn't be re-used. This means I have lots of repos with the exact same yaml workflow, or roughly the same workflow with slight variations. For example these 3 repos (and others) currently use the exact same workflow for CI:</p>
-<ul>
-<li><a href="https://github.com/chris48s/datapackage-to-datasette/blob/1db8e836f588d0d1b65fbef56bcfa4ccc79d871b/.github/workflows/test.yml">datapackage-to-datasette</a></li>
-<li><a href="https://github.com/chris48s/commitment/blob/fa634b9e6c4291052af5160421274c194d5eef3e/.github/workflows/test.yml">commitment</a></li>
-<li><a href="https://github.com/chris48s/datasette-mailto-links/blob/705aae608f839fbdff787971957291ec01f30d3f/.github/workflows/test.yml">datasette-mailto-links</a></li>
-</ul>
-<p>Composite actions essentially allows yaml workflow steps to be packaged and re-used in the same way that javascript actions or docker actions can be, so I can package this up as a shared action and use it in lots of repos. This is a feature I have been hoping would be added to Actions for some time and I'm looking forward to DRYing up my workflows across repos over the coming weeks.</p>
-    </div>
     </article>
 </div>
 
