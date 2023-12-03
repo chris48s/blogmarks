@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>So, you want to start a side project? | Blogmarks</title>
+<link href="../../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../../rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/posts/2023/side-project/">
+<!--[if lt IE 9]><script src="../../../assets/js/html5shiv-printshiv.min.js"></script><![endif]--><meta name="author" content="chris48s">
+<link rel="prev" href="../bulk-querying-github/" title="Querying GitHub Repos in Bulk" type="text/html">
+<meta property="og:site_name" content="Blogmarks">
+<meta property="og:title" content="So, you want to start a side project?">
+<meta property="og:url" content="https://chris48s.github.io/blogmarks/posts/2023/side-project/">
+<meta property="og:description" content="Over the years, I have started or worked on many side projects and spent a lot of time maintaining them. This has taught me a lot about what makes a project easy and hard to maintain. This post is a r">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2023-12-03T00:00:00Z">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="../../../" title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+                <li><a href="../../../categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">So, you want to start a side project?</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2023-12-03T00:00:00Z" itemprop="datePublished" title="2023-12-03">2023-12-03</time></a>
+            </p>
+            
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Over the years, I have started or worked on many side projects and spent a lot of time maintaining them. This has taught me a lot about what makes a project easy and hard to maintain. This post is a reflection on some of the lessons learned over that time.</p>
+<p>First, lets start off with some assumptions:</p>
+<ol>
+<li>You want to start a side project, not a side hustle. A side hustle is an entrepreneurial exercise. It is something you eventually want to turn into a business or job, even if it is not on day one. The objective of a side project is the creative satisfaction of the project itself. It might be a learning experience, or exploration of personal interests.</li>
+<li>Your side project is software or programming related.</li>
+<li>The project is in some way public. It might be open source. You want to make something with a userbase or community beyond just yourself.</li>
+<li>Crucially, you care about maintaining this project over a period of time. It is not just a throwaway learning exercise.</li>
+</ol>
+<p>If you are looking to start a side project, this implies you have some time on your hands right now. This is a great place to be, but it won't be true forever. Life happens, and it usually happens unexpectedly.</p>
+<p>So, how can we optimise for projects that are low-maintenance or at least projects that require the type of maintenance that can be done on our own terms? A side project that may require attention urgently and unexpectedly can quickly become a burden.</p>
+<h3>Third party APIs</h3>
+<p>Third Party APIs are one of the most likely sources of sudden and unexpected maintenance tasks. You may or may not get warning when changes happen. If you use an API with authentication or credentials, you probably had to sign up for an account so the upstream service provider probably does at least hold some contact details they could use to inform you of changes. Expect the unexpected from any API where you use public or anonymous access.</p>
+<p>Sometimes an API you depend on will:</p>
+<ul>
+<li>Make a non-backwards compatible change.</li>
+<li>Introduce rate limits or enforce stricter rate limits.</li>
+<li>Change their terms of service such that your project now violates them in some way. </li>
+<li>Withdraw service completely or shut down.</li>
+</ul>
+<p>All of this is very in vogue at the moment.</p>
+<h3>Scrapers</h3>
+<p>Web scrapers are like third party APIs, only worse. API authors expect that other people's code depends on their API. They may still choose to make a breaking change anyway, but there is some incentive there to maintain a stable platform for their users. Nobody assumes or cares that your code relies on scraping their website. It certainly won't be a consideration in changing it. You definitely won't get any communication informing you of a change that impacts your code. Website authors may even be actively trying to prevent you from scraping them. Code that relies on web scraping is certain to break at some point. It is matter of <em>when</em>, rather than <em>if</em>.</p>
+<h3>Infrastructure</h3>
+<p>Any kind of infrastructure you run (web servers, DB, cache, etc) is going to come with some maintenance overhead. Applying security upgrades, backup and restore, ensuring uptime, etc. The exact tasks that come up will vary a bit depending on the type of infrastructure, but could include a mix of tasks that can be planned in advance and things that happen unexpectedly. You can plan or defer applying an upgrade, but data loss requiring a restore from backup will happen when you least expect it.</p>
+<p>There are some tradeoffs to be made here. Using a managed service can outsource some of this maintenance. For example, if we consider something like a Postgres DB: Running your own Postgres instance on a VPS leaves everything up to you (of course, with a side project, managing this yourself could be part of the joy or satisfaction). A fully managed service like Heroku Postgres will handle most of this stuff for you transparently. Something like RDS or Fly.io's "semi-managed" Postgres sits somewhere in the middle of those two extremes.</p>
+<p>A fully managed service comes with some costs though. A managed service can be it's own source of breaking changes or deprecations. Some platforms have a greater or lesser reputation for stability (think AWS vs GCP 😀). The more obvious cost is the literal financial cost though, which brings us on to..</p>
+<h3>Finances</h3>
+<p>If you go down the route of a project that requires some sort of infrastructure, that has a cost associated with it, and somebody needs to cover that. Maybe you will pay for it out of your own pocket. In general, side projects are not revenue generating and need to run on a modest budget. Often that budget will be zero. Maybe you can run a service using free tier offerings. However, even if you're using it for free, someone is still paying. For the moment, the company offering that "free" service is covering that cost out of marketing budget because offering a free tier is good promotion, but that might not stay true forever. If your project is popular, you might also consider soliciting some sponsorship to cover your costs, either from your community or a corporate sponsor.</p>
+<p>Again, funding concerns are another common source of suddenly urgent work.</p>
+<ul>
+<li>Your project may become more popular, outgrowing your current pricing plan or the level of sponsorship your project currently attracts.</li>
+<li>If your project runs on a free tier service, that offering will probably be withdrawn at some point. Most of them are eventually.</li>
+<li>If you have a corporate sponsor, also assume it will not last forever. Sponsorships of open source and community projects are often the first things to be cut when times are tough.</li>
+</ul>
+<p>All of this can leave you quickly scrambling to migrate to another service, find ways to consume fewer resources, or present an immediate existential threat to your project.</p>
+<h3>Personal data</h3>
+<p>nopenopenopenopenope</p>
+<p>If your side project stores personal data, congratulations. You now have compliance obligations. Choo choo 🚂 All aboard the fun train! A service that stores any kind of personal data (e.g: user accounts) is not a good choice for a side project. This one is a hard no from me.</p>
+<h3>It's not all doom and gloom</h3>
+<p>That is a list of things that can, to one degree or another, generate some maintenance overhead. So what are some types of projects that don't have any of those characteristics (or at least as few of them as possible)?</p>
+<h3>Command line applications (compiled language)</h3>
+<p>If your project is distributed as a compiled binary and it doesn't call any external APIs, there are relatively few externalities that can break this type of project or require attention from a maintainer. This is even more true for a statically linked binary. The only real exception to this might be needing to respond to a security issue.</p>
+<h3>Command line applications (dynamic language) or Libraries</h3>
+<p>This type of project has similar properties to a compiled command line tool. However, with anything that the user installs via <code>pip install</code>, <code>npm install</code>, etc, your dependencies are resolved at install time. This means your previously working code can be broken for some users by non-backwards compatible changes made in an in-range dependency version. In theory SemVer saves us here, but in most languages (other than javascript) it is necessary to support wide ranges. This type of breakage is not super common, but it does happen.</p>
+<h3>Static sites</h3>
+<p>Static content is good content. If you have the type of static site that can be served from a S3 bucket, there are multiple places that will host it for free and scale it to handle as much traffic as the internet can throw at it. If you do need to move it, it is relatively easy and you have zero infrastructure to maintain.</p>
+<p>For a low-maintenance project side project that involves a website, "could this be a static site" is generally a good question to ask. Sometimes by making a compromise or two, it is possible to get rid of a web server and DB and replace them with a static site. This is usually an advisable tradeoff. A good example of this might be choosing a SSG for your blog, instead of hosting a CMS.</p>
+<p>It is worth noting that this is not true of the type of "static site" which is heavily tied to the specific features of a platform like Vercel or Netlify. These basically have the same tradeoffs as managed infrastructure with the additional downside of vendor lock-in.</p>
+<h3>End</h3>
+<p>So, that's some thoughts on the characteristics of a low maintenance side project. Go forth. May your side project bring you many hours of joy and few unexpected urgent maintenance issues.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../bulk-querying-github/" rel="prev" title="Querying GitHub Repos in Bulk">Previous post</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>
+</p>
+<p>Contents © 2023 chris48s</p>
+
+<ul class="no-bullet">
+<li>
+    <i class="fab fa-github"></i>
+    <a href="https://github.com/chris48s/" target="_blank">Github</a>
+  </li>
+  <li>
+    <i class="fab fa-mastodon"></i>
+    <a href="https://fed.chris-shaw.dev/@chris" target="_blank">Mastodon</a>
+  </li>
+</ul></footer>
+</div>
+    
+            <script src="../../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('div#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>
