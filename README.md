@@ -7,8 +7,8 @@ https://chris48s.github.io/blogmarks/
 ## Local dev
 
 ```bash
-poetry install
 poetry shell
+poetry install
 
 nikola auto
 ```
