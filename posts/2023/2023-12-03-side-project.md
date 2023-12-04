@@ -54,7 +54,7 @@ If you go down the route of a project that requires some sort of infrastructure,
 Again, funding concerns are another common source of suddenly urgent work.
 
 - Your project may become more popular, outgrowing your current pricing plan or the level of sponsorship your project currently attracts.
-- If your project runs on a free tier service, that offering will probably be withdrawn at some point. Most of them are eventually.
+- If your project runs on a free tier service, that offering will probably be withdrawn at some point. Most of them are, eventually.
 - If you have a corporate sponsor, also assume it will not last forever. Sponsorships of open source and community projects are often the first things to be cut when times are tough.
 
 All of this can leave you quickly scrambling to migrate to another service, find ways to consume fewer resources, or present an immediate existential threat to your project.
@@ -71,7 +71,7 @@ That is a list of things that can, to one degree or another, generate some maint
 
 ## Command line applications (compiled language)
 
-If your project is distributed as a compiled binary and it doesn't call any external APIs, there are relatively few externalities that can break this type of project or require attention from a maintainer. This is even more true for a statically linked binary. The only real exception to this might be needing to respond to a security issue.
+If your project is distributed as a compiled binary and it doesn't call any external APIs, there are very few externalities that can break this type of project or require attention from you as a maintainer. This is even more true for a statically linked binary. The only real exception to this might be needing to respond to a security issue.
 
 ## Command line applications (dynamic language) or Libraries
 
@@ -81,10 +81,10 @@ This type of project has similar properties to a compiled command line tool. How
 
 Static content is good content. If you have the type of static site that can be served from a S3 bucket, there are multiple places that will host it for free and scale it to handle as much traffic as the internet can throw at it. If you do need to move it, it is relatively easy and you have zero infrastructure to maintain.
 
-For a low-maintenance project side project that involves a website, "could this be a static site" is generally a good question to ask. Sometimes by making a compromise or two, it is possible to get rid of a web server and DB and replace them with a static site. This is usually an advisable tradeoff. A good example of this might be choosing a SSG for your blog, instead of hosting a CMS.
+For a low-maintenance project side project that involves a website, "could this be a static site?" is generally a good question to ask. Sometimes by making a compromise or two, it is possible to get rid of a web server and DB and replace them with a static site. This is usually an advisable tradeoff. A good example of this might be choosing a SSG for your blog, instead of hosting a CMS.
 
 It is worth noting that this is not true of the type of "static site" which is heavily tied to the specific features of a platform like Vercel or Netlify. These basically have the same tradeoffs as managed infrastructure with the additional downside of vendor lock-in.
 
 ## End
 
-So, that's some thoughts on the characteristics of a low maintenance side project. Go forth. May your side project bring you many hours of joy and few unexpected urgent maintenance issues.
+So, that's some thoughts on the characteristics of a low-maintenance side project. Go forth. May your side project bring you many hours of joy and few unexpected urgent maintenance issues.
