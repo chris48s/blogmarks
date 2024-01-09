@@ -81,7 +81,7 @@ This type of project has similar properties to a compiled command line tool. How
 
 Static content is good content. If you have the type of static site that can be served from a S3 bucket, there are multiple places that will host it for free and scale it to handle as much traffic as the internet can throw at it. If you do need to move it, it is relatively easy and you have zero infrastructure to maintain.
 
-For a low-maintenance project side project that involves a website, "could this be a static site?" is generally a good question to ask. Sometimes by making a compromise or two, it is possible to get rid of a web server and DB and replace them with a static site. This is usually an advisable tradeoff. A good example of this might be choosing a SSG for your blog, instead of hosting a CMS.
+For a low-maintenance project side project that involves a website, "could this be a static site?" is generally a good question to ask. Sometimes by making a compromise or two, it is possible to get rid of a web server and DB and replace them with a static site. This is usually an advisable tradeoff. A good example of this might be choosing a SSG for your blog, instead of hosting a CMS. (**Edit:** A couple of months after I wrote this I came across this article [simple lasts longer](https://newsletter.pnote.eu/p/simple-lasts-longer) by Przemek, which gives a great concrete example of making some tradeoffs to allow a project to be delivered as a static site in preference to running a database).
 
 It is worth noting that this is not true of the type of "static site" which is heavily tied to the specific features of a platform like Vercel or Netlify. These basically have the same tradeoffs as managed infrastructure with the additional downside of vendor lock-in.
 
