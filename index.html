@@ -17,7 +17,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
 <link rel="canonical" href="https://chris48s.github.io/blogmarks/">
 <link rel="next" href="index-5.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2023/side-project/" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2024/arq-taskiq/" type="text/html">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -40,7 +40,34 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/side-project/" class="u-url">So, you want to start a side project?</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/arq-taskiq/" class="u-url">Arq and TaskIQ</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2024/arq-taskiq/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-01-18T00:00:00Z" itemprop="datePublished" title="2024-01-18">2024-01-18</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>At work, we recently found ourselves in the market for an asynchronous task queue for python. A traditional task queue like Celery can be said to be "asynchronous" in the sense that your web server can kick a task into the queue and continue processing the web request without waiting for the task to complete. However it is "synchronous" in the sense that the task functions in your queue must be synchronous functions (declared with <code>def</code> rather than <code>async def</code>). If you want to queue an <code>async</code> function, you need an async worker to process it.</p>
+<p>The two contenders we've been looking at in this space are <a href="https://arq-docs.helpmanual.io/">arq</a> and <a href="https://taskiq-python.github.io/">taskiq</a>. These two solutions take slightly different approaches to solving the same problem.</p>
+<p>Taskiq takes a conceptually simple push/pop approach to interacting with the queue. This is the same model used by popular synchronous packages like Celery and rq. When a worker is free to take a task, it pops a task off the queue and then executes it. The downside of this approach is that if a worker pops a task off the queue and then shuts down without processing the task to completion, that task is already gone from your queue without having been run to completion. Another worker can't try it again.</p>
+<p>Arq takes a different approach called "pessimistic execution" which solves that specific problem. When an arq worker takes a task from the queue, it doesn't remove it from the queue yet. The task stays in the queue while it is being run. The task is finally deleted from the queue in a post hook after the task is complete. This means a task is only removed from the queue after it has run to completion.</p>
+<p>In order to ensure every worker in your cluster is not trying to process the same task at once, arq also maintains some additional shared state. When a worker takes a task, the worker acquires a lock on a task. That lock is automatically set to release after a timeout. If a worker never deletes the task in the post hook, the task is eventually unlocked and becomes available for another worker to process at a later time once the timeout expires.</p>
+<p>This gives arq some slightly different characteristics than taskiq.</p>
+<p>Arq will ideally try to deliver your task exactly once, but guarantees "at least once execution". Executing your task multiple times is considered preferable to executing it zero times. This means no lost tasks, but it also means if you use arq, your tasks must be written to be idempotent.</p>
+<p>The simple push/pop relationship with the queue employed by taskiq lends itself to being compatible with a wide range of backends. Taskiq already has plugins for using NATS, Redis, RabbitMQ and Kafka as brokers. Taskiq defines a <a href="https://taskiq-python.github.io/extending-taskiq/broker.html">plugin interface</a> for brokers, so it would be possible to write plugins for aditional backends like SQS for example.</p>
+<p>Conversely, arq has a more complicated relationship with the data store. The additional shared state required to implement the locking behaviour needs a richer set of operations. As such, arq is tightly coupled to redis as a backend. There is no mechanism to substitute another broker.</p>
+<p>So here's a summary of those tradeoffs:</p>
+<ul>
+<li>Arq is tied to redis. It provides stronger guarantees about eventual task execution and requires you to write your tasks with the assumption they could be attempted multiple times.</li>
+<li>Taskiq follows a model similar to Celery or rq. It provides weaker assurances, but this conceptually simpler model means you can assume your tasks will only be executed once. This setup also allows for compatibility with a wider range of brokers.</li>
+</ul>
+<p>Our project has a lot of long-running tasks, which are vulnerable to being killed off before running to completion by deploy or scale-in events. Because of this, we prefer the pessimistic execution model offered by arq. We ended up moving forward with arq for our project.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/side-project/" class="u-url">So, you want to start a side project?</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s
@@ -384,19 +411,6 @@ in a bunch of places. Here's what I came up with:</p>
 <li>Rich can be used as a log handler. <a href="https://rich.readthedocs.io/en/stable/logging.html">The docs</a> cover how to use it with python's <code>logging</code> module, but Will has also published this <a href="https://www.willmcgugan.com/blog/tech/post/richer-django-logging/">blog post</a> showing how to configure Django to use Rich as the default log handler.</li>
 </ol>
 </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/html5-kitchen-sink/" class="u-url">HTML 5 Kitchen Sink</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                chris48s
-            </span></p>
-            <p class="dateline">
-            <a href="posts/2021/html5-kitchen-sink/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-12-22T00:00:00Z" itemprop="datePublished" title="2021-12-22">2021-12-22</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p><a href="https://github.com/dbox/html5-kitchen-sink">HTML 5 Kitchen Sink</a> is really useful for testing out themes and stylesheets. It also has the helpful side effect of introducing me to (or reminding me about) some of the less common HTML5 elements that exist in the spec as I use it.</p>
-    </div>
     </article>
 </div>
 
