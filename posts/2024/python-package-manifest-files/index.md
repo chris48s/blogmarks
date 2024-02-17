@@ -94,7 +94,7 @@ In the sample of repos I looked at 17,245 (55%) contained a pyproject.toml file.
   <tr>
     <td>Has Poetry metadata</td>
     <td class="right-align">4,890</td>
-    <td class="percent" style="background-size: 33% 100%">28%</td>
+    <td class="percent" style="background-size: 28% 100%">28%</td>
   </tr>
   <tr>
     <td>Has no packaging metadata</td>
