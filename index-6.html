@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Handy links or snippets, and a sentence or two">
+<meta name="viewport" content="width=device-width">
+<title>Blogmarks (old posts, page 6) | Blogmarks</title>
+<link href="assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/index-6.html">
+<link rel="prev" href="." type="text/html">
+<link rel="next" href="index-5.html" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]-->
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="." title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="rss.xml">RSS feed</a></li>
+                <li><a href="categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><div class="postindex">
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/rich-tips/" class="u-url">Three Rich tips</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2022/rich-tips/" rel="bookmark">
+            <time class="published dt-published" datetime="2022-02-13T00:00:00Z" itemprop="datePublished" title="2022-02-13">2022-02-13</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I've mentioned Will McGugan's excellent library <a href="https://github.com/willmcgugan/rich">Rich</a> on this blog before. It is a great tool for building nice terminal interfaces, but it is also an important local development tool. Here's three top tips:</p>
+<ol>
+<li>Rich can be registered as a <a href="https://rich.readthedocs.io/en/stable/traceback.html#traceback-handler">handler to render stacktraces</a>. As well as the aesthetics, using Rich to handle stacktraces like this provides additional context which improves the usefulness of error messages in comparison to python's default handler.</li>
+<li>
+<a href="https://github.com/Textualize/rich#rich-inspect">Rich.inspect</a> can be used to examine a python object at runtime. I used to use <code>dir()</code> or <code>vars()</code> for this, but <code>rich.inspect()</code> is a big step up.</li>
+<li>Rich can be used as a log handler. <a href="https://rich.readthedocs.io/en/stable/logging.html">The docs</a> cover how to use it with python's <code>logging</code> module, but Will has also published this <a href="https://www.willmcgugan.com/blog/tech/post/richer-django-logging/">blog post</a> showing how to configure Django to use Rich as the default log handler.</li>
+</ol>
+</div>
+    </article>
+</div>
+
+        <nav class="postindexpager"><ul class="pager">
+<li class="previous">
+                <a href="." rel="prev">Newer posts</a>
+            </li>
+            <li class="next">
+                <a href="index-5.html" rel="next">Older posts</a>
+            </li>
+        </ul></nav></main><footer id="footer"><p>
+</p>
+<p>Contents © 2024 chris48s</p>
+
+<ul class="no-bullet">
+<li>
+    <i class="fab fa-github"></i>
+    <a href="https://github.com/chris48s/" target="_blank">Github</a>
+  </li>
+  <li>
+    <i class="fab fa-mastodon"></i>
+    <a href="https://fed.chris-shaw.dev/@chris" target="_blank">Mastodon</a>
+  </li>
+</ul></footer>
+</div>
+    
+            <script src="assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('main#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>
