@@ -44,3 +44,29 @@ ul.no-bullet {
   padding-left: 0.5em;
   padding-right: 0.2em;
 }
+
+
+/* table styles */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table, th, td {
+  border: 1px solid #000;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+}
+
+td.right-align {
+  text-align: right;
+}
+
+td.percent {
+  background-image: linear-gradient(to bottom right, #ccd9e8, #ccd9e8);
+  background-repeat: no-repeat;
+}
