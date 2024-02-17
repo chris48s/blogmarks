@@ -165,7 +165,7 @@ I haven't attempted to parse the setup.py and setup.cfg files. I am perhaps miss
   </tr>
   <tr>
     <td><b>Total</b></td>
-    <td class="right-align"><b>30,279</b></td>
+    <td class="right-align"><b>31,474</b></td>
     <td class="percent" style="background-size: 100% 100%"><b>100%</b></td>
   </tr>
 </table>
