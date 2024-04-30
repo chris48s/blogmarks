@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-nikola = "^8.3.0"
+nikola = "^8.3.1"
 tomli = "^2.0.1"
 aiohttp = "^3.9.5"
 watchdog = "^4.0.0"
