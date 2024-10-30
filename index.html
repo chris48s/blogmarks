@@ -17,7 +17,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
 <link rel="canonical" href="https://chris48s.github.io/blogmarks/">
 <link rel="next" href="index-6.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2024/python-package-manifest-files/" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2024/moto-lambda-logs/" type="text/html">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -40,7 +40,102 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/python-package-manifest-files/" class="u-url">An analysis of python package manifest files</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/moto-lambda-logs/" class="u-url">Where do the logs from fake lambda go?</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2024/moto-lambda-logs/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-10-30T00:00:00Z" itemprop="datePublished" title="2024-10-30">2024-10-30</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I've written before about <a href="https://docs.getmoto.org/en/latest/">moto</a>. It is a library for mocking out AWS services under test, and it is basically magic.</p>
+<p>Recently, I was working on a test for some code that invokes an AWS lambda function, and I was using moto to mock out the lambda service. The fact that moto can do this is quite impressive in itself, but during the course of this I found myself needing some visibility onto what was happening in the lambda while moto was running it in the mock lambda environment. This led me to the question "Where do the logs from fake lambda go?"</p>
+<p>It turns out the answer to this question is: "Into fake CloudWatch".</p>
+<p>On one level this answer makes complete logical sense. Simultaneously I found this a bit mind-blowing 🤯 Moto really is incredibly capable software.</p>
+<p>So, armed with this knowledge, how do we use it?</p>
+<p>I've pushed a repo with some complete working code demonstrating this to <a href="https://github.com/chris48s/moto-lambda-logs-demo">https://github.com/chris48s/moto-lambda-logs-demo</a>. Here's a cut down version leaving out some imports and helper functions for the sake of brevity.</p>
+<p>First lets define a toy lambda function we can test. As well as returning a response, our handler also prints something to stdout.</p>
+<div class="code"><pre class="code literal-block"><span class="c1"># handler.py</span>
+<span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"log message"</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"statusCode"</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s2">"body"</span><span class="p">:</span> <span class="s2">"Hello from Lambda!"</span><span class="p">}</span>
+</pre></div>
+
+<p>We can use moto to run this handler in a mock lambda environment and test the response like this:</p>
+<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">test_lambda</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">mock_aws</span><span class="p">():</span>
+        <span class="n">role</span> <span class="o">=</span> <span class="n">_get_mock_role</span><span class="p">()</span>
+
+        <span class="n">lambda_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+            <span class="s2">"lambda"</span><span class="p">,</span>
+            <span class="n">region_name</span><span class="o">=</span><span class="s2">"eu-west-1"</span>
+        <span class="p">)</span>
+
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">lambda_client</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span>
+            <span class="n">FunctionName</span><span class="o">=</span><span class="s2">"TestLambdaFunction"</span><span class="p">,</span>
+            <span class="n">Runtime</span><span class="o">=</span><span class="s2">"python3.10"</span><span class="p">,</span>
+            <span class="n">Role</span><span class="o">=</span><span class="n">role</span><span class="p">[</span><span class="s2">"Role"</span><span class="p">][</span><span class="s2">"Arn"</span><span class="p">],</span>
+            <span class="n">Handler</span><span class="o">=</span><span class="s2">"handler.lambda_handler"</span><span class="p">,</span>
+            <span class="n">Code</span><span class="o">=</span><span class="p">{</span><span class="s2">"ZipFile"</span><span class="p">:</span> <span class="n">_make_lambda_zip</span><span class="p">()},</span>
+        <span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">lambda_client</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span>
+            <span class="n">FunctionName</span><span class="o">=</span><span class="n">fn</span><span class="p">[</span><span class="s2">"FunctionName"</span><span class="p">],</span>
+            <span class="n">Payload</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({}),</span>
+        <span class="p">)</span>
+
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+            <span class="n">response</span><span class="p">[</span><span class="s2">"Payload"</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">payload</span> <span class="o">==</span> <span class="p">{</span>
+                <span class="s2">"statusCode"</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+                <span class="s2">"body"</span><span class="p">:</span> <span class="s2">"Hello from Lambda!"</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="o">...</span>
+</pre></div>
+
+<p>Having invoked the lambda, we can then also inspect the CloudWatch logs generated while running that function and make assertions about anything written to the log streams. In this case, I'm asserting the output of our <code>print()</code> statement made it into the logs.</p>
+<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">test_lambda</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">mock_aws</span><span class="p">():</span>
+
+        <span class="o">...</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">payload</span> <span class="o">==</span> <span class="p">{</span>
+                <span class="s2">"statusCode"</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+                <span class="s2">"body"</span><span class="p">:</span> <span class="s2">"Hello from Lambda!"</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="n">logs_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+            <span class="s2">"logs"</span><span class="p">,</span>
+            <span class="n">region_name</span><span class="o">=</span><span class="s2">"eu-west-1"</span>
+        <span class="p">)</span>
+        <span class="n">log_streams</span> <span class="o">=</span> <span class="n">logs_client</span><span class="o">.</span><span class="n">describe_log_streams</span><span class="p">(</span>
+            <span class="n">logGroupName</span><span class="o">=</span><span class="sa">f</span><span class="s2">"/aws/lambda/</span><span class="si">{</span><span class="n">fn</span><span class="p">[</span><span class="s1">'FunctionName'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"logStreams"</span><span class="p">)</span>
+
+        <span class="n">log_events</span> <span class="o">=</span> <span class="n">logs_client</span><span class="o">.</span><span class="n">get_log_events</span><span class="p">(</span>
+            <span class="n">logGroupName</span><span class="o">=</span><span class="sa">f</span><span class="s2">"/aws/lambda/</span><span class="si">{</span><span class="n">fn</span><span class="p">[</span><span class="s1">'FunctionName'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">logStreamName</span><span class="o">=</span><span class="n">log_streams</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"logStreamName"</span><span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"events"</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">([</span>
+                <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">log_events</span>
+                <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s2">"message"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"log message"</span>
+            <span class="p">])</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">)</span>
+</pre></div>
+
+<p>Moto really does provide an exceptionally deep and comprehensive mock AWS environment.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/python-package-manifest-files/" class="u-url">An analysis of python package manifest files</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s
@@ -631,24 +726,6 @@ in a bunch of places. Here's what I came up with:</p>
     <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">ses</span>
 </pre></div>
     </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/three-programming-blogs/" class="u-url">Three great programming blogs</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                chris48s
-            </span></p>
-            <p class="dateline">
-            <a href="posts/2022/three-programming-blogs/" rel="bookmark">
-            <time class="published dt-published" datetime="2022-09-16T00:00:00+01:00" itemprop="datePublished" title="2022-09-16">2022-09-16</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>These are some of my favourite programming bloggers. All 3 of these are consistently knocking out quality posts and well worth a follow:</p>
-<ol>
-<li><a href="https://martinheinz.dev/">Martin Heinz</a></li>
-<li><a href="https://adamj.eu/tech">Adam Johnson</a></li>
-<li><a href="https://roman.pt/">Roman Imankulov</a></li>
-</ol>
-</div>
     </article>
 </div>
 

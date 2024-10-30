@@ -1,5 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about python)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2024 chris48s</copyright><lastBuildDate>Sun, 29 Sep 2024 17:59:31 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>An analysis of python package manifest files</title><link>https://chris48s.github.io/blogmarks/posts/2024/python-package-manifest-files/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Python packaging is messy and fragmented. Lots of people have been writing about it recently and there have been some great articles that have attracted a lot of attention. For example, I've particularly enjoyed:&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about python)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2024 chris48s</copyright><lastBuildDate>Wed, 30 Oct 2024 20:22:25 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Where do the logs from fake lambda go?</title><link>https://chris48s.github.io/blogmarks/posts/2024/moto-lambda-logs/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;I've written before about &lt;a href="https://docs.getmoto.org/en/latest/"&gt;moto&lt;/a&gt;. It is a library for mocking out AWS services under test, and it is basically magic.&lt;/p&gt;
+&lt;p&gt;Recently, I was working on a test for some code that invokes an AWS lambda function, and I was using moto to mock out the lambda service. The fact that moto can do this is quite impressive in itself, but during the course of this I found myself needing some visibility onto what was happening in the lambda while moto was running it in the mock lambda environment. This led me to the question "Where do the logs from fake lambda go?"&lt;/p&gt;
+&lt;p&gt;It turns out the answer to this question is: "Into fake CloudWatch".&lt;/p&gt;
+&lt;p&gt;On one level this answer makes complete logical sense. Simultaneously I found this a bit mind-blowing 🤯 Moto really is incredibly capable software.&lt;/p&gt;
+&lt;p&gt;So, armed with this knowledge, how do we use it?&lt;/p&gt;
+&lt;p&gt;I've pushed a repo with some complete working code demonstrating this to &lt;a href="https://github.com/chris48s/moto-lambda-logs-demo"&gt;https://github.com/chris48s/moto-lambda-logs-demo&lt;/a&gt;. Here's a cut down version leaving out some imports and helper functions for the sake of brevity.&lt;/p&gt;
+&lt;p&gt;First lets define a toy lambda function we can test. As well as returning a response, our handler also prints something to stdout.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="c1"&gt;# handler.py&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;lambda_handler&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;context&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"log message"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"statusCode"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;200&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"body"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"Hello from Lambda!"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can use moto to run this handler in a mock lambda environment and test the response like this:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_lambda&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;mock_aws&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+        &lt;span class="n"&gt;role&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;_get_mock_role&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+        &lt;span class="n"&gt;lambda_client&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;boto3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="s2"&gt;"lambda"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;region_name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"eu-west-1"&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="n"&gt;fn&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;lambda_client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;create_function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;FunctionName&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"TestLambdaFunction"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;Runtime&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"python3.10"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;Role&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;role&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"Role"&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="s2"&gt;"Arn"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+            &lt;span class="n"&gt;Handler&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"handler.lambda_handler"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;Code&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"ZipFile"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;_make_lambda_zip&lt;/span&gt;&lt;span class="p"&gt;()},&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;lambda_client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;invoke&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;FunctionName&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;fn&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"FunctionName"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+            &lt;span class="n"&gt;Payload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dumps&lt;/span&gt;&lt;span class="p"&gt;({}),&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="n"&gt;payload&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;loads&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"Payload"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;decode&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;payload&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+                &lt;span class="s2"&gt;"statusCode"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;200&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                &lt;span class="s2"&gt;"body"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"Hello from Lambda!"&lt;/span&gt;
+            &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="o"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Having invoked the lambda, we can then also inspect the CloudWatch logs generated while running that function and make assertions about anything written to the log streams. In this case, I'm asserting the output of our &lt;code&gt;print()&lt;/code&gt; statement made it into the logs.&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_lambda&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;mock_aws&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+
+        &lt;span class="o"&gt;...&lt;/span&gt;
+        &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;payload&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+                &lt;span class="s2"&gt;"statusCode"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;200&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                &lt;span class="s2"&gt;"body"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"Hello from Lambda!"&lt;/span&gt;
+            &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="n"&gt;logs_client&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;boto3&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="s2"&gt;"logs"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;region_name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"eu-west-1"&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;log_streams&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;logs_client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;describe_log_streams&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;logGroupName&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"/aws/lambda/&lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;fn&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'FunctionName'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"logStreams"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="n"&gt;log_events&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;logs_client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get_log_events&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="n"&gt;logGroupName&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;"/aws/lambda/&lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;fn&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;'FunctionName'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="n"&gt;logStreamName&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;log_streams&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="s2"&gt;"logStreamName"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"events"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="nb"&gt;len&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;
+                &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;log_events&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"message"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"log message"&lt;/span&gt;
+            &lt;span class="p"&gt;])&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Moto really does provide an exceptionally deep and comprehensive mock AWS environment.&lt;/p&gt;</description><category>devops</category><category>python</category><category>testing</category><guid>https://chris48s.github.io/blogmarks/posts/2024/moto-lambda-logs/</guid><pubDate>Wed, 30 Oct 2024 00:00:00 GMT</pubDate></item><item><title>An analysis of python package manifest files</title><link>https://chris48s.github.io/blogmarks/posts/2024/python-package-manifest-files/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Python packaging is messy and fragmented. Lots of people have been writing about it recently and there have been some great articles that have attracted a lot of attention. For example, I've particularly enjoyed:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://alpopkes.com/posts/python/packaging_tools/"&gt;An unbiased evaluation of environment management and packaging tools&lt;/a&gt; by Anna-Lena Popkes&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://chriswarrick.com/blog/2023/01/15/how-to-improve-python-packaging/"&gt;How to improve Python packaging, or why fourteen tools are at least twelve too many&lt;/a&gt; by Chris Warrick and&lt;/li&gt;
@@ -443,39 +525,4 @@ in a bunch of places. Here's what I came up with:&lt;/p&gt;
 
 &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;'__main__'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
     &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;main&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</description><category>python</category><category>terminal</category><guid>https://chris48s.github.io/blogmarks/posts/2020/stdin-or-file/</guid><pubDate>Mon, 07 Dec 2020 00:00:00 GMT</pubDate></item><item><title>pip 20.3</title><link>https://chris48s.github.io/blogmarks/posts/2020/pip-203/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;There is a very long-standing issue on the pip repository: &lt;a href="https://github.com/pypa/pip/issues/988"&gt;pip needs a dependency resolver&lt;/a&gt;. Most language package managers (e.g: composer, bundler, cargo, etc) either use a resolver to derive a consistent dependency tree and prevent incompatible installations, or in the case of NPM/yarn allow "broken diamond" resolution (where more than one version of the same package can be installed at the same time). For the longest time, pip has had no true resolver, allowing incompatible dependencies to be installed. Until now..&lt;/p&gt;
-&lt;p&gt;Today's release of &lt;a href="https://blog.python.org/2020/11/pip-20-3-release-new-resolver.html"&gt;Pip 20.3&lt;/a&gt; is the culmination of a &lt;a href="https://pyfound.blogspot.com/2020/03/new-pip-resolver-to-roll-out-this-year.html"&gt;long programme of work&lt;/a&gt; to implement a proper dependency resolver in pip. This makes pip 20.3 the most significant pip release in a very long time, possibly ever.&lt;/p&gt;
-&lt;p&gt;It has actually been possible to preview this feature for some time using the &lt;code&gt;--use-feature=2020-resolver&lt;/code&gt; flag in pip 20.2.x or by installing the beta releases of pip 20.3, but pip 20.3 is the first stable release to enable the new resolver by default. This means that a command like:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;virtualenv&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;.0.2&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;six&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.11
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;or&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="nb"&gt;printf&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;"virtualenv==20.0.2\nsix==1.11"&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&amp;gt;&lt;span class="w"&gt; &lt;/span&gt;requirements.txt
-pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;requirements.txt
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;will now not install any new packages and throw a helpful error like:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ERROR: Cannot install six==1.11 and virtualenv==20.0.2 because these package versions have conflicting dependencies.
-
-The conflict is caused by:
-    The user requested six==1.11
-    virtualenv 20.0.2 depends on six&amp;lt;2 and &amp;gt;=1.12.0
-
-To fix this you could try to:
-1. loosen the range of package versions you've specified
-2. remove package versions to allow pip attempt to solve the dependency conflict
-
-ERROR: ResolutionImpossible: for help visit https://pip.pypa.io/en/latest/user_guide/#fixing-conflicting-dependencies
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;which is a &lt;em&gt;massive&lt;/em&gt; improvement over the previous behaviour. There is a gotcha though. Resolution only considers the packages being installed in that command. It doesn't take into account other packages already installed in your (virtual) environment. This means running&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;virtualenv&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;20&lt;/span&gt;.0.2&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nv"&gt;six&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="m"&gt;1&lt;/span&gt;.11
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;doesn't fail to install &lt;code&gt;six==1.11&lt;/code&gt; with a &lt;code&gt;ResolutionImpossible&lt;/code&gt; error. It will still install the incompatible package and warn you that it has done that:&lt;/p&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
-ERROR: virtualenv 20.0.2 requires six&amp;lt;2,&amp;gt;=1.12.0, but you'll have six 1.11.0 which is incompatible.
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;This isn't a bug. This behaviour is noted in the error message  and &lt;a href="https://pip.pypa.io/en/latest/user_guide/#changes-to-the-pip-dependency-resolver-in-20-3-2020"&gt;documented in the release notes&lt;/a&gt;, but it is worth understanding this limitation. Even with the new resolver pip will still install incompatible dependencies in your environment if given the right combination of commands. This is a situation it is possible to wander into without realising or consciously enabling the legacy behaviour with &lt;code&gt;--use-deprecated=legacy-resolver&lt;/code&gt;. While it is useful to have some further improved messaging around this, it is still a bit of a disappointment.&lt;/p&gt;
-&lt;p&gt;I've &lt;a href="https://chris48s.github.io/blogmarks/posts/2020/2poetry/"&gt;previously written&lt;/a&gt; about poetry. I'm now using poetry for all projects where I'm the only person who works on it and I have no plan to change that (poetry's behaviour is still more advanced here and IMO preferable), but it is impossible to work in the wider python community without encountering pip. This feature reduces that point of friction and it is great to see, but it isn't a silver bullet for preventing incompatible dependencies. It will be interesting to see how the wider community responds as users encounter this behaviour change for the first time.&lt;/p&gt;</description><category>packaging</category><category>python</category><guid>https://chris48s.github.io/blogmarks/posts/2020/pip-203/</guid><pubDate>Mon, 30 Nov 2020 00:00:00 GMT</pubDate></item></channel></rss>
+&lt;/pre&gt;&lt;/div&gt;</description><category>python</category><category>terminal</category><guid>https://chris48s.github.io/blogmarks/posts/2020/stdin-or-file/</guid><pubDate>Mon, 07 Dec 2020 00:00:00 GMT</pubDate></item></channel></rss>
