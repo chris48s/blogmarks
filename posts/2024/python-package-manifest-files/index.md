@@ -2,7 +2,7 @@
 .. title: An analysis of python package manifest files
 .. slug: python-package-manifest-files
 .. date: 2024-02-17 00:00:00
-.. tags: python
+.. tags: python,packaging
 .. category: 
 .. link: 
 .. description: To be a proper python dev these days you have to either build your own python package manager in rust, or write a blog post about the state of python packaging. Turns out I am crap at rust.

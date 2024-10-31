@@ -2,7 +2,7 @@
 .. title: Generating a GitHub Markdown Summary from Mocha
 .. slug: mocha-markdown
 .. date: 2022-09-20 00:00:00
-.. tags: javascript,testing
+.. tags: javascript,testing,github
 .. category: 
 .. link: 
 .. description: 
