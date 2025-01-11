@@ -1,18 +1,20 @@
-[tool.poetry]
+[project]
 name = "blogmarks"
 version = "0.1.0"
 description = "Handy links or snippets, and a sentence or two"
-authors = ["chris48s <git@chris-shaw.dev>"]
+authors = [{name = "chris48s", email = "git@chris-shaw.dev"}]
 readme = "README.md"
+requires-python = "^3.10"
+dependencies = [
+    "nikola==8.3.1",
+    "tomli==2.0.1",
+    "aiohttp==3.10.6",
+    "watchdog==4.0.2"
+]
+
+[tool.poetry]
+requires-poetry = ">=2.0"
 package-mode = false
-
-[tool.poetry.dependencies]
-python = "^3.10"
-nikola = "^8.3.1"
-tomli = "^2.0.1"
-aiohttp = "^3.10.6"
-watchdog = "^4.0.2"
-
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.13.2"
@@ -20,5 +22,5 @@ black = "^24.8.0"
 flake8 = "^7.1.1"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
