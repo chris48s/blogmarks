@@ -41,7 +41,59 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/three-programming-blogs/" class="u-url">Three great programming blogs</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/diagrams/" class="u-url">Diagrams</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2022/diagrams/" rel="bookmark">
+            <time class="published dt-published" datetime="2022-09-18T00:00:00+01:00" itemprop="datePublished" title="2022-09-18">2022-09-18</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Last week I tried out <a href="https://diagrams.mingrammer.com/">diagrams</a> to knock up some cloud infrastructure diagrams. There are several things I really like about this tool:</p>
+<ul>
+<li>The learning curve is very easy. I was able to absorb the key concepts and produce a useful diagram showing the AWS setup for an application I am working on within about 30 mins of installing it for the first time.</li>
+<li>The [effort in]:[pretty pictures out] ratio is very satisfying.</li>
+<li>Because the diagram is generated from code, it can live in your repo. The diff changing the diagram could be in the same commit as the updates to your CDK definitions or ansible playbooks or whatever it is that actually makes the infrastructure changes.</li>
+</ul>
+<p>For example, the following diagram</p>
+<p><img alt="example diagram" src="images/diagram.png"></p>
+<p>is generated from this short python snippet:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">diagrams</span> <span class="kn">import</span> <span class="n">Cluster</span><span class="p">,</span> <span class="n">Diagram</span>
+<span class="kn">from</span> <span class="nn">diagrams.aws.compute</span> <span class="kn">import</span> <span class="n">Fargate</span>
+<span class="kn">from</span> <span class="nn">diagrams.aws.database</span> <span class="kn">import</span> <span class="n">RDS</span><span class="p">,</span> <span class="n">ElastiCache</span>
+<span class="kn">from</span> <span class="nn">diagrams.aws.engagement</span> <span class="kn">import</span> <span class="n">SES</span>
+<span class="kn">from</span> <span class="nn">diagrams.aws.network</span> <span class="kn">import</span> <span class="n">ELB</span><span class="p">,</span> <span class="n">Route53</span>
+<span class="kn">from</span> <span class="nn">diagrams.aws.storage</span> <span class="kn">import</span> <span class="n">S3</span>
+
+<span class="k">with</span> <span class="n">Diagram</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">ses</span> <span class="o">=</span> <span class="n">SES</span><span class="p">(</span><span class="s2">"Mail Transport (SES)"</span><span class="p">)</span>
+    <span class="n">dns</span> <span class="o">=</span> <span class="n">Route53</span><span class="p">(</span><span class="s2">"Route 53 (DNS)"</span><span class="p">)</span>
+    <span class="n">s3</span> <span class="o">=</span> <span class="n">S3</span><span class="p">(</span><span class="s2">"S3"</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">"VPC"</span><span class="p">):</span>
+        <span class="n">lb</span> <span class="o">=</span> <span class="n">ELB</span><span class="p">(</span><span class="s2">"Load Balancer (ALB)"</span><span class="p">)</span>
+        <span class="n">elasticache</span> <span class="o">=</span> <span class="n">ElastiCache</span><span class="p">(</span><span class="s2">"Redis (ElastiCache)"</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">"ECS"</span><span class="p">):</span>
+            <span class="n">web</span> <span class="o">=</span> <span class="n">Fargate</span><span class="p">(</span><span class="s2">"web"</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">"DB Cluster (RDS)"</span><span class="p">):</span>
+            <span class="n">db_primary</span> <span class="o">=</span> <span class="n">RDS</span><span class="p">(</span><span class="s2">"primary"</span><span class="p">)</span>
+            <span class="n">db_primary</span> <span class="o">-</span> <span class="n">RDS</span><span class="p">(</span><span class="s2">"read replica"</span><span class="p">)</span>
+
+    <span class="n">dns</span> <span class="o">&gt;&gt;</span> <span class="n">lb</span>
+    <span class="n">lb</span> <span class="o">&gt;&gt;</span> <span class="n">web</span>
+
+    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">elasticache</span>
+    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">db_primary</span>
+    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">s3</span>
+    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">ses</span>
+</pre></div>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/three-programming-blogs/" class="u-url">Three great programming blogs</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s

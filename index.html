@@ -17,7 +17,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
 <link rel="canonical" href="https://chris48s.github.io/blogmarks/">
 <link rel="next" href="index-6.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2024/moto-lambda-logs/" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2025/moto-lambda-logs/" type="text/html">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -40,7 +40,115 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/moto-lambda-logs/" class="u-url">Where do the logs from fake lambda go?</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/moto-lambda-logs/" class="u-url">Three lessons from moving to Renovate</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2025/moto-lambda-logs/" rel="bookmark">
+            <time class="published dt-published" datetime="2025-01-19T00:00:00Z" itemprop="datePublished" title="2025-01-19">2025-01-19</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>At work recently I have been working on migrating some python projects using UV for package management from dependabot to renovate. Renovate is really impressive software. It can do <em>all the things</em>. However with that capability comes some complexity. Whereas dependabot is a go kart, renovate is more like an aeroplane cockpit. Although I've used renovate before, the projects I've been migrating recently are a bit bigger with a few more moving parts.</p>
+<p>Here's a random grab-bag of things I have recently learned that were not immediately obvious to me.</p>
+<h3>Order of packageRules evaluation</h3>
+<p>Renovate evaluates <code>packageRules[]</code> from top to bottom. The order they are declared in is important. If a package matches a rule, there’s no bail-out or "early return". It keeps going down the array. This means if a package matches multiple rules, later rules override earlier rules in the array.</p>
+<p>To give a worked example:</p>
+<p>If I have</p>
+<div class="code"><pre class="code literal-block"><span class="k">[project]</span>
+<span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s">"boto3==1.35.98"</span><span class="p">,</span>
+<span class="w">    </span><span class="s">"botocore==1.35.98"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+<p>In my <code>pyproject.toml</code></p>
+<p>This renovate config</p>
+<div class="code"><pre class="code literal-block"><span class="nt">"packageRules"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"matchManagers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"pep621"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"matchDepTypes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"project.dependencies"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"schedule"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"before 4am on monday"</span><span class="p">],</span><span class="w"> </span><span class="c1">// weekly</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"groupName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"boto"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"matchManagers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"pep621"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"matchPackageNames"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"/^boto.*$/"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"schedule"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"* 0-3 1 * *"</span><span class="p">],</span><span class="w"> </span><span class="c1">// monthly</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+
+<p>Will bump the two boto packages <strong>monthly</strong>, whereas the same rules in the opposite order</p>
+<div class="code"><pre class="code literal-block"><span class="nt">"packageRules"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"groupName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"boto"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"matchManagers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"pep621"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"matchPackageNames"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"/^boto.*$/"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"schedule"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"* 0-3 1 * *"</span><span class="p">],</span><span class="w"> </span><span class="c1">// monthly</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"matchManagers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"pep621"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"matchDepTypes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"project.dependencies"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"schedule"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"before 4am on monday"</span><span class="p">],</span><span class="w"> </span><span class="c1">// weekly</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+
+<p>will bump them <strong>weekly</strong> because the packages match both rules and the second one "wins".</p>
+<p>This means that you broadly want to order your <code>packageRules</code> from the most general at the start of the array to most specific at the end.</p>
+<h3>VCS Dependencies</h3>
+<p>UV allows you to specify VCS dependencies in a couple of ways.</p>
+<p>One of them is to do it inline in <code>dependencies</code> using PEP-508 syntax e.g:</p>
+<div class="code"><pre class="code literal-block"><span class="k">[project]</span>
+<span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s">"arcgis2geojson @ git+https://github.com/chris48s/arcgis2geojson.git@3.0.3"</span>
+<span class="p">]</span>
+</pre></div>
+
+<p>The other us to use UV <a href="https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-sources">dependency sources</a> e.g:</p>
+<div class="code"><pre class="code literal-block"><span class="k">[project]</span>
+<span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s">"arcgis2geojson"</span>
+<span class="p">]</span>
+
+<span class="k">[tool.uv.sources]</span>
+<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+
+<p>Renovate's UV manager natively knows how to bump VCS dependencies in <code>pyproject.toml</code>. However, it will only detect and bump dependencies which are specified with the dependency sources syntax. VCS dependencies specified inline will be ignored, so the syntax you use here matters.</p>
+<p>Additionally, the specific syntax you use inside <code>tool.uv.sources</code> is also important. These two declarations are essentially identical in terms of what gets installed into your virtual environment:</p>
+<div class="code"><pre class="code literal-block"><span class="k">[tool.uv.sources]</span>
+<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">rev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+
+<div class="code"><pre class="code literal-block"><span class="k">[tool.uv.sources]</span>
+<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+
+<p>However, renovate will interpret them and bump them differently. Using <code>rev</code> here will cause renovate to bump you to the latest commit every time a commit is pushed to the referenced repository, whereas using <code>tag</code> will only offer to upgrade the dependency when a new tag is pushed.</p>
+<h3>Pre-Commit</h3>
+<p>I'm going to go on record and say I don't particularly like pre-commit. It is not something I use on my own projects. I do encounter on other people's repositories a lot though, including some of the repos at work. As such, although it is something I prefer not to use, I do need to find coping mechanisms for it. One of my least favourite things about pre-commit is that unless you use repository-local hooks (which is relatively uncommon), pre-commit pushes you towards using custom "hook" repos. This leads to a situation where you end up with the version numbers of your tools duplicated in your package manifest and your <code>.pre-commit.yaml</code>. You now no longer have a single source of truth for this information and the two version numbers can end up out of sync.</p>
+<p>Usefully, renovate has a <a href="https://docs.renovatebot.com/modules/manager/pre-commit/">pre-commit manager</a> which can bump version numbers in <code>.pre-commit.yaml</code>. This means you can write a <code>packageRule</code> like:</p>
+<div class="code"><pre class="code literal-block"><span class="p">{</span>
+<span class="w">    </span><span class="nt">"groupName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ruff"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"matchManagers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">"pep621"</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">"pre-commit"</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"matchPackageNames"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">"ruff"</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">"astral-sh/ruff-pre-commit"</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>for example, which will bump the version of ruff in <code>pyproject.toml</code>/<code>uv.lock</code> and <code>.pre-commit.yaml</code> in a single PR, keeping the two in sync.</p>
+<p>Note that renovate's pre-commit manager is <strong>disabled by default</strong> and you must explicitly opt-in to it, as noted in the <a href="https://docs.renovatebot.com/modules/manager/pre-commit/#enabling">docs</a>.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/moto-lambda-logs/" class="u-url">Where do the logs from fake lambda go?</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s
@@ -673,58 +781,6 @@ in a bunch of places. Here's what I came up with:</p>
 
 <p>and we've got ourselves a nice little summary report from our mocha tests.</p>
 <p><img alt="example markdown summary" src="images/markdown-summary.png"></p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/diagrams/" class="u-url">Diagrams</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                chris48s
-            </span></p>
-            <p class="dateline">
-            <a href="posts/2022/diagrams/" rel="bookmark">
-            <time class="published dt-published" datetime="2022-09-18T00:00:00+01:00" itemprop="datePublished" title="2022-09-18">2022-09-18</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>Last week I tried out <a href="https://diagrams.mingrammer.com/">diagrams</a> to knock up some cloud infrastructure diagrams. There are several things I really like about this tool:</p>
-<ul>
-<li>The learning curve is very easy. I was able to absorb the key concepts and produce a useful diagram showing the AWS setup for an application I am working on within about 30 mins of installing it for the first time.</li>
-<li>The [effort in]:[pretty pictures out] ratio is very satisfying.</li>
-<li>Because the diagram is generated from code, it can live in your repo. The diff changing the diagram could be in the same commit as the updates to your CDK definitions or ansible playbooks or whatever it is that actually makes the infrastructure changes.</li>
-</ul>
-<p>For example, the following diagram</p>
-<p><img alt="example diagram" src="images/diagram.png"></p>
-<p>is generated from this short python snippet:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">diagrams</span> <span class="kn">import</span> <span class="n">Cluster</span><span class="p">,</span> <span class="n">Diagram</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.compute</span> <span class="kn">import</span> <span class="n">Fargate</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.database</span> <span class="kn">import</span> <span class="n">RDS</span><span class="p">,</span> <span class="n">ElastiCache</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.engagement</span> <span class="kn">import</span> <span class="n">SES</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.network</span> <span class="kn">import</span> <span class="n">ELB</span><span class="p">,</span> <span class="n">Route53</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.storage</span> <span class="kn">import</span> <span class="n">S3</span>
-
-<span class="k">with</span> <span class="n">Diagram</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">ses</span> <span class="o">=</span> <span class="n">SES</span><span class="p">(</span><span class="s2">"Mail Transport (SES)"</span><span class="p">)</span>
-    <span class="n">dns</span> <span class="o">=</span> <span class="n">Route53</span><span class="p">(</span><span class="s2">"Route 53 (DNS)"</span><span class="p">)</span>
-    <span class="n">s3</span> <span class="o">=</span> <span class="n">S3</span><span class="p">(</span><span class="s2">"S3"</span><span class="p">)</span>
-
-    <span class="k">with</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">"VPC"</span><span class="p">):</span>
-        <span class="n">lb</span> <span class="o">=</span> <span class="n">ELB</span><span class="p">(</span><span class="s2">"Load Balancer (ALB)"</span><span class="p">)</span>
-        <span class="n">elasticache</span> <span class="o">=</span> <span class="n">ElastiCache</span><span class="p">(</span><span class="s2">"Redis (ElastiCache)"</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">"ECS"</span><span class="p">):</span>
-            <span class="n">web</span> <span class="o">=</span> <span class="n">Fargate</span><span class="p">(</span><span class="s2">"web"</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">"DB Cluster (RDS)"</span><span class="p">):</span>
-            <span class="n">db_primary</span> <span class="o">=</span> <span class="n">RDS</span><span class="p">(</span><span class="s2">"primary"</span><span class="p">)</span>
-            <span class="n">db_primary</span> <span class="o">-</span> <span class="n">RDS</span><span class="p">(</span><span class="s2">"read replica"</span><span class="p">)</span>
-
-    <span class="n">dns</span> <span class="o">&gt;&gt;</span> <span class="n">lb</span>
-    <span class="n">lb</span> <span class="o">&gt;&gt;</span> <span class="n">web</span>
-
-    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">elasticache</span>
-    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">db_primary</span>
-    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">s3</span>
-    <span class="n">web</span> <span class="o">&gt;&gt;</span> <span class="n">ses</span>
-</pre></div>
     </div>
     </article>
 </div>
