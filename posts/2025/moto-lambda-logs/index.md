@@ -9,7 +9,7 @@
 .. type: text
 -->
 
-At work recently I have been working on migrating some python projects using UV for package management from dependabot to renovate. Renovate is really impressive software. It can do _all the things_. However with that capability comes some complexity. Whereas dependabot is a go kart, renovate is more like an aeroplane cockpit. Although I've used renovate before, the projects I've been migrating recently are a bit bigger with a few more moving parts.
+At work recently I have been migrating some python projects using UV for package management from dependabot to renovate. Renovate is really impressive software. It can do _all the things_. However with that capability comes some complexity. Whereas dependabot is a go kart, renovate is more like an aeroplane cockpit. Although I've used renovate before, the projects I've been migrating recently are a bit bigger with a few more moving parts.
 
 Here's a random grab-bag of things I have recently learned that were not immediately obvious to me.
 
