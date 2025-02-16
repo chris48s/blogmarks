@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html prefix="        og: http://ogp.me/ns# article: http://ogp.me/ns/article#     " vocab="http://ogp.me/ns" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Django DB Routers: Pitfalls | Blogmarks</title>
+<link href="../../../assets/css/baguetteBox.min.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/rst_base.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/nikola_rst.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../../rss.xml">
+<link rel="canonical" href="https://chris48s.github.io/blogmarks/posts/2025/django-db-routers-1/">
+<!--[if lt IE 9]><script src="../../../assets/js/html5shiv-printshiv.min.js"></script><![endif]--><meta name="author" content="chris48s">
+<link rel="prev" href="../moto-lambda-logs/" title="Three lessons from moving to Renovate" type="text/html">
+<meta property="og:site_name" content="Blogmarks">
+<meta property="og:title" content="Django DB Routers: Pitfalls">
+<meta property="og:url" content="https://chris48s.github.io/blogmarks/posts/2025/django-db-routers-1/">
+<meta property="og:description" content="Django has a feature called Database Routers. This gives you an application-level abstraction to manage multiple database connections. This can be useful if you are working with a primary/replica setu">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2025-02-16T00:00:00Z">
+<meta property="article:tag" content="django">
+<meta property="article:tag" content="python">
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Django DB Routers: Pitfalls",
+    "url": "https://chris48s.github.io/blogmarks/posts/2025/django-db-routers-1/",
+    "description": "",
+    "author": {
+        "@type": "Person",
+        "name": "chris48s"
+    },
+    "mainEntityOfPage": "https://chris48s.github.io/blogmarks/posts/2025/django-db-routers-1/",
+    "datePublished": "2025-02-16",
+    "dateCreated": "2025-02-16",
+    "dateModified": "2025-02-16"
+}
+</script>
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+        
+    <header id="header"><h1 id="brand"><a href="../../../" title="Blogmarks" rel="home">
+
+        <span id="blog-title">Blogmarks</span>
+    </a></h1>
+
+        
+
+        
+    <nav id="menu"><ul>
+<li><a href="../../../rss.xml">RSS feed</a></li>
+                <li><a href="../../../categories/">Tags</a></li>
+
+    
+
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Django DB Routers: Pitfalls</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2025-02-16T00:00:00Z" itemprop="datePublished" title="2025-02-16">2025-02-16</time></a>
+            </p>
+            
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Django has a feature called <a href="https://docs.djangoproject.com/en/5.2/topics/db/multi-db/">Database Routers</a>. This gives you an application-level abstraction to manage multiple database connections. This can be useful if you are working with a primary/replica setup or if you're implementing database partitioning or sharding in your application.</p>
+<p>There are a couple of ways in which it is can be a bit of a leaky abstraction though.</p>
+<h3>Raw SQL</h3>
+<p>This one is pretty obvious if you think about it, but anything you define in your database routers only applies to database I/O that happens via the ORM. As soon as you use a <code>cursor</code> to execute raw SQL your DB routers are bypassed and it is your responsibility to manage which connection is being used. You can do this by importing <code>from django.db import connections</code> and selecting a named connection.</p>
+<p>This isn't a big surprise, but it is worth being aware of if you are converting an existing application to use multiple DB connections. This is not normally something you implement from day one.</p>
+<p>The other thing worth noting here is that even if your own application code only interacts with the DB through the ORM, if there is any package anywhere in your dependency tree that uses <code>connection.cursor()</code>, that is going to bypass any logic in your database router. This could lead to reads or writes performed by a third party package which don't happen on the expected DB connection.</p>
+<h3>Transactions</h3>
+<p>This one is perhaps less obvious. Any time you use a transaction, you are also responsible for explicitly managing your own DB connections. Imagine we have an application with the following setup:</p>
+<div class="code"><pre class="code literal-block"><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"default"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"ENGINE"</span><span class="p">:</span> <span class="s2">"django.db.backends.sqlite3"</span><span class="p">,</span>
+        <span class="s2">"NAME"</span><span class="p">:</span> <span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s2">"db1.sqlite3"</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">"auth"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"ENGINE"</span><span class="p">:</span> <span class="s2">"django.db.backends.sqlite3"</span><span class="p">,</span>
+        <span class="s2">"NAME"</span><span class="p">:</span> <span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s2">"db2.sqlite3"</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">AuthRouter</span><span class="p">:</span>
+    <span class="n">route_app_labels</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"contenttypes"</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_app_labels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"auth"</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_app_labels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"auth"</span>
+        <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+
+<p>If I write the following code:</p>
+<div class="code"><pre class="code literal-block"><span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
+    <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="s1">'user1'</span><span class="p">,</span>
+        <span class="n">email</span><span class="o">=</span><span class="s1">'user1@example.com'</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s1">'changeme1'</span>
+    <span class="p">)</span>
+    <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="s1">'user2'</span><span class="p">,</span>
+        <span class="n">email</span><span class="o">=</span><span class="s1">'user2@example.com'</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s1">'changeme2'</span>
+    <span class="p">)</span>
+</pre></div>
+
+<p>this will create 2 users, writing the records to our <code>auth</code> DB. But the transaction wrapping those writes uses the <code>default</code> DB connection. This won't throw any exception or error. It just means these two writes are not wrapped in a meaningful transaction. However, to a casual reader of the code, it probably looks like they are.</p>
+<p>The correct code in this case would be <code>with transaction.atomic(using="auth"):</code> but it is worth being aware of this. Using multiple DBs opens the door to a class of wrong code that looks right.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../../categories/django/" rel="tag">django</a></li>
+            <li><a class="tag p-category" href="../../../categories/python/" rel="tag">python</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../moto-lambda-logs/" rel="prev" title="Three lessons from moving to Renovate">Previous post</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>
+</p>
+<p>Contents © 2025 chris48s</p>
+
+<ul class="no-bullet">
+<li>
+    <i class="fab fa-github"></i>
+    <a href="https://github.com/chris48s/" target="_blank">Github</a>
+  </li>
+  <li>
+    <i class="fab fa-mastodon"></i>
+    <a href="https://fed.chris-shaw.dev/@chris" target="_blank">Mastodon</a>
+  </li>
+</ul></footer>
+</div>
+    
+            <script src="../../../assets/js/baguetteBox.min.js"></script><script>
+    baguetteBox.run('main#content', {
+        ignoreClass: 'islink',
+        captions: function(element){var i=element.getElementsByTagName('img')[0];return i===undefined?'':i.alt;}});
+    </script>
+</body>
+</html>

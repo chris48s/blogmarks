@@ -41,7 +41,60 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/diagrams/" class="u-url">Diagrams</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/mocha-markdown/" class="u-url">Generating a GitHub Markdown Summary from Mocha</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2022/mocha-markdown/" rel="bookmark">
+            <time class="published dt-published" datetime="2022-09-20T00:00:00+01:00" itemprop="datePublished" title="2022-09-20">2022-09-20</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I recently wanted to migrate some CI builds running mocha tests from CircleCI to GitHub Actions. I also wanted to use <a href="https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/">Job Summaries</a> to produce a markdown summary of the build. This allows you to output a summary of your workflow run by echoing markdown to a special environment variable called <code>$GITHUB_STEP_SUMMARY</code> e.g: <code>echo '### Hello world! :rocket:' &gt;&gt; $GITHUB_STEP_SUMMARY</code></p>
+<p>We run our tests with mocha, which doesn't ship with a markdown output formatter. The "min" formatter was quite close to what I wanted (a markdown summary of any failed tests but a "quiet" output if everything passed). Dumping that to a code fence would have probably been acceptable. Unfortunately our test suite has a number of tests which log output to stdout which made things a bit messy as the "min" formatter also dumps to stdout. So I decided to write a quick script to parse mocha's json output and produce a markdown summary. Doing this also allowed me to uses some nicer formatting than dumping console output into a code fence.</p>
+<div class="code"><pre class="code literal-block"><span class="c1">// mocha2md.js</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nx">fs</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'fs'</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mf">3</span><span class="p">]))</span>
+
+<span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`# </span><span class="si">${</span><span class="nx">title</span><span class="si">}</span><span class="sb">\n\n`</span><span class="p">)</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">passes</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`✔ </span><span class="si">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">passes</span><span class="si">}</span><span class="sb"> passed\n`</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">failures</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`✖ </span><span class="si">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">failures</span><span class="si">}</span><span class="sb"> failed\n\n`</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">failures</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">test</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">tests</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">test</span><span class="p">.</span><span class="nx">err</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">test</span><span class="p">.</span><span class="nx">err</span><span class="p">).</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`### </span><span class="si">${</span><span class="nx">test</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">\n\n`</span><span class="p">)</span>
+<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">test</span><span class="p">.</span><span class="nx">fullTitle</span><span class="si">}</span><span class="sb">\n\n`</span><span class="p">)</span>
+<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'```\n'</span><span class="p">)</span>
+<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">test</span><span class="p">.</span><span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="si">}</span><span class="sb">\n`</span><span class="p">)</span>
+<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'```\n\n'</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Combine that with some workflow yaml to run the tests with the json reporter and use our script to write the report.</p>
+<div class="code"><pre class="code literal-block"><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run tests</span>
+<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">npm run test:core -- --reporter json --reporter-option 'output=reports/test.json'</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Write Markdown Summary</span>
+<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node mocha2md.js Tests reports/test.json &gt;&gt; $GITHUB_STEP_SUMMARY</span>
+</pre></div>
+
+<p>and we've got ourselves a nice little summary report from our mocha tests.</p>
+<p><img alt="example markdown summary" src="images/markdown-summary.png"></p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/diagrams/" class="u-url">Diagrams</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s

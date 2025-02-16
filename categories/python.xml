@@ -1,5 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about python)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2025 chris48s</copyright><lastBuildDate>Mon, 20 Jan 2025 17:17:28 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Three lessons from moving to Renovate</title><link>https://chris48s.github.io/blogmarks/posts/2025/moto-lambda-logs/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;At work recently I have been migrating some python projects using UV for package management from dependabot to renovate. Renovate is really impressive software. It can do &lt;em&gt;all the things&lt;/em&gt;. However with that capability comes some complexity. Whereas dependabot is a go kart, renovate is more like an aeroplane cockpit. Although I've used renovate before, the projects I've been migrating recently are a bit bigger with a few more moving parts.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about python)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/python.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2025 chris48s</copyright><lastBuildDate>Sun, 16 Feb 2025 11:37:19 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Django DB Routers: Pitfalls</title><link>https://chris48s.github.io/blogmarks/posts/2025/django-db-routers-1/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Django has a feature called &lt;a href="https://docs.djangoproject.com/en/5.2/topics/db/multi-db/"&gt;Database Routers&lt;/a&gt;. This gives you an application-level abstraction to manage multiple database connections. This can be useful if you are working with a primary/replica setup or if you're implementing database partitioning or sharding in your application.&lt;/p&gt;
+&lt;p&gt;There are a couple of ways in which it is can be a bit of a leaky abstraction though.&lt;/p&gt;
+&lt;h3&gt;Raw SQL&lt;/h3&gt;
+&lt;p&gt;This one is pretty obvious if you think about it, but anything you define in your database routers only applies to database I/O that happens via the ORM. As soon as you use a &lt;code&gt;cursor&lt;/code&gt; to execute raw SQL your DB routers are bypassed and it is your responsibility to manage which connection is being used. You can do this by importing &lt;code&gt;from django.db import connections&lt;/code&gt; and selecting a named connection.&lt;/p&gt;
+&lt;p&gt;This isn't a big surprise, but it is worth being aware of if you are converting an existing application to use multiple DB connections. This is not normally something you implement from day one.&lt;/p&gt;
+&lt;p&gt;The other thing worth noting here is that even if your own application code only interacts with the DB through the ORM, if there is any package anywhere in your dependency tree that uses &lt;code&gt;connection.cursor()&lt;/code&gt;, that is going to bypass any logic in your database router. This could lead to reads or writes performed by a third party package which don't happen on the expected DB connection.&lt;/p&gt;
+&lt;h3&gt;Transactions&lt;/h3&gt;
+&lt;p&gt;This one is perhaps less obvious. Any time you use a transaction, you are also responsible for explicitly managing your own DB connections. Imagine we have an application with the following setup:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;DATABASES&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="s2"&gt;"default"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s2"&gt;"ENGINE"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"django.db.backends.sqlite3"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"NAME"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;BASE_DIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="s2"&gt;"db1.sqlite3"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;},&lt;/span&gt;
+    &lt;span class="s2"&gt;"auth"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s2"&gt;"ENGINE"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"django.db.backends.sqlite3"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="s2"&gt;"NAME"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;BASE_DIR&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="s2"&gt;"db2.sqlite3"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;AuthRouter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;route_app_labels&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;"auth"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"contenttypes"&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;db_for_read&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;hints&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_meta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;app_label&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;route_app_labels&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;"auth"&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;None&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;db_for_write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;hints&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_meta&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;app_label&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;route_app_labels&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;"auth"&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;None&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If I write the following code:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;transaction&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;atomic&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;create_user&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'user1'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;email&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'user1@example.com'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'changeme1'&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;create_user&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'user2'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;email&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'user2@example.com'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'changeme2'&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;this will create 2 users, writing the records to our &lt;code&gt;auth&lt;/code&gt; DB. But the transaction wrapping those writes uses the &lt;code&gt;default&lt;/code&gt; DB connection. This won't throw any exception or error. It just means these two writes are not wrapped in a meaningful transaction. However, to a casual reader of the code, it probably looks like they are.&lt;/p&gt;
+&lt;p&gt;The correct code in this case would be &lt;code&gt;with transaction.atomic(using="auth"):&lt;/code&gt; but it is worth being aware of this. Using multiple DBs opens the door to a class of wrong code that looks right.&lt;/p&gt;</description><category>django</category><category>python</category><guid>https://chris48s.github.io/blogmarks/posts/2025/django-db-routers-1/</guid><pubDate>Sun, 16 Feb 2025 00:00:00 GMT</pubDate></item><item><title>Three lessons from moving to Renovate</title><link>https://chris48s.github.io/blogmarks/posts/2025/moto-lambda-logs/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;At work recently I have been migrating some python projects using UV for package management from dependabot to renovate. Renovate is really impressive software. It can do &lt;em&gt;all the things&lt;/em&gt;. However with that capability comes some complexity. Whereas dependabot is a go kart, renovate is more like an aeroplane cockpit. Although I've used renovate before, the projects I've been migrating recently are a bit bigger with a few more moving parts.&lt;/p&gt;
 &lt;p&gt;Here's a random grab-bag of things I have recently learned that were not immediately obvious to me.&lt;/p&gt;
 &lt;h3&gt;Order of packageRules evaluation&lt;/h3&gt;
 &lt;p&gt;Renovate evaluates &lt;code&gt;packageRules[]&lt;/code&gt; from top to bottom. The order they are declared in is important. If a package matches a rule, there’s no bail-out or "early return". It keeps going down the array. This means if a package matches multiple rules, later rules override earlier rules in the array.&lt;/p&gt;
@@ -545,42 +593,4 @@ in a bunch of places. Here's what I came up with:&lt;/p&gt;
 &lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;python&lt;span class="w"&gt; &lt;/span&gt;manage.py&lt;span class="w"&gt; &lt;/span&gt;makemigrations&lt;span class="w"&gt; &lt;/span&gt;--check
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;in my CI build, this will cause the build to fail if my migrations are out of sync with the models, warning me about the problem.&lt;/p&gt;</description><category>python</category><guid>https://chris48s.github.io/blogmarks/posts/2021/check-migrations/</guid><pubDate>Wed, 10 Feb 2021 00:00:00 GMT</pubDate></item><item><title>Changing the tyres while the car is moving</title><link>https://chris48s.github.io/blogmarks/posts/2021/changing-the-tyres/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;I am currently working on a project where I need to migrate a legacy test suite from nose to pytest. The codebase has about 7,000 lines of test code. That isn't an enormous test suite, but I'm the only person who will be working on it. It will take me a while to get through them all because moving from one test runner to another will require changes to fixtures, factories, etc and maybe some light codebase refactoring as well as just reviewing/updating the test code itself. I also need to balance this with continuing to deliver bugfix and feature work. I can't block all delivery on the test suite migration, so here's a pattern:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Split the test suite into two dirs: &lt;code&gt;/tests/nose&lt;/code&gt; and &lt;code&gt;/tests/pt&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Migrate one module of test code at a time&lt;/li&gt;
-&lt;li&gt;Have the CI build run the old tests with nose and the new ones with pytest and merge the coverage reports:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="p p-Indicator"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;Run nose tests&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;run&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p p-Indicator"&gt;|&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="no"&gt;nosetests&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="no"&gt;--with-coverage \&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="no"&gt;--cover-package=dir \&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="no"&gt;--cover-erase \&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="no"&gt;path/to/tests/nose&lt;/span&gt;
-
-&lt;span class="p p-Indicator"&gt;-&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;Run pytest tests&lt;/span&gt;
-&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;run&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p p-Indicator"&gt;|&lt;/span&gt;
-&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="no"&gt;pytest \&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="no"&gt;--cov=dir \&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="no"&gt;--cov-append \&lt;/span&gt;
-&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="no"&gt;path/to/tests/pt&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-&lt;ul&gt;
-&lt;li&gt;When I rewrite the last test module left in &lt;code&gt;/tests/nose&lt;/code&gt;, we can finally drop nose, delete any nose-specific test helpers and move all the tests from &lt;code&gt;/tests/pt&lt;/code&gt; back to &lt;code&gt;/tests&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This approach buys me several useful things:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;I can tackle the test suite migration one module at a time&lt;/li&gt;
-&lt;li&gt;I can submit small pull requests that are easy to review&lt;/li&gt;
-&lt;li&gt;I can start writing tests for any new features or bugfixes in pytest right now&lt;/li&gt;
-&lt;li&gt;I can minimise the chance of conflicts between test suite migration and bugfix/feature delivery&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This is a very simple example of a high-level general pattern for managing non-trivial migrations (like moving a project from one web framework to another). This can be applied to larger more complex migrations and enables us to "change the tyres while the car is moving" (a phrase I stole from my colleague &lt;a href="https://amercader.net/"&gt;Adrià&lt;/a&gt;):&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Set up a structure that allows both &lt;code&gt;$OLD_BORING_THING&lt;/code&gt; and &lt;code&gt;$NEW_SHINY_THING&lt;/code&gt; to run at the same time&lt;/li&gt;
-&lt;li&gt;Gradually move code from &lt;code&gt;$OLD_BORING_THING&lt;/code&gt; to &lt;code&gt;$NEW_SHINY_THING&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;When we migrate the last bit of code from &lt;code&gt;$OLD_BORING_THING&lt;/code&gt; to &lt;code&gt;$NEW_SHINY_THING&lt;/code&gt;, remove the structure that allows &lt;code&gt;$OLD_BORING_THING&lt;/code&gt; and &lt;code&gt;$NEW_SHINY_THING&lt;/code&gt; to co-exist and delete &lt;code&gt;$OLD_BORING_THING&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Continue to deliver our roadmap in parallel to the migration&lt;/li&gt;
-&lt;/ul&gt;</description><category>python</category><category>testing</category><guid>https://chris48s.github.io/blogmarks/posts/2021/changing-the-tyres/</guid><pubDate>Sun, 31 Jan 2021 00:00:00 GMT</pubDate></item></channel></rss>
+&lt;p&gt;in my CI build, this will cause the build to fail if my migrations are out of sync with the models, warning me about the problem.&lt;/p&gt;</description><category>django</category><category>python</category><guid>https://chris48s.github.io/blogmarks/posts/2021/check-migrations/</guid><pubDate>Wed, 10 Feb 2021 00:00:00 GMT</pubDate></item></channel></rss>

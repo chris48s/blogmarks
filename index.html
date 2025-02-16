@@ -17,7 +17,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
 <link rel="canonical" href="https://chris48s.github.io/blogmarks/">
 <link rel="next" href="index-6.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2025/moto-lambda-logs/" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2025/django-db-routers-1/" type="text/html">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -40,7 +40,68 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/moto-lambda-logs/" class="u-url">Three lessons from moving to Renovate</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/django-db-routers-1/" class="u-url">Django DB Routers: Pitfalls</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2025/django-db-routers-1/" rel="bookmark">
+            <time class="published dt-published" datetime="2025-02-16T00:00:00Z" itemprop="datePublished" title="2025-02-16">2025-02-16</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>Django has a feature called <a href="https://docs.djangoproject.com/en/5.2/topics/db/multi-db/">Database Routers</a>. This gives you an application-level abstraction to manage multiple database connections. This can be useful if you are working with a primary/replica setup or if you're implementing database partitioning or sharding in your application.</p>
+<p>There are a couple of ways in which it is can be a bit of a leaky abstraction though.</p>
+<h3>Raw SQL</h3>
+<p>This one is pretty obvious if you think about it, but anything you define in your database routers only applies to database I/O that happens via the ORM. As soon as you use a <code>cursor</code> to execute raw SQL your DB routers are bypassed and it is your responsibility to manage which connection is being used. You can do this by importing <code>from django.db import connections</code> and selecting a named connection.</p>
+<p>This isn't a big surprise, but it is worth being aware of if you are converting an existing application to use multiple DB connections. This is not normally something you implement from day one.</p>
+<p>The other thing worth noting here is that even if your own application code only interacts with the DB through the ORM, if there is any package anywhere in your dependency tree that uses <code>connection.cursor()</code>, that is going to bypass any logic in your database router. This could lead to reads or writes performed by a third party package which don't happen on the expected DB connection.</p>
+<h3>Transactions</h3>
+<p>This one is perhaps less obvious. Any time you use a transaction, you are also responsible for explicitly managing your own DB connections. Imagine we have an application with the following setup:</p>
+<div class="code"><pre class="code literal-block"><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"default"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"ENGINE"</span><span class="p">:</span> <span class="s2">"django.db.backends.sqlite3"</span><span class="p">,</span>
+        <span class="s2">"NAME"</span><span class="p">:</span> <span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s2">"db1.sqlite3"</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">"auth"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"ENGINE"</span><span class="p">:</span> <span class="s2">"django.db.backends.sqlite3"</span><span class="p">,</span>
+        <span class="s2">"NAME"</span><span class="p">:</span> <span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s2">"db2.sqlite3"</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">AuthRouter</span><span class="p">:</span>
+    <span class="n">route_app_labels</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"contenttypes"</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_app_labels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"auth"</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_app_labels</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"auth"</span>
+        <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+
+<p>If I write the following code:</p>
+<div class="code"><pre class="code literal-block"><span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
+    <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="s1">'user1'</span><span class="p">,</span>
+        <span class="n">email</span><span class="o">=</span><span class="s1">'user1@example.com'</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s1">'changeme1'</span>
+    <span class="p">)</span>
+    <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
+        <span class="n">username</span><span class="o">=</span><span class="s1">'user2'</span><span class="p">,</span>
+        <span class="n">email</span><span class="o">=</span><span class="s1">'user2@example.com'</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s1">'changeme2'</span>
+    <span class="p">)</span>
+</pre></div>
+
+<p>this will create 2 users, writing the records to our <code>auth</code> DB. But the transaction wrapping those writes uses the <code>default</code> DB connection. This won't throw any exception or error. It just means these two writes are not wrapped in a meaningful transaction. However, to a casual reader of the code, it probably looks like they are.</p>
+<p>The correct code in this case would be <code>with transaction.atomic(using="auth"):</code> but it is worth being aware of this. Using multiple DBs opens the door to a class of wrong code that looks right.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/moto-lambda-logs/" class="u-url">Three lessons from moving to Renovate</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s
@@ -728,59 +789,6 @@ in a bunch of places. Here's what I came up with:</p>
 
 <p>This will tag any <code>ValueError</code>s raised by calling <code>do_a_thing()</code> with
 <code>custom-key=custom-value</code> when we log the exception to sentry.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2022/mocha-markdown/" class="u-url">Generating a GitHub Markdown Summary from Mocha</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                chris48s
-            </span></p>
-            <p class="dateline">
-            <a href="posts/2022/mocha-markdown/" rel="bookmark">
-            <time class="published dt-published" datetime="2022-09-20T00:00:00+01:00" itemprop="datePublished" title="2022-09-20">2022-09-20</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>I recently wanted to migrate some CI builds running mocha tests from CircleCI to GitHub Actions. I also wanted to use <a href="https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/">Job Summaries</a> to produce a markdown summary of the build. This allows you to output a summary of your workflow run by echoing markdown to a special environment variable called <code>$GITHUB_STEP_SUMMARY</code> e.g: <code>echo '### Hello world! :rocket:' &gt;&gt; $GITHUB_STEP_SUMMARY</code></p>
-<p>We run our tests with mocha, which doesn't ship with a markdown output formatter. The "min" formatter was quite close to what I wanted (a markdown summary of any failed tests but a "quiet" output if everything passed). Dumping that to a code fence would have probably been acceptable. Unfortunately our test suite has a number of tests which log output to stdout which made things a bit messy as the "min" formatter also dumps to stdout. So I decided to write a quick script to parse mocha's json output and produce a markdown summary. Doing this also allowed me to uses some nicer formatting than dumping console output into a code fence.</p>
-<div class="code"><pre class="code literal-block"><span class="c1">// mocha2md.js</span>
-
-<span class="k">import</span><span class="w"> </span><span class="nx">fs</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'fs'</span>
-
-<span class="kd">const</span><span class="w"> </span><span class="nx">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span>
-<span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mf">3</span><span class="p">]))</span>
-
-<span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`# </span><span class="si">${</span><span class="nx">title</span><span class="si">}</span><span class="sb">\n\n`</span><span class="p">)</span>
-
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">passes</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`✔ </span><span class="si">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">passes</span><span class="si">}</span><span class="sb"> passed\n`</span><span class="p">)</span>
-<span class="p">}</span>
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">failures</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`✖ </span><span class="si">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">failures</span><span class="si">}</span><span class="sb"> failed\n\n`</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">stats</span><span class="p">.</span><span class="nx">failures</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">test</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">tests</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">test</span><span class="p">.</span><span class="nx">err</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">test</span><span class="p">.</span><span class="nx">err</span><span class="p">).</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`### </span><span class="si">${</span><span class="nx">test</span><span class="p">.</span><span class="nx">title</span><span class="si">}</span><span class="sb">\n\n`</span><span class="p">)</span>
-<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">test</span><span class="p">.</span><span class="nx">fullTitle</span><span class="si">}</span><span class="sb">\n\n`</span><span class="p">)</span>
-<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'```\n'</span><span class="p">)</span>
-<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">test</span><span class="p">.</span><span class="nx">err</span><span class="p">.</span><span class="nx">stack</span><span class="si">}</span><span class="sb">\n`</span><span class="p">)</span>
-<span class="w">      </span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">'```\n\n'</span><span class="p">)</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-
-<p>Combine that with some workflow yaml to run the tests with the json reporter and use our script to write the report.</p>
-<div class="code"><pre class="code literal-block"><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run tests</span>
-<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">npm run test:core -- --reporter json --reporter-option 'output=reports/test.json'</span>
-
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Write Markdown Summary</span>
-<span class="w">  </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node mocha2md.js Tests reports/test.json &gt;&gt; $GITHUB_STEP_SUMMARY</span>
-</pre></div>
-
-<p>and we've got ourselves a nice little summary report from our mocha tests.</p>
-<p><img alt="example markdown summary" src="images/markdown-summary.png"></p>
     </div>
     </article>
 </div>

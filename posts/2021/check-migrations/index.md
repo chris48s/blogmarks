@@ -2,7 +2,7 @@
 .. title: Failing the CI build if django migrations are out of date
 .. slug: check-migrations
 .. date: 2021-02-10 00:00:00
-.. tags: python
+.. tags: python,django
 .. category: 
 .. link: 
 .. description: 
