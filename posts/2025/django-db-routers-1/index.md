@@ -56,14 +56,14 @@ If I write the following code:
 ```py
 with transaction.atomic():
     User.objects.create_user(
-        username='user1',
-        email='user1@example.com',
-        password='changeme1'
+        username="user1",
+        email="user1@example.com",
+        password="changeme1",
     )
     User.objects.create_user(
-        username='user2',
-        email='user2@example.com',
-        password='changeme2'
+        username="user2",
+        email="user2@example.com",
+        password="changeme2",
     )
 ```
 

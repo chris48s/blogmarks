@@ -87,14 +87,14 @@
 <p>If I write the following code:</p>
 <div class="code"><pre class="code literal-block"><span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
     <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
-        <span class="n">username</span><span class="o">=</span><span class="s1">'user1'</span><span class="p">,</span>
-        <span class="n">email</span><span class="o">=</span><span class="s1">'user1@example.com'</span><span class="p">,</span>
-        <span class="n">password</span><span class="o">=</span><span class="s1">'changeme1'</span>
+        <span class="n">username</span><span class="o">=</span><span class="s2">"user1"</span><span class="p">,</span>
+        <span class="n">email</span><span class="o">=</span><span class="s2">"user1@example.com"</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s2">"changeme1"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
-        <span class="n">username</span><span class="o">=</span><span class="s1">'user2'</span><span class="p">,</span>
-        <span class="n">email</span><span class="o">=</span><span class="s1">'user2@example.com'</span><span class="p">,</span>
-        <span class="n">password</span><span class="o">=</span><span class="s1">'changeme2'</span>
+        <span class="n">username</span><span class="o">=</span><span class="s2">"user2"</span><span class="p">,</span>
+        <span class="n">email</span><span class="o">=</span><span class="s2">"user2@example.com"</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s2">"changeme2"</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
 
