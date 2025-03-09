@@ -11,7 +11,7 @@
 
 Django has a feature called [Database Routers](https://docs.djangoproject.com/en/5.2/topics/db/multi-db/). This gives you an application-level abstraction to manage multiple database connections. This can be useful if you are working with a primary/replica setup or if you're implementing database partitioning or sharding in your application.
 
-There are a couple of ways in which it is can be a bit of a leaky abstraction though.
+There are a few ways in which it is can be a bit of a leaky abstraction though.
 
 ## Raw SQL
 
@@ -70,3 +70,41 @@ with transaction.atomic():
 this will create 2 users, writing the records to our `auth` DB. But the transaction wrapping those writes uses the `default` DB connection. This won't throw any exception or error. It just means these two writes are not wrapped in a meaningful transaction. However, to a casual reader of the code, it probably looks like they are.
 
 The correct code in this case would be `with transaction.atomic(using="auth"):` but it is worth being aware of this. Using multiple DBs opens the door to a class of wrong code that looks right.
+
+## Data Migrations
+
+It is also important to be careful when writing custom migrations using `RunPython`. Continuing to use our example above where we have a `default` DB and an `auth` DB, consider the following migration code:
+
+```py
+def create_user(apps, schema_editor):
+    User = apps.get_model("auth", "User")
+    User.objects.create_user(
+        username="user1",
+        email="user1@example.com",
+        password="changeme1",
+    )
+
+class Migration(migrations.Migration):
+    operations = [
+        migrations.RunPython(
+            create_user,
+            reverse_code=migrations.RunPython.noop
+        )
+    ]
+```
+
+This code looks fairly reasonable on the surface. If you are moving to using multiple DBs in an application which has historically run on a single DB, you probably have some migrations like this kicking about in the project history. The catch here is: If we run `./manage.py migrate` it will attempt to create the User object on the `default` DB connection. That will also happen if we run `./manage.py migrate --database auth`. This happens because the model retrieved via `apps.get_model()` is unaware of the database being used in the migration process. Django uses the default database unless explicitly specified.
+
+The correct code in this case would be:
+
+```py
+def create_user(apps, schema_editor):
+    User = apps.get_model("auth", "User")
+    User.objects.using(
+        schema_editor.connection.alias
+    ).create_user(
+        username="user1",
+        email="user1@example.com",
+        password="changeme1",
+    )
+```
