@@ -1,5 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about django)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/django.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2025 chris48s</copyright><lastBuildDate>Sun, 09 Mar 2025 15:49:36 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Django DB Routers: Pitfalls</title><link>https://chris48s.github.io/blogmarks/posts/2025/django-db-routers-1/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Django has a feature called &lt;a href="https://docs.djangoproject.com/en/5.2/topics/db/multi-db/"&gt;Database Routers&lt;/a&gt;. This gives you an application-level abstraction to manage multiple database connections. This can be useful if you are working with a primary/replica setup or if you're implementing database partitioning or sharding in your application.&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks (Posts about django)</title><link>https://chris48s.github.io/blogmarks/</link><description></description><atom:link href="https://chris48s.github.io/blogmarks/categories/django.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2025 chris48s</copyright><lastBuildDate>Fri, 04 Apr 2025 18:00:04 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Django DB Routers: Avoiding Race Conditions</title><link>https://chris48s.github.io/blogmarks/posts/2025/django-db-routers-2/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;If you are using django with a Postgres primary/replica setup for the first time, your first instinct may be to write something like this:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="n"&gt;DATABASES&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="s2"&gt;"default"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s2"&gt;"ENGINE"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"django.db.backends.postgresql"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="o"&gt;...&lt;/span&gt;
+    &lt;span class="p"&gt;},&lt;/span&gt;
+    &lt;span class="s2"&gt;"replica1"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s2"&gt;"ENGINE"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"django.db.backends.postgresql"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="o"&gt;...&lt;/span&gt;
+    &lt;span class="p"&gt;},&lt;/span&gt;
+    &lt;span class="s2"&gt;"replica2"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s2"&gt;"ENGINE"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"django.db.backends.postgresql"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="o"&gt;...&lt;/span&gt;
+    &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;AuthRouter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;db_for_read&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;hints&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;choice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+            &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"replica1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"replica2"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+        &lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;db_for_write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;hints&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;"default"&lt;/span&gt;
+    &lt;span class="o"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Read from the replicas, write to the primary - simple. There are tutorials online that will tell you to do this.&lt;/p&gt;
+&lt;p&gt;However, there's a problem with this setup: You now have a race condition. Replication is not instant. If you write something to the primary and then read back the same record from one of the replicas, the data may be stale.&lt;/p&gt;
+&lt;p&gt;How you choose to solve this depends on your application, but here's one strategy I have recently used.&lt;/p&gt;
+&lt;p&gt;A site I am working on has essentially a read-only public-facing site with a large number of users. Writes are made either by a handful of internal users via django's admin backend, or by management commands. We want to prevent race conditions in contexts where we will perform writes and scale DB reads in the public-facing parts of the site.&lt;/p&gt;
+&lt;p&gt;In order to do this, we used a package called &lt;a href="https://pypi.org/project/django-middleware-global-request/"&gt;django-middleware-global-request&lt;/a&gt;. This package provides a middleware that can store the current request in a thread-local variable so it can be accessed in contexts where a request would not normally be in scope.&lt;/p&gt;
+&lt;p&gt;Using this package allows us to write the following code:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;random&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django_middleware_global_request&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;get_request&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;AuthRouter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;db_for_read&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;hints&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;request&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;get_request&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"/admin"&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+                &lt;span class="c1"&gt;# always read from the primary&lt;/span&gt;
+                &lt;span class="c1"&gt;# in the admin interface&lt;/span&gt;
+                &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;"default"&lt;/span&gt;
+
+            &lt;span class="c1"&gt;# use replicas to serve read traffic&lt;/span&gt;
+            &lt;span class="c1"&gt;# on the public site&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;random&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;choice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+                &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"replica1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"replica2"&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+            &lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="c1"&gt;# if there's no request in scope,&lt;/span&gt;
+        &lt;span class="c1"&gt;# read from the primary&lt;/span&gt;
+        &lt;span class="c1"&gt;# we don't care about trying to "scale"&lt;/span&gt;
+        &lt;span class="c1"&gt;# management commands&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;"default"&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;db_for_write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;hints&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;"default"&lt;/span&gt;
+    &lt;span class="o"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;There are some situations where this wouldn't work. Obviously if you can't generalise about traffic based on the URL this strategy isn't going to hold water. Perhaps less obviously, if you've got an application which uses a lot of background tasks (which also will not have a request in scope) you might want to also serve some reads from the replicas in that situation. This approach would serve all the reads from the primary in that context.&lt;/p&gt;
+&lt;p&gt;For my use-case, this worked like a charm.&lt;/p&gt;</description><category>django</category><category>python</category><guid>https://chris48s.github.io/blogmarks/posts/2025/django-db-routers-2/</guid><pubDate>Thu, 03 Apr 2025 23:00:00 GMT</pubDate></item><item><title>Django DB Routers: Pitfalls</title><link>https://chris48s.github.io/blogmarks/posts/2025/django-db-routers-1/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Django has a feature called &lt;a href="https://docs.djangoproject.com/en/5.2/topics/db/multi-db/"&gt;Database Routers&lt;/a&gt;. This gives you an application-level abstraction to manage multiple database connections. This can be useful if you are working with a primary/replica setup or if you're implementing database partitioning or sharding in your application.&lt;/p&gt;
 &lt;p&gt;There are a few ways in which it is can be a bit of a leaky abstraction though.&lt;/p&gt;
 &lt;h3&gt;Raw SQL&lt;/h3&gt;
 &lt;p&gt;This one is pretty obvious if you think about it, but anything you define in your database routers only applies to database I/O that happens via the ORM. As soon as you use a &lt;code&gt;cursor&lt;/code&gt; to execute raw SQL your DB routers are bypassed and it is your responsibility to manage which connection is being used. You can do this by importing &lt;code&gt;from django.db import connections&lt;/code&gt; and selecting a named connection.&lt;/p&gt;

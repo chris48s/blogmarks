@@ -17,7 +17,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
 <link rel="canonical" href="https://chris48s.github.io/blogmarks/">
 <link rel="next" href="index-6.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2025/django-db-routers-1/" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2025/django-db-routers-2/" type="text/html">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -40,7 +40,87 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/django-db-routers-1/" class="u-url">Django DB Routers: Pitfalls</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/django-db-routers-2/" class="u-url">Django DB Routers: Avoiding Race Conditions</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2025/django-db-routers-2/" rel="bookmark">
+            <time class="published dt-published" datetime="2025-04-04T00:00:00+01:00" itemprop="datePublished" title="2025-04-04">2025-04-04</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>If you are using django with a Postgres primary/replica setup for the first time, your first instinct may be to write something like this:</p>
+<div class="code"><pre class="code literal-block"><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"default"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"ENGINE"</span><span class="p">:</span> <span class="s2">"django.db.backends.postgresql"</span><span class="p">,</span>
+        <span class="o">...</span>
+    <span class="p">},</span>
+    <span class="s2">"replica1"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"ENGINE"</span><span class="p">:</span> <span class="s2">"django.db.backends.postgresql"</span><span class="p">,</span>
+        <span class="o">...</span>
+    <span class="p">},</span>
+    <span class="s2">"replica2"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"ENGINE"</span><span class="p">:</span> <span class="s2">"django.db.backends.postgresql"</span><span class="p">,</span>
+        <span class="o">...</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="k">class</span> <span class="nc">AuthRouter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">"replica1"</span><span class="p">,</span> <span class="s2">"replica2"</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">"default"</span>
+    <span class="o">...</span>
+</pre></div>
+
+<p>Read from the replicas, write to the primary - simple. There are tutorials online that will tell you to do this.</p>
+<p>However, there's a problem with this setup: You now have a race condition. Replication is not instant. If you write something to the primary and then read back the same record from one of the replicas, the data may be stale.</p>
+<p>How you choose to solve this depends on your application, but here's one strategy I have recently used.</p>
+<p>A site I am working on has essentially a read-only public-facing site with a large number of users. Writes are made either by a handful of internal users via django's admin backend, or by management commands. We want to prevent race conditions in contexts where we will perform writes and scale DB reads in the public-facing parts of the site.</p>
+<p>In order to do this, we used a package called <a href="https://pypi.org/project/django-middleware-global-request/">django-middleware-global-request</a>. This package provides a middleware that can store the current request in a thread-local variable so it can be accessed in contexts where a request would not normally be in scope.</p>
+<p>Using this package allows us to write the following code:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">django_middleware_global_request</span> <span class="kn">import</span> <span class="n">get_request</span>
+
+<span class="k">class</span> <span class="nc">AuthRouter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">get_request</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">request</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"/admin"</span><span class="p">):</span>
+                <span class="c1"># always read from the primary</span>
+                <span class="c1"># in the admin interface</span>
+                <span class="k">return</span> <span class="s2">"default"</span>
+
+            <span class="c1"># use replicas to serve read traffic</span>
+            <span class="c1"># on the public site</span>
+            <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                <span class="p">[</span><span class="s2">"replica1"</span><span class="p">,</span> <span class="s2">"replica2"</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="c1"># if there's no request in scope,</span>
+        <span class="c1"># read from the primary</span>
+        <span class="c1"># we don't care about trying to "scale"</span>
+        <span class="c1"># management commands</span>
+        <span class="k">return</span> <span class="s2">"default"</span>
+
+    <span class="k">def</span> <span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">"default"</span>
+    <span class="o">...</span>
+</pre></div>
+
+<p>There are some situations where this wouldn't work. Obviously if you can't generalise about traffic based on the URL this strategy isn't going to hold water. Perhaps less obviously, if you've got an application which uses a lot of background tasks (which also will not have a request in scope) you might want to also serve some reads from the replicas in that situation. This approach would serve all the reads from the primary in that context.</p>
+<p>For my use-case, this worked like a charm.</p>
+    </div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/django-db-routers-1/" class="u-url">Django DB Routers: Pitfalls</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s
@@ -771,55 +851,6 @@
     <p>I self-host my own mastodon instance. I am <a href="https://fed.chris-shaw.dev/@chris">the only user on my server</a> and I only follow a handful of accounts. This means I inhabit a somewhat weakly connected corner of the fediverse. For example, following a tag doesn't act as a useful way for me to discover new posts because it almost exclusively shows me posts from people I am already following, which I know about anyway.</p>
 <p>This is a problem that is theoretically solved by ActivityPub Relays, although practically I was never really able to get a handle on which (if any) made sense for me to add to my instance.</p>
 <p>That changed recently when I found out about <a href="https://relay.fedi.buzz/">relay.fedi.buzz</a> which allows you to generate ad-hoc follow-only ActivityPub relays for specific tags or instances (the most useful of those being tags IMO). For example, if I want to follow the <code>#python</code> tag, I can add <a href="https://relay.fedi.buzz/tag/python">https://relay.fedi.buzz/tag/python</a> to my instance's relays. That ingests a much wider range of posts featuring that tag into my federated timeline, including from instance I was not already federated with via my follows. Then following that tag from my personal account now allows me to discover new posts on that topic.</p>
-    </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/sentry-decorator/" class="u-url">Adding a custom tag to a Sentry event</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                chris48s
-            </span></p>
-            <p class="dateline">
-            <a href="posts/2023/sentry-decorator/" rel="bookmark">
-            <time class="published dt-published" datetime="2023-05-29T00:00:00+01:00" itemprop="datePublished" title="2023-05-29">2023-05-29</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>Sentry allows you to enrich captured events by applying
-<a href="https://docs.sentry.io/product/sentry-basics/integrate-backend/capturing-errors/#enriching-your-event-data">custom tags and attributes</a>.
-I was recently working on a python application where I needed a re-usable
-abstraction to express the logic "if function X throws exception Y
-then apply this custom <code>key=value</code> tag when we log the exception to Sentry"
-in a bunch of places. Here's what I came up with:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">sentry_sdk</span> <span class="kn">import</span> <span class="n">capture_exception</span><span class="p">,</span> <span class="n">push_scope</span>
-
-<span class="k">def</span> <span class="nf">tag_error</span><span class="p">(</span><span class="n">exc_class</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
-        <span class="nd">@wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
-                <span class="k">raise</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">exc_class</span><span class="p">):</span>
-                    <span class="k">with</span> <span class="n">push_scope</span><span class="p">()</span> <span class="k">as</span> <span class="n">scope</span><span class="p">:</span>
-                        <span class="n">scope</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-                        <span class="n">capture_exception</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
-                <span class="k">raise</span>
-        <span class="k">return</span> <span class="n">wrapper</span>
-    <span class="k">return</span> <span class="n">decorator</span>
-</pre></div>
-
-<p>This gives us a <code>@tag_error</code> decorator, which can be applied to any function. For example:</p>
-<div class="code"><pre class="code literal-block"><span class="nd">@tag_error</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="s2">"custom-key"</span><span class="p">,</span> <span class="s2">"custom-value"</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">do_a_thing</span><span class="p">():</span>
-    <span class="o">...</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Oh no. A terrible thing has happened."</span><span class="p">)</span>
-    <span class="o">...</span>
-</pre></div>
-
-<p>This will tag any <code>ValueError</code>s raised by calling <code>do_a_thing()</code> with
-<code>custom-key=custom-value</code> when we log the exception to sentry.</p>
     </div>
     </article>
 </div>
