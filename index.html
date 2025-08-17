@@ -17,7 +17,7 @@
 <link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="rss.xml">
 <link rel="canonical" href="https://chris48s.github.io/blogmarks/">
 <link rel="next" href="index-6.html" type="text/html">
-<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2025/django-db-routers-2/" type="text/html">
+<!--[if lt IE 9]><script src="assets/js/html5shiv-printshiv.min.js"></script><![endif]--><link rel="prefetch" href="posts/2025/masto-host-behind-cloudflare/" type="text/html">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -40,7 +40,31 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/django-db-routers-2/" class="u-url">Django DB Routers: Avoiding Race Conditions</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/masto-host-behind-cloudflare/" class="u-url">Running masto.host behind CloudFlare</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2025/masto-host-behind-cloudflare/" rel="bookmark">
+            <time class="published dt-published" datetime="2025-08-17T00:00:00+01:00" itemprop="datePublished" title="2025-08-17">2025-08-17</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>My mastodon instance is managed by <a href="https://masto.host/">masto.host</a> and I use CloudFlare for DNS. If you use this combination of services and run "Check DNS" in the masto.host dashboard, it will tell you</p>
+<blockquote>
+<p>NOTICE: CloudFlare Proxy needs to be disabled.
+The Proxy Status for that record should read 'DNS Only'.
+If you see the 'orange cloud' next to the record then Proxy is enabled and you need to disable it.</p>
+</blockquote>
+<p>This is a working configuration, but running in DNS Only mode means there is no cache/CDN in front of your instance. It also means a lot of useful CloudFlare features are not available to you as they only work when CloudFlare is acting as a proxy.</p>
+<p>Although masto.host tells you to set CloudFlare to DNS Only, they do this to reduce support overhead for CloudFlare users. That is understandable, but it is perfectly possible to run CloudFlare in proxy mode. In my case, I needed to do two things:</p>
+<ol>
+<li>Ensure the TLS mode is set to <a href="https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/full-strict/">Full (strict)</a>. I want this anyway because my origin has its own TLS cert, but Flexible mode will cause a <a href="https://developers.cloudflare.com/ssl/troubleshooting/too-many-redirects/">redirect loop</a> because the upstream server redirects http:// requests to https://.</li>
+<li>Turn off <a href="https://developers.cloudflare.com/ssl/edge-certificates/additional-options/always-use-https/">Always Use HTTPS</a>. This is needed so that the origin's TLS certificate can be <a href="https://community.cloudflare.com/t/let-lets-encrypt-bot-bypass-always-use-https/200274">renewed by Let's Encrypt Bot</a>.</li>
+</ol>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/django-db-routers-2/" class="u-url">Django DB Routers: Avoiding Race Conditions</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s
@@ -837,21 +861,6 @@
 <li>You are likely to be using a different ORM, and much of your current ORM knowledge may not apply</li>
 </ul>
 </div>
-    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/relay-fedi-buzz/" class="u-url">relay.fedi.buzz</a></h1>
-        <div class="metadata">
-            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                chris48s
-            </span></p>
-            <p class="dateline">
-            <a href="posts/2023/relay-fedi-buzz/" rel="bookmark">
-            <time class="published dt-published" datetime="2023-06-26T00:00:00+01:00" itemprop="datePublished" title="2023-06-26">2023-06-26</time></a>
-            </p>
-        </div>
-    </header><div class="e-content entry-content">
-    <p>I self-host my own mastodon instance. I am <a href="https://fed.chris-shaw.dev/@chris">the only user on my server</a> and I only follow a handful of accounts. This means I inhabit a somewhat weakly connected corner of the fediverse. For example, following a tag doesn't act as a useful way for me to discover new posts because it almost exclusively shows me posts from people I am already following, which I know about anyway.</p>
-<p>This is a problem that is theoretically solved by ActivityPub Relays, although practically I was never really able to get a handle on which (if any) made sense for me to add to my instance.</p>
-<p>That changed recently when I found out about <a href="https://relay.fedi.buzz/">relay.fedi.buzz</a> which allows you to generate ad-hoc follow-only ActivityPub relays for specific tags or instances (the most useful of those being tags IMO). For example, if I want to follow the <code>#python</code> tag, I can add <a href="https://relay.fedi.buzz/tag/python">https://relay.fedi.buzz/tag/python</a> to my instance's relays. That ingests a much wider range of posts featuring that tag into my federated timeline, including from instance I was not already federated with via my follows. Then following that tag from my personal account now allows me to discover new posts on that topic.</p>
-    </div>
     </article>
 </div>
 
