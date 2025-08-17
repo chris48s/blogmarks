@@ -9,7 +9,7 @@
 .. type: text
 -->
 
-I self-host my own mastodon instance. I am [the only user on my server](https://fed.chris-shaw.dev/@chris) and I only follow a handful of accounts. This means I inhabit a somewhat weakly connected corner of the fediverse. For example, following a tag doesn't act as a useful way for me to discover new posts because it almost exclusively shows me posts from people I am already following, which I know about anyway.
+I administer my own mastodon instance. I am [the only user on my server](https://fed.chris-shaw.dev/@chris) and I only follow a handful of accounts. This means I inhabit a somewhat weakly connected corner of the fediverse. For example, following a tag doesn't act as a useful way for me to discover new posts because it almost exclusively shows me posts from people I am already following, which I know about anyway.
 
 This is a problem that is theoretically solved by ActivityPub Relays, although practically I was never really able to get a handle on which (if any) made sense for me to add to my instance.
 
