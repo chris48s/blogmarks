@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks</title><link>https://chris48s.github.io/blogmarks/</link><description>Handy links or snippets, and a sentence or two</description><atom:link href="https://chris48s.github.io/blogmarks/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2025 chris48s</copyright><lastBuildDate>Sun, 26 Oct 2025 15:46:56 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Running masto.host behind CloudFlare</title><link>https://chris48s.github.io/blogmarks/posts/2025/masto-host-behind-cloudflare/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;My mastodon instance is managed by &lt;a href="https://masto.host/"&gt;masto.host&lt;/a&gt; and I use CloudFlare for DNS. If you use this combination of services and run "Check DNS" in the masto.host dashboard, it will tell you&lt;/p&gt;
+<?xml-stylesheet type="text/xsl" href="assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogmarks</title><link>https://chris48s.github.io/blogmarks/</link><description>Handy links or snippets, and a sentence or two</description><atom:link href="https://chris48s.github.io/blogmarks/rss.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><copyright>Contents © 2025 chris48s</copyright><lastBuildDate>Wed, 05 Nov 2025 20:35:53 GMT</lastBuildDate><generator>Nikola (getnikola.com)</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Throwing warnings as if they are exceptions</title><link>https://chris48s.github.io/blogmarks/posts/2025/throwing-warnings/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;Sometimes a warning is logged from third-party code in a way that doesn't make it clear where the problem is in your own code. For example, today I was trying to track down the cause of this:&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;.venv/lib/python3.12/site-packages/django/template/base.py:1047: RemovedInDjango50Warning: The "default.html" templates for forms and formsets will be removed. These were proxies to the equivalent "table.html" templates, but the new "div.html" templates will be the default from Django 5.0. Transitional renderers are provided to allow you to opt-in to the new output style now. See https://docs.djangoproject.com/en/4.2/releases/4.1/ for more details
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;I understand the message, but &lt;code&gt;.venv/lib/python3.12/site-packages/django/template/base.py&lt;/code&gt; doesn't tell me where in my own codebase to look for the problem.&lt;/p&gt;
+&lt;p&gt;Today I learned that you can tell pytest (and indeed, python itself) to throw warnings as if they are an exception. So you can run&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pytest&lt;span class="w"&gt; &lt;/span&gt;-W&lt;span class="w"&gt; &lt;/span&gt;error
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;to treat all warnings as if they are an exception, or something like&lt;/p&gt;
+&lt;div class="code"&gt;&lt;pre class="code literal-block"&gt;pytest&lt;span class="w"&gt; &lt;/span&gt;-W&lt;span class="w"&gt; &lt;/span&gt;error::django.utils.deprecation.RemovedInDjango50Warning
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;to only apply this behaviour to a particular class of warning.&lt;/p&gt;
+&lt;p&gt;Either way, this will give you a stacktrace from the point where the warning is logged which can give you some breadcrumbs to follow.&lt;/p&gt;</description><category>python</category><category>testing</category><guid>https://chris48s.github.io/blogmarks/posts/2025/throwing-warnings/</guid><pubDate>Wed, 05 Nov 2025 00:00:00 GMT</pubDate></item><item><title>Running masto.host behind CloudFlare</title><link>https://chris48s.github.io/blogmarks/posts/2025/masto-host-behind-cloudflare/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;My mastodon instance is managed by &lt;a href="https://masto.host/"&gt;masto.host&lt;/a&gt; and I use CloudFlare for DNS. If you use this combination of services and run "Check DNS" in the masto.host dashboard, it will tell you&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;NOTICE: CloudFlare Proxy needs to be disabled.
 The Proxy Status for that record should read 'DNS Only'.
@@ -673,20 +687,4 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
 &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;to retrieve the &lt;code&gt;archived&lt;/code&gt; property for those three repos in a single round-trip over the network. When querying a large number of repos this is a big benefit.&lt;/p&gt;</description><category>github</category><guid>https://chris48s.github.io/blogmarks/posts/2023/bulk-querying-github/</guid><pubDate>Sun, 17 Sep 2023 23:00:00 GMT</pubDate></item><item><title>Always bet on SQL</title><link>https://chris48s.github.io/blogmarks/posts/2023/always-bet-on-sql/</link><dc:creator>chris48s</dc:creator><description>&lt;p&gt;I don't often write a spicy opinion piece, but it is spicy opinion time: ORMs are fine, but it is not worth investing too much time into becoming an expert in one.&lt;/p&gt;
-&lt;p&gt;I first learned SQL over 20 years ago. Everything I learned then is still true now. Lots of other things have also become true in the meantime, but everything I learned then still holds.&lt;/p&gt;
-&lt;p&gt;I've also used a number of different ORMs in some depth. Some free-standing. Some attached to a particular framework.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Django ORM&lt;/li&gt;
-&lt;li&gt;SQLAlchemy&lt;/li&gt;
-&lt;li&gt;Doctrine&lt;/li&gt;
-&lt;li&gt;CakePHP ORM&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;All of those use different design patterns and provide conceptually quite different abstractions over the same underlying SQL. There are some common ideas between them, but if you pick any two from that list there are probably more differences between them than similarities. Only a subset of the knowledge from learning one is directly transferable to another ORM.&lt;/p&gt;
-&lt;p&gt;ORMs come and go as different languages and frameworks gain or lose traction, but the underlying SQL is a constant.&lt;/p&gt;
-&lt;p&gt;So here's a rule of thumb: ORMs are fine. They do a useful job. Even if you don't like them, you'll probably end up using one. But any given ORM doesn't really warrant too much energy or attention. Focus on SQL. Understand how an ORM maps onto the underlying SQL and learn your current ORM well enough to make it generate the SQL statement you want under the hood.&lt;/p&gt;
-&lt;p&gt;There is a good chance that 5 years from now:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Anything you learn about SQL today will remain valid and useful, even when transitioning to a new ORM&lt;/li&gt;
-&lt;li&gt;You are likely to be using a different ORM, and much of your current ORM knowledge may not apply&lt;/li&gt;
-&lt;/ul&gt;</description><category>sql</category><guid>https://chris48s.github.io/blogmarks/posts/2023/always-bet-on-sql/</guid><pubDate>Sun, 06 Aug 2023 23:00:00 GMT</pubDate></item></channel></rss>
+&lt;p&gt;to retrieve the &lt;code&gt;archived&lt;/code&gt; property for those three repos in a single round-trip over the network. When querying a large number of repos this is a big benefit.&lt;/p&gt;</description><category>github</category><guid>https://chris48s.github.io/blogmarks/posts/2023/bulk-querying-github/</guid><pubDate>Sun, 17 Sep 2023 23:00:00 GMT</pubDate></item></channel></rss>

@@ -41,7 +41,36 @@
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/relay-fedi-buzz/" class="u-url">relay.fedi.buzz</a></h1>
+    <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/always-bet-on-sql/" class="u-url">Always bet on SQL</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                chris48s
+            </span></p>
+            <p class="dateline">
+            <a href="posts/2023/always-bet-on-sql/" rel="bookmark">
+            <time class="published dt-published" datetime="2023-08-07T00:00:00+01:00" itemprop="datePublished" title="2023-08-07">2023-08-07</time></a>
+            </p>
+        </div>
+    </header><div class="e-content entry-content">
+    <p>I don't often write a spicy opinion piece, but it is spicy opinion time: ORMs are fine, but it is not worth investing too much time into becoming an expert in one.</p>
+<p>I first learned SQL over 20 years ago. Everything I learned then is still true now. Lots of other things have also become true in the meantime, but everything I learned then still holds.</p>
+<p>I've also used a number of different ORMs in some depth. Some free-standing. Some attached to a particular framework.</p>
+<ul>
+<li>Django ORM</li>
+<li>SQLAlchemy</li>
+<li>Doctrine</li>
+<li>CakePHP ORM</li>
+</ul>
+<p>All of those use different design patterns and provide conceptually quite different abstractions over the same underlying SQL. There are some common ideas between them, but if you pick any two from that list there are probably more differences between them than similarities. Only a subset of the knowledge from learning one is directly transferable to another ORM.</p>
+<p>ORMs come and go as different languages and frameworks gain or lose traction, but the underlying SQL is a constant.</p>
+<p>So here's a rule of thumb: ORMs are fine. They do a useful job. Even if you don't like them, you'll probably end up using one. But any given ORM doesn't really warrant too much energy or attention. Focus on SQL. Understand how an ORM maps onto the underlying SQL and learn your current ORM well enough to make it generate the SQL statement you want under the hood.</p>
+<p>There is a good chance that 5 years from now:</p>
+<ul>
+<li>Anything you learn about SQL today will remain valid and useful, even when transitioning to a new ORM</li>
+<li>You are likely to be using a different ORM, and much of your current ORM knowledge may not apply</li>
+</ul>
+</div>
+    </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/relay-fedi-buzz/" class="u-url">relay.fedi.buzz</a></h1>
         <div class="metadata">
             <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                 chris48s
