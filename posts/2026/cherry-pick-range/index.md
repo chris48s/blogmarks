@@ -11,7 +11,7 @@
 
 Sometimes it is useful to cherry pick multiple commits in a single operation.
 
-There most frequent way I do this is by cherry-picking a range using the syntax
+The most frequent way I do this is by cherry-picking a range using the syntax
 
 ```
 git cherry-pick abc123^..def456
