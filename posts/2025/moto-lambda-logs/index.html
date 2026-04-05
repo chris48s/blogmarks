@@ -88,8 +88,8 @@
 <p>If I have</p>
 <div class="code"><pre class="code literal-block"><span class="k">[project]</span>
 <span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s">"boto3==1.35.98"</span><span class="p">,</span>
-<span class="w">    </span><span class="s">"botocore==1.35.98"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"boto3==1.35.98"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"botocore==1.35.98"</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 
@@ -133,28 +133,28 @@
 <p>One of them is to do it inline in <code>dependencies</code> using PEP-508 syntax e.g:</p>
 <div class="code"><pre class="code literal-block"><span class="k">[project]</span>
 <span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s">"arcgis2geojson @ git+https://github.com/chris48s/arcgis2geojson.git@3.0.3"</span>
+<span class="w">    </span><span class="s2">"arcgis2geojson @ git+https://github.com/chris48s/arcgis2geojson.git@3.0.3"</span>
 <span class="p">]</span>
 </pre></div>
 
 <p>The other us to use UV <a href="https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-sources">dependency sources</a> e.g:</p>
 <div class="code"><pre class="code literal-block"><span class="k">[project]</span>
 <span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s">"arcgis2geojson"</span>
+<span class="w">    </span><span class="s2">"arcgis2geojson"</span>
 <span class="p">]</span>
 
 <span class="k">[tool.uv.sources]</span>
-<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
+<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
 </pre></div>
 
 <p>Renovate's UV manager natively knows how to bump VCS dependencies in <code>pyproject.toml</code>. However, it will only detect and bump dependencies which are specified with the dependency sources syntax. VCS dependencies specified inline will be ignored, so the syntax you use here matters.</p>
 <p>Additionally, the specific syntax you use inside <code>tool.uv.sources</code> is also important. These two declarations are essentially identical in terms of what gets installed into your virtual environment:</p>
 <div class="code"><pre class="code literal-block"><span class="k">[tool.uv.sources]</span>
-<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">rev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
+<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">rev</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
 </pre></div>
 
 <div class="code"><pre class="code literal-block"><span class="k">[tool.uv.sources]</span>
-<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
+<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
 </pre></div>
 
 <p>However, renovate will interpret them and bump them differently. Using <code>rev</code> here will cause renovate to bump you to the latest commit every time a commit is pushed to the referenced repository, whereas using <code>tag</code> will only offer to upgrade the dependency when a new tag is pushed.</p>

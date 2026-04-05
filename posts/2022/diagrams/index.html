@@ -91,12 +91,12 @@ The learning curve is very easy. I was able to absorb the key co">
 <p>For example, the following diagram</p>
 <p><img alt="example diagram" src="../../../images/diagram.png"></p>
 <p>is generated from this short python snippet:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">diagrams</span> <span class="kn">import</span> <span class="n">Cluster</span><span class="p">,</span> <span class="n">Diagram</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.compute</span> <span class="kn">import</span> <span class="n">Fargate</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.database</span> <span class="kn">import</span> <span class="n">RDS</span><span class="p">,</span> <span class="n">ElastiCache</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.engagement</span> <span class="kn">import</span> <span class="n">SES</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.network</span> <span class="kn">import</span> <span class="n">ELB</span><span class="p">,</span> <span class="n">Route53</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.storage</span> <span class="kn">import</span> <span class="n">S3</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">diagrams</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cluster</span><span class="p">,</span> <span class="n">Diagram</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">diagrams.aws.compute</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fargate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">diagrams.aws.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDS</span><span class="p">,</span> <span class="n">ElastiCache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">diagrams.aws.engagement</span><span class="w"> </span><span class="kn">import</span> <span class="n">SES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">diagrams.aws.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">ELB</span><span class="p">,</span> <span class="n">Route53</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">diagrams.aws.storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3</span>
 
 <span class="k">with</span> <span class="n">Diagram</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">ses</span> <span class="o">=</span> <span class="n">SES</span><span class="p">(</span><span class="s2">"Mail Transport (SES)"</span><span class="p">)</span>

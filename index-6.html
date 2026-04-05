@@ -149,13 +149,13 @@ I was recently working on a python application where I needed a re-usable
 abstraction to express the logic "if function X throws exception Y
 then apply this custom <code>key=value</code> tag when we log the exception to Sentry"
 in a bunch of places. Here's what I came up with:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">sentry_sdk</span> <span class="kn">import</span> <span class="n">capture_exception</span><span class="p">,</span> <span class="n">push_scope</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sentry_sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">capture_exception</span><span class="p">,</span> <span class="n">push_scope</span>
 
-<span class="k">def</span> <span class="nf">tag_error</span><span class="p">(</span><span class="n">exc_class</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tag_error</span><span class="p">(</span><span class="n">exc_class</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
@@ -172,7 +172,7 @@ in a bunch of places. Here's what I came up with:</p>
 
 <p>This gives us a <code>@tag_error</code> decorator, which can be applied to any function. For example:</p>
 <div class="code"><pre class="code literal-block"><span class="nd">@tag_error</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="s2">"custom-key"</span><span class="p">,</span> <span class="s2">"custom-value"</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">do_a_thing</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">do_a_thing</span><span class="p">():</span>
     <span class="o">...</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Oh no. A terrible thing has happened."</span><span class="p">)</span>
     <span class="o">...</span>
@@ -254,12 +254,12 @@ in a bunch of places. Here's what I came up with:</p>
 <p>For example, the following diagram</p>
 <p><img alt="example diagram" src="images/diagram.png"></p>
 <p>is generated from this short python snippet:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">diagrams</span> <span class="kn">import</span> <span class="n">Cluster</span><span class="p">,</span> <span class="n">Diagram</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.compute</span> <span class="kn">import</span> <span class="n">Fargate</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.database</span> <span class="kn">import</span> <span class="n">RDS</span><span class="p">,</span> <span class="n">ElastiCache</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.engagement</span> <span class="kn">import</span> <span class="n">SES</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.network</span> <span class="kn">import</span> <span class="n">ELB</span><span class="p">,</span> <span class="n">Route53</span>
-<span class="kn">from</span> <span class="nn">diagrams.aws.storage</span> <span class="kn">import</span> <span class="n">S3</span>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span><span class="w"> </span><span class="nn">diagrams</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cluster</span><span class="p">,</span> <span class="n">Diagram</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">diagrams.aws.compute</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fargate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">diagrams.aws.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDS</span><span class="p">,</span> <span class="n">ElastiCache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">diagrams.aws.engagement</span><span class="w"> </span><span class="kn">import</span> <span class="n">SES</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">diagrams.aws.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">ELB</span><span class="p">,</span> <span class="n">Route53</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">diagrams.aws.storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">S3</span>
 
 <span class="k">with</span> <span class="n">Diagram</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">ses</span> <span class="o">=</span> <span class="n">SES</span><span class="p">(</span><span class="s2">"Mail Transport (SES)"</span><span class="p">)</span>

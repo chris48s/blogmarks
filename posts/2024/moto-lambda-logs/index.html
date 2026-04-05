@@ -90,14 +90,14 @@ Recently, I was working on a test for some code that invokes an AWS lambda funct
 <p>I've pushed a repo with some complete working code demonstrating this to <a href="https://github.com/chris48s/moto-lambda-logs-demo">https://github.com/chris48s/moto-lambda-logs-demo</a>. Here's a cut down version leaving out some imports and helper functions for the sake of brevity.</p>
 <p>First lets define a toy lambda function we can test. As well as returning a response, our handler also prints something to stdout.</p>
 <div class="code"><pre class="code literal-block"><span class="c1"># handler.py</span>
-<span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"log message"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s2">"statusCode"</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s2">"body"</span><span class="p">:</span> <span class="s2">"Hello from Lambda!"</span><span class="p">}</span>
 </pre></div>
 
 <p>We can use moto to run this handler in a mock lambda environment and test the response like this:</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">test_lambda</span><span class="p">():</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">test_lambda</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">mock_aws</span><span class="p">():</span>
         <span class="n">role</span> <span class="o">=</span> <span class="n">_get_mock_role</span><span class="p">()</span>
 
@@ -132,7 +132,7 @@ Recently, I was working on a test for some code that invokes an AWS lambda funct
 </pre></div>
 
 <p>Having invoked the lambda, we can then also inspect the CloudWatch logs generated while running that function and make assertions about anything written to the log streams. In this case, I'm asserting the output of our <code>print()</code> statement made it into the logs.</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">test_lambda</span><span class="p">():</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">test_lambda</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">mock_aws</span><span class="p">():</span>
 
         <span class="o">...</span>

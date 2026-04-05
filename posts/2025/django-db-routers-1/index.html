@@ -99,15 +99,15 @@
     <span class="p">},</span>
 <span class="p">}</span>
 
-<span class="k">class</span> <span class="nc">AuthRouter</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthRouter</span><span class="p">:</span>
     <span class="n">route_app_labels</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"contenttypes"</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_app_labels</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">"auth"</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_app_labels</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">"auth"</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -131,7 +131,7 @@
 <p>The correct code in this case would be <code>with transaction.atomic(using="auth"):</code> but it is worth being aware of this. Using multiple DBs opens the door to a class of wrong code that looks right.</p>
 <h3>Data Migrations</h3>
 <p>It is also important to be careful when writing custom migrations using <code>RunPython</code>. Continuing to use our example above where we have a <code>default</code> DB and an <code>auth</code> DB, consider the following migration code:</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
     <span class="n">User</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"User"</span><span class="p">)</span>
     <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
         <span class="n">username</span><span class="o">=</span><span class="s2">"user1"</span><span class="p">,</span>
@@ -139,7 +139,7 @@
         <span class="n">password</span><span class="o">=</span><span class="s2">"changeme1"</span><span class="p">,</span>
     <span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">Migration</span><span class="p">(</span><span class="n">migrations</span><span class="o">.</span><span class="n">Migration</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Migration</span><span class="p">(</span><span class="n">migrations</span><span class="o">.</span><span class="n">Migration</span><span class="p">):</span>
     <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">migrations</span><span class="o">.</span><span class="n">RunPython</span><span class="p">(</span>
             <span class="n">create_user</span><span class="p">,</span>
@@ -150,7 +150,7 @@
 
 <p>This code looks fairly reasonable on the surface. If you are moving to using multiple DBs in an application which has historically run on a single DB, you probably have some migrations like this kicking about in the project history. The catch here is: If we run <code>./manage.py migrate</code> it will attempt to create the User object on the <code>default</code> DB connection. That will also happen if we run <code>./manage.py migrate --database auth</code>. This happens because the model retrieved via <code>apps.get_model()</code> is unaware of the database being used in the migration process. Django uses the default database unless explicitly specified.</p>
 <p>The correct code in this case would be:</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
     <span class="n">User</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"User"</span><span class="p">)</span>
     <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">using</span><span class="p">(</span>
         <span class="n">schema_editor</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">alias</span>

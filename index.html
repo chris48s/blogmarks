@@ -156,15 +156,15 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
 <span class="p">}</span>
 
 
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
-<span class="k">class</span> <span class="nc">AuthRouter</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthRouter</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
             <span class="p">[</span><span class="s2">"replica1"</span><span class="p">,</span> <span class="s2">"replica2"</span><span class="p">]</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">"default"</span>
     <span class="o">...</span>
 </pre></div>
@@ -175,11 +175,11 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
 <p>A site I am working on has essentially a read-only public-facing site with a large number of users. Writes are made either by a handful of internal users via django's admin backend, or by management commands. We want to prevent race conditions in contexts where we will perform writes and scale DB reads in the public-facing parts of the site.</p>
 <p>In order to do this, we used a package called <a href="https://pypi.org/project/django-middleware-global-request/">django-middleware-global-request</a>. This package provides a middleware that can store the current request in a thread-local variable so it can be accessed in contexts where a request would not normally be in scope.</p>
 <p>Using this package allows us to write the following code:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">django_middleware_global_request</span> <span class="kn">import</span> <span class="n">get_request</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django_middleware_global_request</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_request</span>
 
-<span class="k">class</span> <span class="nc">AuthRouter</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthRouter</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
         <span class="n">request</span> <span class="o">=</span> <span class="n">get_request</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">request</span><span class="p">:</span>
@@ -200,7 +200,7 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
         <span class="c1"># management commands</span>
         <span class="k">return</span> <span class="s2">"default"</span>
 
-    <span class="k">def</span> <span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">"default"</span>
     <span class="o">...</span>
 </pre></div>
@@ -238,15 +238,15 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
     <span class="p">},</span>
 <span class="p">}</span>
 
-<span class="k">class</span> <span class="nc">AuthRouter</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AuthRouter</span><span class="p">:</span>
     <span class="n">route_app_labels</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"contenttypes"</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">db_for_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_app_labels</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">"auth"</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">db_for_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">route_app_labels</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">"auth"</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -270,7 +270,7 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
 <p>The correct code in this case would be <code>with transaction.atomic(using="auth"):</code> but it is worth being aware of this. Using multiple DBs opens the door to a class of wrong code that looks right.</p>
 <h3>Data Migrations</h3>
 <p>It is also important to be careful when writing custom migrations using <code>RunPython</code>. Continuing to use our example above where we have a <code>default</code> DB and an <code>auth</code> DB, consider the following migration code:</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
     <span class="n">User</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"User"</span><span class="p">)</span>
     <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span>
         <span class="n">username</span><span class="o">=</span><span class="s2">"user1"</span><span class="p">,</span>
@@ -278,7 +278,7 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
         <span class="n">password</span><span class="o">=</span><span class="s2">"changeme1"</span><span class="p">,</span>
     <span class="p">)</span>
 
-<span class="k">class</span> <span class="nc">Migration</span><span class="p">(</span><span class="n">migrations</span><span class="o">.</span><span class="n">Migration</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Migration</span><span class="p">(</span><span class="n">migrations</span><span class="o">.</span><span class="n">Migration</span><span class="p">):</span>
     <span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">migrations</span><span class="o">.</span><span class="n">RunPython</span><span class="p">(</span>
             <span class="n">create_user</span><span class="p">,</span>
@@ -289,7 +289,7 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
 
 <p>This code looks fairly reasonable on the surface. If you are moving to using multiple DBs in an application which has historically run on a single DB, you probably have some migrations like this kicking about in the project history. The catch here is: If we run <code>./manage.py migrate</code> it will attempt to create the User object on the <code>default</code> DB connection. That will also happen if we run <code>./manage.py migrate --database auth</code>. This happens because the model retrieved via <code>apps.get_model()</code> is unaware of the database being used in the migration process. Django uses the default database unless explicitly specified.</p>
 <p>The correct code in this case would be:</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="n">apps</span><span class="p">,</span> <span class="n">schema_editor</span><span class="p">):</span>
     <span class="n">User</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span><span class="s2">"auth"</span><span class="p">,</span> <span class="s2">"User"</span><span class="p">)</span>
     <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">using</span><span class="p">(</span>
         <span class="n">schema_editor</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">alias</span>
@@ -319,8 +319,8 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
 <p>If I have</p>
 <div class="code"><pre class="code literal-block"><span class="k">[project]</span>
 <span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s">"boto3==1.35.98"</span><span class="p">,</span>
-<span class="w">    </span><span class="s">"botocore==1.35.98"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"boto3==1.35.98"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"botocore==1.35.98"</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 
@@ -364,28 +364,28 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
 <p>One of them is to do it inline in <code>dependencies</code> using PEP-508 syntax e.g:</p>
 <div class="code"><pre class="code literal-block"><span class="k">[project]</span>
 <span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s">"arcgis2geojson @ git+https://github.com/chris48s/arcgis2geojson.git@3.0.3"</span>
+<span class="w">    </span><span class="s2">"arcgis2geojson @ git+https://github.com/chris48s/arcgis2geojson.git@3.0.3"</span>
 <span class="p">]</span>
 </pre></div>
 
 <p>The other us to use UV <a href="https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-sources">dependency sources</a> e.g:</p>
 <div class="code"><pre class="code literal-block"><span class="k">[project]</span>
 <span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s">"arcgis2geojson"</span>
+<span class="w">    </span><span class="s2">"arcgis2geojson"</span>
 <span class="p">]</span>
 
 <span class="k">[tool.uv.sources]</span>
-<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
+<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
 </pre></div>
 
 <p>Renovate's UV manager natively knows how to bump VCS dependencies in <code>pyproject.toml</code>. However, it will only detect and bump dependencies which are specified with the dependency sources syntax. VCS dependencies specified inline will be ignored, so the syntax you use here matters.</p>
 <p>Additionally, the specific syntax you use inside <code>tool.uv.sources</code> is also important. These two declarations are essentially identical in terms of what gets installed into your virtual environment:</p>
 <div class="code"><pre class="code literal-block"><span class="k">[tool.uv.sources]</span>
-<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">rev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
+<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">rev</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
 </pre></div>
 
 <div class="code"><pre class="code literal-block"><span class="k">[tool.uv.sources]</span>
-<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
+<span class="n">arcgis2geojson</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"https://github.com/chris48s/arcgis2geojson.git"</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">"3.0.3"</span><span class="w"> </span><span class="p">}</span>
 </pre></div>
 
 <p>However, renovate will interpret them and bump them differently. Using <code>rev</code> here will cause renovate to bump you to the latest commit every time a commit is pushed to the referenced repository, whereas using <code>tag</code> will only offer to upgrade the dependency when a new tag is pushed.</p>
@@ -427,14 +427,14 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
 <p>I've pushed a repo with some complete working code demonstrating this to <a href="https://github.com/chris48s/moto-lambda-logs-demo">https://github.com/chris48s/moto-lambda-logs-demo</a>. Here's a cut down version leaving out some imports and helper functions for the sake of brevity.</p>
 <p>First lets define a toy lambda function we can test. As well as returning a response, our handler also prints something to stdout.</p>
 <div class="code"><pre class="code literal-block"><span class="c1"># handler.py</span>
-<span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"log message"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s2">"statusCode"</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s2">"body"</span><span class="p">:</span> <span class="s2">"Hello from Lambda!"</span><span class="p">}</span>
 </pre></div>
 
 <p>We can use moto to run this handler in a mock lambda environment and test the response like this:</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">test_lambda</span><span class="p">():</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">test_lambda</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">mock_aws</span><span class="p">():</span>
         <span class="n">role</span> <span class="o">=</span> <span class="n">_get_mock_role</span><span class="p">()</span>
 
@@ -469,7 +469,7 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
 </pre></div>
 
 <p>Having invoked the lambda, we can then also inspect the CloudWatch logs generated while running that function and make assertions about anything written to the log streams. In this case, I'm asserting the output of our <code>print()</code> statement made it into the logs.</p>
-<div class="code"><pre class="code literal-block"><span class="k">def</span> <span class="nf">test_lambda</span><span class="p">():</span>
+<div class="code"><pre class="code literal-block"><span class="k">def</span><span class="w"> </span><span class="nf">test_lambda</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">mock_aws</span><span class="p">():</span>
 
         <span class="o">...</span>
@@ -612,7 +612,7 @@ If you see the 'orange cloud' next to the record then Proxy is enabled and you n
 <h3>Setup.py and setup.cfg</h3>
 <p>The oldest way to specify package metadata is using setup.py. This has served the community well for many years, but the package metadata is mixed with executable python code. The python community's first attempt at a declarative manifest format was setup.cfg. This was a format specific to setuptools rather than a standard and the setuptools project plans to <a href="https://github.com/pypa/setuptools/issues/3214">eventually deprecate</a> setup.cfg. One of the big pushes in python is for moving away from setup.py and setup.cfg to specify package metadata, and towards pyproject.toml. So how is that going out there in the real world?</p>
 <p>Of the repos I looked at, 20,684 (66%) contained a setup.py and 10,406 (33%) contained a setup.cfg file. Many contained both. As with pyproject.toml, presence or absence of the file in a repo doesn't necessarily tell us the full story. Some repos that are primarily using pyproject.toml also have a stub setup.py that just contains</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">setuptools</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="nn">setuptools</span>
 <span class="n">setuptools</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 </pre></div>
 
