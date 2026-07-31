@@ -4,5 +4,6 @@ __pycache__/
 
 # Nikola
 .doit.db
+.doit.db.db
 cache/
 output/
