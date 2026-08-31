@@ -17,7 +17,7 @@ requires-poetry = ">=2.0"
 package-mode = false
 
 [tool.poetry.group.dev.dependencies]
-isort = "^8.0.1"
+isort = "^9.0.1"
 black = "^26.5.1"
 flake8 = "^7.3.0"
 
