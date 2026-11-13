@@ -1474,7 +1474,10 @@ INDEX_DISPLAY_POST_COUNT = 10
 # Google Analytics or whatever else you use. Added to the bottom of <body>
 # in the default template (base.tmpl).
 # (translatable)
-# BODY_END = ""
+BODY_END = """<script
+    data-goatcounter="https://chris48s.goatcounter.com/count"
+    async src="//gc.zgo.at/count.js"
+></script>"""
 
 # The possibility to extract metadata from the filename by using a
 # regular expression.
